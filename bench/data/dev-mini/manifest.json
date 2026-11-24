@@ -1,0 +1,44 @@
+{
+  "tier": "dev-mini",
+  "seed": 2026,
+  "anti_leakage_overlap": 0,
+  "excluded_hash_count": 4070,
+  "total_rows": 728,
+  "langs": [
+    "bam",
+    "bmq",
+    "boz",
+    "dtm",
+    "ful",
+    "kao",
+    "mey",
+    "mku",
+    "myk",
+    "ses",
+    "snk",
+    "spp",
+    "taq"
+  ],
+  "files": {
+    "morph.jsonl": {
+      "rows": 130,
+      "sha256": "81e5ceec5c9b50b14417767ff8529cf462505779837c43373f1fdbdb88a608e8"
+    },
+    "gen.jsonl": {
+      "rows": 104,
+      "sha256": "488ae48d904201f8b1f11e13baaa9ca234fa8db07c1647f7616d1d34335f0bb0"
+    },
+    "lid.jsonl": {
+      "rows": 130,
+      "sha256": "bb8f1027ab35abacc54d284c0b801f3ec607b74c174d64cb0fb006a0633dfffb"
+    },
+    "cloze.jsonl": {
+      "rows": 104,
+      "sha256": "59c315536bb2d04989a8f09171b33e4d8f7bffcba375f4a0c6158d866aa6473b"
+    },
+    "lm_efficiency.jsonl": {
+      "rows": 260,
+      "sha256": "37ea7a3afd3ee0af3e905856a52b66fdca661b4f49470a62107d346246d3bbcd"
+    }
+  }
+}

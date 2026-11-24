@@ -1,0 +1,21 @@
+# Secrets & local runtime state (NEVER commit)
+.env
+.env.*
+!.env.example
+runs/
+*.log
+
+# Python caches & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+dist/
+build/
+
+# OS / Editor
+.DS_Store
+Thumbs.db

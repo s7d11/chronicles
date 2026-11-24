@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="newsprint">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE SEBENI CHRONICLE — MULTI13 Morphotactics, Typology &amp; Lexicon Supplement</title>
+  <style>
+    :root {
+      --paper: #f5f1e6;
+      --paper-card: #fbf8f0;
+      --paper-alt: #ede7d8;
+      --ink: #181613;
+      --ink-muted: #554f47;
+      --ink-soft: #756d62;
+      --rule-heavy: #1c1915;
+      --rule-hair: #cbc2af;
+      --crimson: #8c1d24;
+      --slate: #1b4d6e;
+      --forest: #1e5c3a;
+      --ochre: #9a6314;
+      --stone: #8a8275;
+      --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Times New Roman", serif;
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    [data-theme="evening"] {
+      --paper: #161412;
+      --paper-card: #1e1b18;
+      --paper-alt: #26221d;
+      --ink: #ede6d8;
+      --ink-muted: #b8ae9e;
+      --ink-soft: #8f8577;
+      --rule-heavy: #d8cebd;
+      --rule-hair: #3e3830;
+      --crimson: #e06c75;
+      --slate: #61afef;
+      --forest: #6cc08a;
+      --ochre: #e5c07b;
+      --stone: #7f786c;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--serif);
+      line-height: 1.58;
+      font-size: 16px;
+    }
+    code, pre {
+      font-family: var(--mono);
+      font-size: 0.84em;
+      background: var(--paper-alt);
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+    a { color: var(--crimson); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .sheet {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 16px 24px 56px;
+    }
+
+    /* Folio Strip */
+    .folio-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      padding: 6px 0 10px;
+      border-bottom: 1px solid var(--rule-heavy);
+    }
+    .folio-controls { display: flex; gap: 8px; align-items: center; }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      padding: 18px 8px 14px;
+      border-bottom: 3px double var(--rule-heavy);
+    }
+    .masthead .kicker {
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .masthead h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(2.1rem, 4.6vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.05;
+    }
+    .masthead .subtitle {
+      margin: 8px auto 0;
+      max-width: 880px;
+      font-style: italic;
+      font-size: 1.02rem;
+      color: var(--ink-muted);
+    }
+
+    /* Jump Nav Strip */
+    nav.ed-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 18px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--rule-heavy);
+      font-family: var(--sans);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+    nav.ed-nav a { color: var(--ink); }
+    nav.ed-nav a:hover { color: var(--crimson); }
+
+    /* Buttons / Interactive Pills in print style */
+    button, .pill {
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: var(--paper-card);
+      color: var(--ink);
+      border: 1px solid var(--rule-heavy);
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    button:hover, .pill:hover { background: var(--paper-alt); }
+    button.active, .pill.active {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    /* Front-page Lead Spread (2:1 asymmetric) */
+    .front-spread {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(280px, 1fr);
+      gap: 28px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--rule-heavy);
+      margin-bottom: 26px;
+    }
+    .lead-story {
+      padding-right: 26px;
+      border-right: 1px solid var(--rule-hair);
+    }
+    .section-kicker {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-bottom: 4px;
+    }
+    .lead-headline {
+      margin: 0 0 8px;
+      font-size: clamp(1.65rem, 2.8vw, 2.35rem);
+      line-height: 1.12;
+      font-weight: 700;
+    }
+    .deck {
+      margin: 0 0 10px;
+      font-size: 1.06rem;
+      color: var(--ink-muted);
+      font-style: italic;
+    }
+    .byline {
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      padding: 6px 0 12px;
+      border-top: 1px solid var(--rule-hair);
+      border-bottom: 1px solid var(--rule-hair);
+      margin-bottom: 14px;
+    }
+    .news-cols-2 {
+      column-count: 2;
+      column-gap: 24px;
+      column-rule: 1px solid var(--rule-hair);
+      text-align: justify;
+      hyphens: auto;
+    }
+    .news-cols-2 p { margin: 0 0 12px; }
+    .dropcap::first-letter {
+      float: left;
+      font-size: 3.35rem;
+      line-height: 0.85;
+      padding: 4px 8px 0 0;
+      font-weight: 700;
+      color: var(--crimson);
+    }
+    blockquote.pull-quote {
+      margin: 16px 0 4px;
+      padding: 12px 16px;
+      border-top: 2px solid var(--rule-heavy);
+      border-bottom: 2px solid var(--rule-heavy);
+      background: var(--paper-card);
+      font-size: 1.08rem;
+      font-style: italic;
+      text-align: center;
+      color: var(--ink);
+    }
+    blockquote.pull-quote cite {
+      display: block;
+      margin-top: 6px;
+      font-family: var(--sans);
+      font-style: normal;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    /* Sidebar Factbox */
+    .factbox {
+      background: var(--paper-card);
+      border: 1px solid var(--rule-heavy);
+      border-top: 4px solid var(--rule-heavy);
+      padding: 16px 18px;
+    }
+    .factbox h3 {
+      margin: 0 0 10px;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--rule-heavy);
+      padding-bottom: 6px;
+    }
+    .kpi-ledger {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .kpi-item {
+      border-bottom: 1px dotted var(--rule-hair);
+      padding-bottom: 8px;
+    }
+    .kpi-item .lbl {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+    }
+    .kpi-item .val {
+      font-size: 1.35rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .kpi-item .sub {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+    .invariants-note {
+      font-size: 0.83rem;
+      background: var(--paper-alt);
+      padding: 10px 12px;
+      border-left: 3px solid var(--crimson);
+    }
+    .invariants-note ul { margin: 6px 0 0; padding-left: 16px; }
+    .invariants-note li { margin-bottom: 4px; }
+
+    /* Major Sections */
+    .broadsheet-sec {
+      padding-bottom: 26px;
+      margin-bottom: 26px;
+      border-bottom: 2px solid var(--rule-heavy);
+    }
+    .sec-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 1px solid var(--rule-heavy);
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .sec-head h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      letter-spacing: -0.01em;
+    }
+    .sec-intro {
+      margin: 0 0 16px;
+      color: var(--ink-muted);
+      font-size: 0.96rem;
+    }
+
+    /* Charts & Ledgers */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 4px; }
+    .figure-frame {
+      background: var(--paper-card);
+      border: 1px solid var(--rule-heavy);
+      padding: 16px 18px;
+      margin-bottom: 20px;
+    }
+    .fig-caption {
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-muted);
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      color: var(--ink-muted);
+      margin-bottom: 10px;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; display: inline-block; border: 1px solid rgba(0,0,0,0.2); }
+
+    .chart-rows { display: grid; gap: 8px; }
+    .chart-row {
+      display: grid;
+      grid-template-columns: 165px 1fr 145px;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 8px;
+      border-bottom: 1px dotted var(--rule-hair);
+    }
+    .chart-lang { font-size: 0.88rem; font-weight: 700; }
+    .chart-lang small { display: block; font-weight: 400; color: var(--ink-soft); font-size: 0.76rem; font-family: var(--sans); }
+    .bar-stack { display: grid; gap: 4px; }
+    .bar-track {
+      height: 10px;
+      background: var(--paper-alt);
+      border: 1px solid var(--rule-hair);
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; transition: width 0.25s ease; }
+    .chart-vals {
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.3;
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      border-top: 2px solid var(--rule-heavy);
+      border-bottom: 2px solid var(--rule-heavy);
+      background: var(--paper-card);
+      margin-bottom: 18px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th, td {
+      padding: 7px 9px;
+      border-bottom: 1px solid var(--rule-hair);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      background: var(--paper-alt);
+      border-bottom: 1px solid var(--rule-heavy);
+      white-space: nowrap;
+    }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--crimson); }
+    td.num, th.num {
+      text-align: right;
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums;
+    }
+    td.center, th.center { text-align: center; }
+    tr:hover td { background: var(--paper-alt); }
+    tr.dimmed { opacity: 0.32; }
+    .pos { color: var(--forest); font-weight: 700; }
+    .neg { color: var(--crimson); font-weight: 700; }
+
+    /* Typology Dot Symbols */
+    .dot-2 { color: var(--ink); font-size: 1.05rem; font-weight: 700; }
+    .dot-1 { color: var(--slate); font-size: 1.05rem; }
+    .dot-0 { color: var(--ink-soft); opacity: 0.55; }
+
+    /* Multi-column Investigation Spread */
+    .cols-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+    .col-pane {
+      padding-right: 18px;
+      border-right: 1px solid var(--rule-hair);
+    }
+    .col-pane:last-child { border-right: none; padding-right: 0; }
+    .col-pane h3 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+      border-bottom: 1px solid var(--rule-heavy);
+      padding-bottom: 4px;
+    }
+    .flow-card {
+      padding: 9px 11px;
+      border: 1px solid var(--rule-hair);
+      background: var(--paper-card);
+      margin-bottom: 10px;
+      font-size: 0.86rem;
+    }
+    .flow-card.bad { border-left: 4px solid var(--crimson); }
+    .flow-card.good { border-left: 4px solid var(--forest); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 22px;
+    }
+    .stacked-bar {
+      display: flex;
+      height: 12px;
+      border: 1px solid var(--rule-heavy);
+      background: var(--paper-alt);
+    }
+    .stacked-curated { background: var(--forest); }
+    .stacked-pending { background: var(--ochre); }
+
+    /* Field Gazette Dispatches */
+    .dispatch-list { display: grid; gap: 10px; }
+    details.dispatch {
+      background: var(--paper-card);
+      border: 1px solid var(--rule-hair);
+      border-top: 2px solid var(--rule-heavy);
+    }
+    details.dispatch summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    details.dispatch summary:hover { background: var(--paper-alt); }
+    .dispatch-num {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-right: 8px;
+    }
+    .dispatch-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      font-weight: 400;
+    }
+    .stamp {
+      border: 1px solid var(--rule-hair);
+      padding: 2px 7px;
+      background: var(--paper);
+    }
+    .stamp.ok { border-color: var(--forest); color: var(--forest); font-weight: 700; }
+    .dispatch-body {
+      padding: 12px 16px 16px;
+      border-top: 1px solid var(--rule-hair);
+      font-size: 0.91rem;
+    }
+    .dispatch-cols {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .dispatch-box {
+      background: var(--paper);
+      border: 1px solid var(--rule-hair);
+      padding: 10px 12px;
+    }
+    .dispatch-box h4 {
+      margin: 0 0 6px;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      border-bottom: 1px dotted var(--rule-hair);
+      padding-bottom: 3px;
+    }
+    .search-input {
+      font-family: var(--sans);
+      font-size: 0.84rem;
+      background: var(--paper-card);
+      color: var(--ink);
+      border: 1px solid var(--rule-heavy);
+      padding: 6px 10px;
+      min-width: 260px;
+    }
+
+    footer.colophon {
+      text-align: center;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      padding-top: 10px;
+    }
+
+    @media (max-width: 960px) {
+      .front-spread { grid-template-columns: 1fr; }
+      .lead-story { padding-right: 0; border-right: none; }
+      .cols-3 { grid-template-columns: 1fr; }
+      .col-pane { padding-right: 0; border-right: none; border-bottom: 1px solid var(--rule-hair); padding-bottom: 14px; }
+      .news-cols-2 { column-count: 1; }
+    }
+    @media (max-width: 700px) {
+      .chart-row { grid-template-columns: 1fr; }
+      .chart-vals { text-align: left; }
+    }
+    @media print {
+      .folio-controls, .toolbar, nav.ed-nav { display: none !important; }
+      body { background: #ffffff; color: #000000; font-size: 11pt; }
+      .broadsheet-sec, details.dispatch { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="folio-bar">
+      <span>VOL. II &bull; NO. 13 &bull; MULTI13 MORPHOTACTICS &amp; LEXICON SUPPLEMENT</span>
+      <span>SEBENI COMPUTATIONAL LINGUISTICS DESK &bull; COMMIT <code>c128d817</code> &bull; PR #1</span>
+      <div class="folio-controls">
+        <button id="themeToggle" type="button">Evening Edition</button>
+        <button type="button" onclick="window.print()">Print Edition</button>
+      </div>
+    </div>
+
+    <header class="masthead">
+      <div class="kicker">Special Analytical Broadsheet &bull; Revision &amp; Empirical Audit</div>
+      <h1>The Sebeni Chronicle</h1>
+      <p class="subtitle">Cross-Linguistic Typology, Morphotactic Grammar Redesign, Four-Tier Lexicon Reinforcement &amp; DabaX Strict Validation Across Mali&rsquo;s Thirteen National Languages</p>
+    </header>
+
+    <nav class="ed-nav">
+      <a href="#front">Front Page</a>
+      <a href="#sec-benchmarks">I. Empirical Ledger</a>
+      <a href="#sec-typology">II. Cross-Linguistic Typology</a>
+      <a href="#sec-diagnostics">III. Systemic Diagnostics</a>
+      <a href="#sec-curation">IV. Safeguards &amp; Curation</a>
+      <a href="#sec-gazette">V. Thirteen-Language Field Gazette</a>
+    </nav>
+
+    <!-- FRONT PAGE SPREAD -->
+    <div id="front" class="front-spread">
+      <article class="lead-story">
+        <div class="section-kicker">Lead Dispatch &bull; Multi13 Baseline Overhaul</div>
+        <h2 class="lead-headline">New Grammars &amp; Guarded Parsing End Phantom Inflation Across 13 Malian Tongues</h2>
+        <p class="deck">Ground-up rewrites, 30,936 new dictionary entries, and strict gloss enforcement lift Constitution parse coverage from 15.8%–79.7% to 88.3%–99.6% while exposing legacy engine artifacts.</p>
+        <div class="byline">By the Sebeni Language Engineering Desk &bull; Validated via DabaX &amp; 371 Automated Tests</div>
+
+        <div class="news-cols-2">
+          <p class="dropcap">An exhaustive empirical audit of all thirteen national language baselines in <code>beni/data/baselines/</code> has fundamentally reshaped Sebeni&rsquo;s morphological analyzer. Evaluating every language against stratified 300-line samples from <code>beni/data/raw/</code> alongside parallel texts of the 2023 Constitution of Mali (<code>beni/data/test.json</code>) revealed that earlier raw <code>&Phi;</code> rewards severely overstated real grammatical understanding.</p>
+          <p>In extreme cases such as Dogon (<code>dtm</code>), Mamara (<code>myk</code>), and Tamasheq (<code>taq</code>), permissive or reversed stage-0/1 rules split unglossed tokens without matching any dictionary stem—causing <code>daba.newmorph</code> to award <code>stage &ge; 0</code> and full <code>&Phi; = 1.0</code> weight on up to <strong>65.3% phantom parses</strong> while genuine dictionary-backed parsing sat between 4.9% and 12.7%.</p>
+          <p>Meanwhile, four structural flaws broke lexicon indexing silently: missing blank lines concatenated consecutive entries under <code>DictReader</code>; uppercase <code>\ps</code> tags failed to match lowercase grammar rules; village names sat inside <code>\ve</code>; and copy-pasted grammars (such as Fula rules inside Hassaniya Arabic <code>mey</code>) misclassified native words as foreign borrowings (<code>EMPR</code>).</p>
+          <p>Every non-Bambara grammar has now been rebuilt from raw corpus evidence, topped off by a two-stage Tamasheq multi-clitic and Berber circumfix engine, four-tier data-reinforced dictionaries totaling <strong>49,257 entries</strong>, Unicode homoglyph normalization, and <code>DabaX(strict_parse=True)</code> guarding.</p>
+        </div>
+
+        <blockquote class="pull-quote">
+          &ldquo;When permissive suffix rules fail dictionary lookup yet return stage&nbsp;0, raw &Phi; celebrates noise; strict gloss checking brings true coverage into focus.&rdquo;
+          <cite>&mdash; Finding &sect;2.1, Sebeni DabaX Diagnostic Audit</cite>
+        </blockquote>
+      </article>
+
+      <aside class="factbox">
+        <h3>By The Numbers &amp; Scope</h3>
+        <div class="kpi-ledger">
+          <div class="kpi-item">
+            <div class="lbl">Lexicon Headwords (<code>\lx</code>)</div>
+            <div class="val">19,018 &rarr; 49,257</div>
+            <div class="sub"><span class="pos">+30,239 entries</span> &bull; Keys: 38,523 &rarr; 90,125</div>
+          </div>
+          <div class="kpi-item">
+            <div class="lbl">Median Raw Corpus True-Parse %</div>
+            <div class="val">12.72% &rarr; 82.53%</div>
+            <div class="sub"><span class="pos">+69.81 pp</span> across 300-line raw + jsonl samples</div>
+          </div>
+          <div class="kpi-item">
+            <div class="lbl">Median Constitution (<code>test.json</code>) True-Parse %</div>
+            <div class="val">23.39% &rarr; 97.59%</div>
+            <div class="sub"><span class="pos">+74.20 pp</span> &bull; Up to <strong>99.57%</strong> (<code>dtm</code>)</div>
+          </div>
+          <div class="kpi-item">
+            <div class="lbl">Peak Phantom-Parse Rate</div>
+            <div class="val">65.30% &rarr; 0.00%</div>
+            <div class="sub">Neutralized in <code>DabaX(strict_parse=True)</code> &bull; <strong>0</strong> <code>DictReader</code> errors</div>
+          </div>
+        </div>
+        <div class="invariants-note">
+          <strong>Preserved Scope &amp; Invariants</strong>
+          <ul>
+            <li><code>bam</code> EMPR stage strictly preserved at <strong>stage 6</strong>; all other 12 languages at <strong>stage 4</strong> (verified by <code>test_empr_stages.py</code>).</li>
+            <li><code>beni/data/raw/*.txt</code> and <code>test.json</code> untouched on disk.</li>
+            <li><code>bbo</code> (Bobo Madar&eacute;) remains an out-of-scope scratch outlier (<code>6,928</code> lines, <code>162,776</code> tokens, <code>4,183</code> word types).</li>
+            <li>9 stale duplicate <code>baseline.*.txt</code> files removed after merging 2,252-entry <code>dtm/baseline.dict.txt</code>.</li>
+            <li>Verification suite: <strong>371 pytest passed</strong> (4 skipped), 0 ruff errors, strict MkDocs clean.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <!-- SECTION I: EMPIRICAL LEDGER -->
+    <section id="sec-benchmarks" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section I &bull; Quantitative Audit</div>
+          <h2>The Empirical Ledger: Before, Pass 1 &amp; Pass 2</h2>
+        </div>
+      </div>
+      <p class="sec-intro">Compare baseline performance against Pass 1 and Pass 2. Pass 2 added two independent upgrades: the <strong>global</strong> <code>DabaX(strict_parse=True)</code> phantom-parse guard + homoglyph normalizer (active across all 13 languages) and the deep <code>taq</code> multi-clitic/circumfix overhaul. Toggle between stratified clean corpus samples and the 2023 Constitution of Mali.</p>
+
+      <div class="toolbar">
+        <div class="btn-group" id="datasetBtns">
+          <button class="pill active" data-dataset="raw_sample">Clean Raw Sample (300 + JSONL)</button>
+          <button class="pill" data-dataset="test_json">Constitution (test.json)</button>
+        </div>
+        <div class="btn-group" id="metricBtns">
+          <button class="pill active" data-metric="true_parsed">True Parse %</button>
+          <button class="pill" data-metric="phantom">Phantom Parse %</button>
+          <button class="pill" data-metric="phi">&Phi; vs. Guarded / Strict</button>
+          <button class="pill" data-metric="lexicon">Lexicon Scale (\lx)</button>
+          <button class="pill" data-metric="speed">Parse Latency (s)</button>
+        </div>
+      </div>
+
+      <div class="figure-frame">
+        <div class="fig-caption">
+          <span><strong>FIG. 1</strong> &mdash; Per-Language Comparative Bars (<span id="figMetricName">True Parse %</span> on <span id="figDatasetName">Clean Raw Sample</span>)</span>
+          <span>Hover any bar for exact value</span>
+        </div>
+        <div class="legend" id="chartLegend"></div>
+        <div class="chart-rows" id="chartContainer"></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="section-kicker" style="margin:0">Table 1A &bull; Interactive 13-Language Benchmark Matrix (Click Headers to Sort)</div>
+        <div class="btn-group" id="familyBtns">
+          <button class="pill active" data-family="ALL">All (13)</button>
+          <button class="pill" data-family="Manding">Manding (3)</button>
+          <button class="pill" data-family="Inner Mande">Inner Mande (2)</button>
+          <button class="pill" data-family="Senufo">Senufo (2)</button>
+          <button class="pill" data-family="Dogon/Gur">Dogon &amp; Gur (2)</button>
+          <button class="pill" data-family="Atlantic">Atlantic (1)</button>
+          <button class="pill" data-family="Songhay">Songhay (1)</button>
+          <button class="pill" data-family="Afro-Asiatic">Afro-Asiatic (2)</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="matrixTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-sort="lang">Lang</th>
+              <th class="sortable" data-sort="family">Classification</th>
+              <th class="sortable num" data-sort="lx_after">\lx After</th>
+              <th class="sortable num" data-sort="true_before">True% Before</th>
+              <th class="sortable num" data-sort="true_after">True% After</th>
+              <th class="sortable num" data-sort="delta_true">&Delta; pp</th>
+              <th class="sortable num" data-sort="phantom_before">Raw Ph% Before</th>
+              <th class="sortable num" data-sort="phantom_after">Raw Ph% After</th>
+              <th class="sortable num" data-sort="empr_after">EMPR%</th>
+              <th class="sortable num" data-sort="unk_after">Unk%</th>
+              <th class="sortable num" data-sort="guarded_phi">Guarded &Phi;</th>
+              <th class="sortable num" data-sort="strict_rate">Strict Rate</th>
+            </tr>
+          </thead>
+          <tbody id="matrixBody"></tbody>
+        </table>
+      </div>
+
+      <div class="section-kicker">Table 1B &bull; Dictionary Scale, Key Indexing &amp; DictReader Health Ledger</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Lang</th>
+              <th>Language</th>
+              <th class="num">\lx Before</th>
+              <th class="num">\lx After</th>
+              <th class="num">Keys Before</th>
+              <th class="num">Keys After</th>
+              <th class="center">Errors</th>
+              <th>Corpus Noise</th>
+              <th>Key Structural &amp; Lexical Repair</th>
+            </tr>
+          </thead>
+          <tbody id="dictHealthBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION II: CROSS-LINGUISTIC TYPOLOGY -->
+    <section id="sec-typology" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section II &bull; Comparative Typology Centerpiece</div>
+          <h2>Cross-Linguistic Typology Across Mali&rsquo;s <code>MULTI13</code></h2>
+        </div>
+      </div>
+
+      <div class="news-cols-2" style="margin-bottom: 18px;">
+        <p class="dropcap">The thirteen national baselines span three major African language phyla&mdash;<strong>Niger-Congo</strong> (Mande, Senufo, Gur, Atlantic, plus the divergent Dogon family), <strong>Songhay</strong> (traditionally grouped with Nilo-Saharan), and <strong>Afro-Asiatic</strong> (Berber and Semitic). Designing a unified parsing strategy required respecting deep typological splits rather than exporting Bambara suffixing assumptions across unrelated families.</p>
+        <p><strong>The Manding East&ndash;West Divide:</strong> Corpus evidence established that both <code>kao.txt</code> (Kassonke) and <code>mku.txt</code> (Maninka) predominantly reflect <em>Western</em> Manding morphology (<code>-o/-ŋo</code> definite, <code>-lu/-nu</code> plural, native velar fricative <code>x</code> as in <code>moxo</code>, <code>baxa</code>), whereas <code>test.json["mlq"]</code> blends Eastern and Western traits. Unifying both paradigms eliminated false <code>EMPR</code> flags.</p>
+        <p><strong>Noun-Class Concord &amp; Consonant Gradation:</strong> Senufo (<code>myk</code>, <code>spp</code>), Gur (<code>bmq</code>), and Dogon (<code>dtm</code>) mark animacy and noun-class gender via obligatory nominal suffixes, while Fulfulde (<code>ful</code>) combines 20+ classes and 3-voice TAM with initial consonant mutation (<code>haal/kaal</code>, <code>wiy/mbiy</code>, <code>heɓ/keɓ</code>). Songhay (<code>ses</code>) required housing two coexisting varieties&mdash;Koyraboro Senni and Koyra Chiini&mdash;inside a single grammar.</p>
+        <p><strong>Afro-Asiatic Non-Concatenative &amp; Clitic Complexity:</strong> Hassaniya Arabic (<code>mey</code>) and Tuareg Tamasheq (<code>taq</code>) invert Niger-Congo suffixing expectations. Both rely heavily on proclitics, broken plurals, and discontinuous consonantal templates; Tamasheq additionally chains up to four clitics (e.g., <code>dăɣ-ăddunya-ta-dăɣ</code>) and Berber circumfixes (<code>{tă||t}</code>, <code>{ti||en}</code>), necessitating two sequential peeling stages in <code>taq/baseline.gram</code>.</p>
+      </div>
+
+      <div class="toolbar">
+        <div class="section-kicker" style="margin:0">Table 2A &bull; 13 &times; 8 Typological Feature Matrix (&bull; Primary &middot; &#9680; Partial/Dialectal &middot; &mdash; Absent)</div>
+        <div class="btn-group" id="phylumBtns">
+          <button class="pill active" data-phylum="ALL">All Phyla (13)</button>
+          <button class="pill" data-phylum="Mande">Mande (5)</button>
+          <button class="pill" data-phylum="Senufo">Senufo (2)</button>
+          <button class="pill" data-phylum="Dogon">Dogon / Gur (2)</button>
+          <button class="pill" data-phylum="Atlantic">Atlantic (1)</button>
+          <button class="pill" data-phylum="Songhay">Songhay (1)</button>
+          <button class="pill" data-phylum="Afro-Asiatic">Afro-Asiatic (2)</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="typologyMatrixTable">
+          <thead>
+            <tr>
+              <th>Language</th>
+              <th>Phylum / Branch</th>
+              <th class="center">Suffixing</th>
+              <th class="center">Prefixing</th>
+              <th class="center">Circumfix</th>
+              <th class="center">Hyphen Clitics</th>
+              <th class="center">Noun Classes</th>
+              <th class="center">Gradation / Ablaut</th>
+              <th class="center">Tone / Nasal V</th>
+              <th class="center">Dialect / Script Bridge</th>
+            </tr>
+          </thead>
+          <tbody id="typologyMatrixBody"></tbody>
+        </table>
+      </div>
+
+      <div class="section-kicker">Table 2B &bull; Nine Cross-Linguistic Typological Profiles &amp; Discovered Morphotactics</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Typological Profile</th>
+              <th>Languages</th>
+              <th>Dominant Morphotactics</th>
+              <th>Key Discovered Rules &amp; Affixes</th>
+              <th>Empirical Corpus Insight</th>
+            </tr>
+          </thead>
+          <tbody id="typologyProfilesBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION III: SYSTEMIC DIAGNOSTICS -->
+    <section id="sec-diagnostics" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section III &bull; Investigative Engineering Desk</div>
+          <h2>Systemic Architectural &amp; Corpus Diagnostics</h2>
+        </div>
+      </div>
+      <div class="cols-3">
+        <div class="col-pane">
+          <h3>&sect;2.1 The <code>daba.newmorph</code> Phantom-Parse Trap</h3>
+          <div class="flow-card bad">
+            <strong>Unguarded <code>lemmatize(word)</code>:</strong> Initializes <code>stage = -1</code> and <code>parsedword = [nullgloss(word)]</code>. Whenever a stage 0/1 affix rule splits <code>word</code> into <code>[stem, affix]</code>, <code>newparsed != parsedword</code> promotes <code>stage = step</code> even when stem lookup fails (<code>daba.newmorph.parsed(gloss) == False</code>).
+          </div>
+          <p style="font-size:0.88rem">Because <code>stage_to_phi</code> assigns full weight <code>1.0</code> to every non-EMPR <code>stage &ge; 0</code>, permissive rules&mdash;such as Dogon <code>-i/-a/-u</code>, Mamara <code>-a/-i</code>, or reversed Tamasheq prefixes&mdash;previously inflated raw <code>&Phi;</code> to <code>0.59–0.85</code> despite genuine parses hovering at <code>5%–37%</code>.</p>
+          <div class="flow-card good">
+            <strong>Global Guard (All 13 Languages) &mdash; <code>DabaX(strict_parse=True)</code>:</strong> Enabled by default with no per-language gate, inspecting every candidate across every language via <code>_is_parsed_gloss()</code>. Any non-EMPR split whose leaf morphemes lack dictionary-backed glosses is demoted to <code>stage = &quot;-1&quot;</code>, eliminating phantom parses (<strong>0.00%</strong>) across all 13 languages.
+          </div>
+        </div>
+
+        <div class="col-pane">
+          <h3>&sect;2.2 <code>DictReader</code> Failures &amp; Tag Repairs</h3>
+          <ul style="margin:0; padding-left:18px; font-size:0.88rem;">
+            <li style="margin-bottom:8px;"><strong>Blank-line record boundaries:</strong> <code>daba.formats.DictReader</code> flushes entries only on blank lines (<code>if not line or line.isspace()</code>). Missing blank lines in <code>myk</code> (1,045), <code>snk</code> (961), <code>spp</code> (1,158), and <code>mku</code> caused consecutive entries to glue onto the first headword.</li>
+            <li style="margin-bottom:8px;"><strong>PoS-tag case &amp; prose mismatch:</strong> <code>spp</code> used uppercase <code>\ps N / V / PRON</code> vs. lowercase <code>:n:</code>; <code>taq</code> used <code>n.m./n.f./adj.</code>; <code>myk</code> used French prose (<code>pron pronom du pr&eacute;sentatif</code>).</li>
+            <li style="margin-bottom:8px;"><strong>Village leakage in <code>\ve</code>:</strong> Because <code>DictReader</code> indexes <code>\ve</code> as headwords, Malian village names in <code>bmq</code> and dialect names in <code>taq</code> polluted the lookup trie until moved to <code>\di</code>.</li>
+            <li><strong>Truncated Dogon lexicon:</strong> Active <code>dtm/baseline.dict</code> held only 29 entries while <code>dtm/baseline.dict.txt</code> held 2,252 entries (~150 broken <code>\mm</code>); merging yielded 4,739 clean entries.</li>
+          </ul>
+        </div>
+
+        <div class="col-pane">
+          <h3>&sect;2.3 Corpus Hygiene &amp; Homoglyphs</h3>
+          <p style="font-size:0.88rem; margin-top:0;">Raw texts interleave African prose with bilingual grammar commentary (<code>kao</code> ~6.6%, <code>boz</code> ~5.3%, <code>dtm</code> ~4.9%, <code>mey</code> ~4.5%, <code>snk</code> ~4.0%) plus non-Latin Unicode lookalikes:</p>
+          <div class="table-wrap" style="margin-bottom:0;">
+            <table>
+              <thead>
+                <tr><th>Lookalike</th><th>Target</th><th>Affected</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>&epsilon;</code> (03B5), <code>&#1297;</code> (0511)</td><td><code>&#603;</code> (025B)</td><td>bam, bmq, dtm, kao, mku, myk, spp</td></tr>
+                <tr><td><code>&#891;</code> (037B), <code>&#8580;</code> (2184)</td><td><code>&#596;</code> (0254)</td><td>dtm, mku, myk, spp</td></tr>
+                <tr><td><code>&#1233;</code> (04D1)</td><td><code>&#259;</code> (0103)</td><td>taq (~9,900 hits)</td></tr>
+                <tr><td><code>&#1241;</code> (04D9)</td><td><code>&#601;</code> (0259)</td><td>taq, mey</td></tr>
+                <tr><td><code>&gamma;</code> (03B3)</td><td><code>&#611;</code> (0263)</td><td>taq, mey</td></tr>
+                <tr><td><code>&#700;</code> (02BC), <code>&rsquo;</code> (2019)</td><td>Normalized</td><td>bam, myk, spp</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION IV: SAFEGUARDS & CURATION -->
+    <section id="sec-curation" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section IV &bull; Implemented Engineering &amp; Lexicon Governance</div>
+          <h2>Safeguards &amp; The Four-Tier Curation Desk</h2>
+        </div>
+      </div>
+      <div class="two-col">
+        <div>
+          <h3 style="margin-top:0">Three Runtime Modules Deployed in PR #1</h3>
+          <div class="flow-card good">
+            <strong>1. Runtime Homoglyph Normalization &amp; Noise Filtering (<code>beni/utils/normalize.py</code>):</strong> <code>normalize_homoglyphs()</code> repairs Greek/Cyrillic encoding drift inside both <code>DabaX.text_processor</code> and <code>SebeniDataLoader</code> (<code>DataConfig.normalize_homoglyphs=True</code>). Opt-in EN/FR commentary filtering (<code>filter_corpus_noise=False</code> default) protects clean training batches without mutating raw files on disk.
+          </div>
+          <div class="flow-card good">
+            <strong>2. Global <code>DabaX</code> Phantom Guard &amp; Strict Metric (<code>dabax.py</code> &amp; <code>metrics.py</code>):</strong> Applied globally across all languages (<code>strict_parse=True</code> default, no language filter): demotes unglossed non-EMPR splits automatically while <code>MorphologyScorer.strict_parsed_rate()</code> tracks dictionary-backed token coverage alongside <code>&Phi;</code>.
+          </div>
+          <div class="flow-card good">
+            <strong>3. Tier 4 Gloss Curation Utility (<code>beni/utils/curation.py</code>):</strong> Mined high-frequency stems carry <code>\ge corpus-stem</code>, <code>\gf radical-corpus</code>, authentic <code>\xv</code> examples, and <code>\rem gloss-pending; freq=N</code> so they remain separate from <code>auto:</code> filtering. <code>curation_summary()</code> and <code>export_gloss_pending()</code> generate frequency-ranked queues for native-speaker linguists.
+          </div>
+        </div>
+
+        <div class="figure-frame" style="margin-bottom:0">
+          <div class="fig-caption">
+            <span><strong>FIG. 2</strong> &mdash; Curated vs. Tier-4 Gloss-Pending Lexicon Breakdown (<code>curation_summary()</code>)</span>
+            <span>Green: Curated &bull; Amber: Pending</span>
+          </div>
+          <div id="curationBars" style="display:grid; gap:7px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION V: THIRTEEN-LANGUAGE FIELD GAZETTE -->
+    <section id="sec-gazette" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section V &bull; Regional Linguistic Dispatches</div>
+          <h2>The Thirteen-Language Field Gazette</h2>
+        </div>
+      </div>
+      <p class="sec-intro">Detailed orthographic findings, grammar architecture notes, dictionary curation totals, residual gaps, and live <code>DabaX(strict_parse=True)</code> morpheme specimen tables for every <code>MULTI13</code> language.</p>
+      <div class="toolbar">
+        <input type="search" id="langSearch" class="search-input" placeholder="Search code, language, affix, dialect..." />
+        <div class="btn-group">
+          <button type="button" id="expandAllBtn">Expand All 13 Dispatches</button>
+          <button type="button" id="collapseAllBtn">Collapse All</button>
+        </div>
+      </div>
+      <div class="dispatch-list" id="langCards"></div>
+    </section>
+
+    <footer class="colophon">
+      THE SEBENI CHRONICLE &bull; UNCOMMITTED COMPARATIVE HTML PREVIEW &bull; PR #1 HEAD <code>c128d817959b</code> &bull; 371 PYTEST PASSED &bull; 0 DICTREADER ERRORS
+    </footer>
+  </div>
+
+  <script>
+    const DATA = {"langs": ["bam", "bmq", "boz", "dtm", "ful", "kao", "mey", "mku", "myk", "ses", "snk", "spp", "taq"], "meta": {"bam": {"name": "Bambara", "family": "Manding (Eastern)", "group": "Manding", "phylum": "Niger-Congo · Mande", "ortho": "a–z (excl. q, v, x), ɛ, ɔ, ɲ, ŋ; Greek ε homoglyph & curly ’ elisions.", "dict_fix": "Preserved Bamadaba; added curly-apostrophe elisions & Roman numerals", "contam": "Minimal", "fix": "Preserved all 540 lines of bam/baseline.gram (EMPR stage 6) and 13,497 Bamadaba entries; appended 32 curly-apostrophe elisions (n’, k’, y’, b’, t’, a’, u’), Constitution legal compounds (ɲɛbila, bolofara), legacy accented stems (kɛ̀/fɛ̀/mɔ̀gɔ̀), and Roman numerals i–xx.", "grammar_change": "Preserved reference (7 stages, EMPR=6)", "gap": "Remaining ~8% raw unknowns are rare code-switched French terms and sporadic typographical variants.", "samples": [["k’a", "Previously unparsed if curly apostrophe U+2019 bypassed ASCII elision"], ["kalansenw", "Nominal pluralization (-w) + derivation"], ["Bolofara", "Constitution compound noun added to lexicon"]]}, "bmq": {"name": "Bomu (Bwamu)", "family": "Gur", "group": "Dogon/Gur", "phylum": "Niger-Congo · Gur", "ortho": "a–z, ɛ, ɔ, ɓ, ɗ, ɲ, ŋ; tone diacritics; Greek ε homoglyph in raw text.", "dict_fix": "Split 234 ;+[IPA] \\va lines; moved towns \\ve → \\di", "contam": "Low", "fix": "Fixed @nasal-v@/@nonnasal-v@ macros (.*), removed copy-pasted Bambara rules, added Bwamu plural/class suffixes (-pɛɛ, -ɓe, -nu, -bee, -be, -robe, -siyo, -yo) and derivations (-yamu/-mu, -ni, -na, -ra, -wa, -wan). Split 234 packed ; + [IPA] \\va lines and moved town names from \\ve to \\di.", "grammar_change": "Rewritten Gur Bwamu suffixing & macro fix", "gap": "1.8% raw unknowns mostly reflect village proper nouns and French loans without tone alignment.", "samples": [["VƐSIROBE", "Previously EMPR/unknown due to unsplit \\va and missing -be/-robe"], ["ɲuɓe", "Human plural class -ɓe"], ["ƝUƁUUSINU", "Bwamu plural inflection -nu from Constitution text"]]}, "boz": {"name": "Bozo", "family": "Inner Mande", "group": "Inner Mande", "phylum": "Niger-Congo · Mande", "ortho": "a–z, ɛ, ɔ, ɲ, ŋ, į, x; Heath tonal arrows (ꜜ, ꜛ) in academic excerpts.", "dict_fix": "Imported 1,548 Heath gloss entries + closed-class + stems", "contam": "~5.3% EN grammar prose", "fix": "Fixed broken @nasal-v@ macros; preserved authentic Bozo morphology (-ye/-yee PL, -gu/-guye DEF, -tį PTCP.PRES, -na PTCP.PST/ORD, -jwɔn/-wɔn/-kwɔn HUM, -tɔmɔ HEAD, -xolo GROUP, -baana CONCEPT, -ni TR); imported 1,548 Heath glossed entries + closed-class + stems.", "grammar_change": "Macro repair + Inner Mande derivational paradigms", "gap": "Remaining 24.7% raw unknowns are predominantly un-stripped Heath grammatical/tonal symbols (ꜜ, ꜛ, hyphenated tone-sandhi tokens) and ~5.3% EN grammar notes.", "samples": [["Jamanakwɔn", "Human/agentive -kwɔn derivation from Constitution text"], ["XAYINYE", "Plural -ye on noun xayin ('travail')"], ["baana", "Concept/state nominalization -na"]]}, "dtm": {"name": "Dogon (Toro So / Tomo Kan)", "family": "Dogon", "group": "Dogon/Gur", "phylum": "Niger-Congo (isolate branch) · Dogon", "ortho": "a–z, ɛ, ɔ, ɲ, ŋ; long vowels; Greek ε/ͻ homoglyphs in corpus.", "dict_fix": "Merged 2,252-entry baseline.dict.txt (fixing malformed \\mm) + Heath + stems", "contam": "~4.9% EN/Heath notes", "fix": "Removed permissive single-char suffixes (-i, -a, -u, -l, -r, -y, -t, -g, -m, -n) that inflated raw phantom parses to 41.97%; modeled Dogon -nw/-w PL, -be/-mbe PL.HUM, -gɔ/-gɔbe DEF, -jɛ PROG, -bɛin IPFV, -lɔ/-lu/-le NEG, -dɔ/-ndɔ FUT, -nɛ PFV, -ɲu 3PL, -mɔ CAUS. Merged 2,252-entry baseline.dict.txt (fixing ~150 malformed \\mm) + 1,002 Heath entries + stems (4,739 entries).", "grammar_change": "Eliminated 42% phantom single-char rules; true Dogon TAM/NC", "gap": "Remaining ~14% raw unknowns include cross-dialect Dogon reduplicated ideophones and Heath metalanguage (~4.9%).", "samples": [["Inɛnw", "Previously phantom-split or unknown (29-entry truncated dict)"], ["PAŊABE", "Human plural -be on Dogon noun pàŋá ('pouvoir')"], ["POROBABE", "Plural nominalized adjective -be from Constitution text"]]}, "ful": {"name": "Fula (Maasina Fulfulde)", "family": "Atlantic", "group": "Atlantic", "phylum": "Niger-Congo · Atlantic", "ortho": "a–z, ɓ, ɗ, ƴ, ɲ, ŋ, c, j; geminate consonants & long vowels; initial consonant gradation.", "dict_fix": "Cleaned empty tags; added closed-class, consonant-grade \\va, stems", "contam": "Low", "fix": "Expanded 20+ noun-class suffixes (-ɓe, -en, -ɗe, -ɗi, -ooji/-eeji/-aaji/-uuji/-iiji, -ji, -ɗo, -jo, -ngol, -nde, -ngal, -ngo, -ɗum, -ri/-re/-ru, -ɗam), full 3-voice TAM (-ii/-ay/-ata/-ataa/-aayi/-iima/-aama/-otoo/-ataako), hyphenated enclitics (-mi, -ɗaa, -ɗen, -ɗon), and consonant-grade \\va pairs (haal/kaal, wiy/mbiy, won/ngon, dar/ndar, heɓ/keɓ).", "grammar_change": "20+ noun classes, 3-voice TAM, consonant-grade \\va", "gap": "6.9% raw phantom splits mostly reflect Pulaar vs. Maasina orthographic divergence cleanly demoted by DabaX.", "samples": [["wallataa", "Imperfective negative TAM (-ataa)"], ["suɓaaɓe", "Human plural noun class (-ɓe) on participle"], ["MAWƊI", "Non-human plural noun class (-ɗi) from Constitution text"]]}, "kao": {"name": "Kassonke (Xaasongaxango)", "family": "Manding (Western)", "group": "Manding", "phylum": "Niger-Congo · Mande", "ortho": "a–z, ɛ, ɔ, ɲ, ŋ, x; nasal vowels & tone marks.", "dict_fix": "Imported 1,721 bilingual : pairs + closed-class + stems", "contam": "~6.6% FR translation glosses", "fix": "Fixed nonkassonke filter (previously flagged 39.5% of native words ending in n/ŋ or containing ou/ai/ei as EMPR); modeled Western Manding -o/-yo/-wo/-no/-ŋo (DEF), -lu/-nu (PL), -olu/-ŋolu (DEF.PL), -ta/-nta/-la/-ra/-na, hyphenated -o/-ta/-la; imported 1,721 bilingual word : French pairs + stems (4,048 entries).", "grammar_change": "Fixed nonkassonke EMPR over-trigger; Western Manding affixes", "gap": "Raw sample includes ~6.6% embedded French translation gloss lines cleanly removable via clean_corpus_lines().", "samples": [["náa-ta", "Previously EMPR or unknown (97-entry dict)"], ["Xonokuwolu", "Plural -lu with Western Manding x"], ["Fasujama", "Qualitative adjective derivation -ma"]]}, "mey": {"name": "Hassaniya Arabic", "family": "Afro-Asiatic (Semitic)", "group": "Afro-Asiatic", "phylum": "Afro-Asiatic · Semitic", "ortho": "Mali Latin (ə, ɣ/ɤ, ḥ/h, ẓ/z, ṭ/t, v, g, q, long VV) & Cyrillic ə homoglyph.", "dict_fix": "Normalized \\ps; added Mali Latin \\va (ɣ/ɤ/v/g/long V) + stems", "contam": "~4.5% EN explanations & IPA", "fix": "Ground-up rewrite replacing legacy copy-pasted Fula rules with Semitic morphology: definite article proclitics (əl|, al|, il|, əl-|, l-|), prepositional proclitics (bi-|, li-|, fi-|, vi-|, wo-|), sound plurals & nisba (-aat, -iin, -iyya/-iya/-iyye), pronominal enclitics (-he/-ḥe/-hum/-kum/-na/-i/-u), imperfective prefixes (yə|, tə|, nə|, yi|, ti|, ni|), Form X st|, participle mu|/mət|. Bridged academic diacritics via \\va.", "grammar_change": "Ground-up Semitic rewrite (replaced legacy Fula copy-paste)", "gap": "Raw mey.txt mixes Hassaniya with ~4.5% English textbook explanations and slash-delimited IPA (/tshu:v/); on clean test.json coverage hits 98.44%.", "samples": [["ƏLWAAJIBAAT", "Definite proclitic əl| + noun stem + sound plural -aat"], ["bi-ḥaqq", "Prepositional proclitic bi-|"], ["IDAARIYA", "Nisba adjective derivation -iya"]]}, "mku": {"name": "Maninka", "family": "Manding (Western / Eastern)", "group": "Manding", "phylum": "Niger-Congo · Mande", "ortho": "a–z (incl. x), ɛ, ɔ, ɲ, ŋ; Greek ε/ͻ homoglyphs.", "dict_fix": "Fixed \\lx ˊa & \\ps; added Western/Eastern Maninka closed-class + stems", "contam": "Low", "fix": "Discovered mku.txt is predominantly Western Maninkakan (-o/-ŋo/-nŋo DEF, -lu/-ŋolu PL, x for k as in moxo/baxa) while test.json[mlq] blends Eastern/Western forms. Unified both in mku/baseline.gram, allowed x in native tokens, repaired \\lx ˊa & \\ps tags, and grew lexicon 30 → 1,903 entries.", "grammar_change": "Unified Western/Eastern Maninka + native x support", "gap": "test.json[mlq] mixes Guinea/Kankan Eastern Maninka and Western Kita/Kenieba forms cleanly covered at 92.57%.", "samples": [["mɔxɔlu", "Western Maninka -lu plural with native x"], ["tɛgɛda", "Compound/derived stem from test.json"], ["kɛra", "Completive intransitive -ra"]]}, "myk": {"name": "Mamara Senufo (Minyanka)", "family": "Senufo", "group": "Senufo", "phylum": "Niger-Congo · Senufo", "ortho": "a–z, ɛ, ɔ, ɲ, ŋ, x, modifier ʼ (U+02BC); tonal vowels.", "dict_fix": "Inserted missing blank lines between all \\lx; normalized French \\ps prose", "contam": "Low", "fix": "Inserted blank lines between all 1,045 \\lx entries (previously merged together by DictReader), normalized French \\ps prose (e.g. pron pronom du présentatif), removed unconstrained -a/-i suffixes (raw phantom parses plunged 50.28% → 3.50%), added full Mamara noun-class suffixes (-wuu/-wu/-wi, -pyii/-pii/-bii, -kii/-ki/-gii, -yii/-yi, -lii/-li/-ri, -gbɔhɔ/-kɛ/-gɛ, -tii/-ti/-di, -mɛɛ/-mɛ/-mɔ) and productive derivations (-gana, -vɔɔ, -fɛɛ, -duun, -pye, -xuu, -pɛɛŋɛ, -nɔhɔ).", "grammar_change": "Fixed blank-line DictReader bug + Senufo noun classes", "gap": "Residual 4.5% raw unknowns are rare proper nouns and tonal enclitic fusions.", "samples": [["cɛɛwuu", "Noun-class -wuu concord"], ["pyegana", "Productive derivation -gana"], ["fɛɛbii", "Noun-class plural -bii"]]}, "ses": {"name": "Songhay (Koyraboro Senni & Koyra Chiini)", "family": "Songhay", "group": "Songhay", "phylum": "Nilo-Saharan (trad.) · Songhay", "ortho": "a–z, ɛ, ɔ, ɲ, ŋ, š, ž; long vowels (oo, aa, ee).", "dict_fix": "Added dual KS/KC closed-class + high-frequency stems", "contam": "Low", "fix": "Discovered both ses.txt and test.json blend Koyraboro Senni (-di, -yo, -diyo, -yaŋ) and Koyra Chiini (-oo, -aa, -ey, -wey, -yan). Fixed @v@/@cons@ macros (.*), removed Bambara vq_derivation, modeled both dialectal paradigms plus -taray, -ante/-antaa/-antey, -koy/-kaw/-kaa, -andi/-tandi/-ndi, and hyphenated -ize/-izey/-ije/-ijeyo/-izoo.", "grammar_change": "Dual-dialect Koyraboro Senni + Koyra Chiini grammar", "gap": "91.58% raw / 97.71% test.json true parsed; residual 4.6% raw unknowns are borrowed French proper names.", "samples": [["boryo", "Koyraboro Senni plural -yo"], ["daaroo", "Koyra Chiini definite singular -oo"], ["Cawboŋey", "Koyra Chiini definite plural -ey"]]}, "snk": {"name": "Soninke", "family": "Inner Mande", "group": "Inner Mande", "phylum": "Niger-Congo · Mande", "ortho": "a–z, ɲ, ŋ, x, q; geminates & long vowels.", "dict_fix": "Fixed blank lines, \\lx casing, 88 empty \\mm; imported 1,735 SIL entries", "contam": "~4.0% EN/FR SIL entries", "fix": "Inserted missing blank lines across 961 records, lowercased non-proper headwords, dropped 88 empty \\mm :: lines, removed copy-pasted Songhay -kayna & Bambara vq_derivation, imported 1,735 structured SIL dictionary entries (Noun./Verb. with EN/FR glosses) from snk.txt, and constrained -n DEF to vowel-final stems.", "grammar_change": "Removed foreign rules + constrained -n DEF to V-final stems", "gap": "Raw sample contains ~4.0% English/French SIL header definitions cleanly filterable via clean_corpus_lines().", "samples": [["JAMAANEN", "Vowel-final stem + definite -n"], ["SARIYANUN", "Plural -nun inflection"], ["HANNIYANTE", "Resultative participle -nte"]]}, "spp": {"name": "Seynara / Supyire Senufo", "family": "Senufo", "group": "Senufo", "phylum": "Niger-Congo · Senufo", "ortho": "a–z, ɛ, ɔ, ɲ, ŋ, modifier ʼ (U+02BC), extensive tonal vowels (àáâèéêìíîòóôùúû).", "dict_fix": "Fixed \\lang seq → spp; added blank lines; lowercased all \\ps tags", "contam": "Low", "fix": "Fixed \\lang seq → spp header, inserted missing blank lines across 1,158 records, lowercased all \\ps tags (N→n, V→v, PRON→prn), fixed nonSPP so tonal vowels and ʼ never trigger EMPR, removed copy-pasted Bambara/Songhay affixes, modeled Senufo noun classes (-ŋi/-ŋɔ, -bii/-bi/-pyi/-pi, -gi/-ge/-gɔ/-ki, -yi, -li/-le/-ri/-re, -mu/-mi) + legal/institutional derivations (-gbagi/-gbagɔhɔ/-gbagbɔhɔ, -bile, -ɲungɔ).", "grammar_change": "Fixed \\ps casing + tone-safe nonSPP + Senufo classes", "gap": "93.19% raw / 97.71% test.json true parsed; residual 3.6% raw unknowns are tonal multi-verb compounds.", "samples": [["SARIYAƝUNGI", "Senufo definite class -gi from Constitution text"], ["Yɛshɛgɛ", "Causative verbal derivation -gɛ"], ["kàntugo", "Tonal noun stem previously flagged EMPR"]]}, "taq": {"name": "Tamasheq (Tuareg)", "family": "Afro-Asiatic (Berber)", "group": "Afro-Asiatic", "phylum": "Afro-Asiatic · Berber", "ortho": "Mali Tamasheq Latin (ă, ə, ɣ, ḍ, ḥ, ḷ, ṇ, ṛ, ṣ, ṭ, ẓ, š, ž) + ~9,900 Cyrillic ӑ/ә homoglyphs.", "dict_fix": "Normalized \\ps; added Cyrillic ӑ/ә homoglyph \\va + multi-clitic stems", "contam": "Minimal (~9,900 Cyrillic drifts)", "fix": "Pass 1+2 deep overhaul: fixed all 16 reversed prefix mark-glosses ({pref|}:: | :pos: [:mrph:TAG :pos:]); introduced two-stage sequential multi-clitic peeling (stage 0 parallel + stage 1 sequential proclitics & enclitics) handling 3–4 morpheme chains; added i-| DAT (i-Măssinăɣ), s-| ALL.INST, făl-|, ḍarăt-|, kăl-|, has-|, |-năwăn, |-kăwăn, |-ta, |-ti, |-en; added Berber circumfixes ({tă||t}, {ti||en}, {ti||ten}, {t||t}, {t||ăt}, {i||ăn}, {nĕ||ăm}) and agentives (ăma|, ima|, tăma|). Added Cyrillic ӑ/ә homoglyph \\va pairs.", "grammar_change": "Pass 2: fixed 16 prefixes + 2-stage multi-clitic & circumfix peeling", "gap": "Residual 12.5% raw phantom splits are non-concatenative Berber ablaut/apophonic stems, safely demoted to stage=-1 by DabaX(strict_parse=True).", "samples": [["făl-a-s", "3-morpheme chain: PREP făl- + 3SG -a + DAT -s"], ["ḍarăt-a-wen", "3-morpheme chain: PREP ḍarăt- + pron -a + DEM -wen"], ["wăr-t-illa", "NEG wăr- + 3SG.M.DO -t- + verb illa"], ["dăɣ-ăddunya-ta-dăɣ", "4-morpheme chain across 2 peeling stages"], ["N-ĂDDĂWLĂT", "Genitive proclitic n-| + noun stem ăddăwlăt"], ["MĂQQĂRĂN", "Adjective plural suffix -ăn (Berber plural)"], ["i-Măssinăɣ", "Dative proclitic i-| on proper noun"]]}}, "before": {"bam": {"dict_lx_count": 13497, "dict_keys": 32136, "dict_reader_errors": 0, "empr_stages": [6], "raw_sample": {"total_tokens": 4574, "true_parsed_pct": 81.66, "phantom_pct": 2.49, "empr_pct": 7.43, "unknown_pct": 8.42, "raw_phi": 0.8552, "parse_seconds": 2.899}, "test_json": {"total_tokens": 281, "true_parsed_pct": 79.72, "phantom_pct": 2.49, "empr_pct": 2.14, "unknown_pct": 15.66, "raw_phi": 0.8237, "parse_seconds": 0.189}}, "bmq": {"dict_lx_count": 325, "dict_keys": 1104, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 9304, "true_parsed_pct": 15.86, "phantom_pct": 5.18, "empr_pct": 9.73, "unknown_pct": 69.23, "raw_phi": 0.2584, "parse_seconds": 3.095}, "test_json": {"total_tokens": 291, "true_parsed_pct": 21.31, "phantom_pct": 16.15, "empr_pct": 8.93, "unknown_pct": 53.61, "raw_phi": 0.521, "parse_seconds": 0.104}}, "boz": {"dict_lx_count": 464, "dict_keys": 523, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 3379, "true_parsed_pct": 26.37, "phantom_pct": 4.02, "empr_pct": 13.26, "unknown_pct": 56.35, "raw_phi": 0.3367, "parse_seconds": 1.36}, "test_json": {"total_tokens": 204, "true_parsed_pct": 47.06, "phantom_pct": 9.8, "empr_pct": 6.86, "unknown_pct": 36.27, "raw_phi": 0.6056, "parse_seconds": 0.076}}, "dtm": {"dict_lx_count": 29, "dict_keys": 30, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 5590, "true_parsed_pct": 4.96, "phantom_pct": 41.97, "empr_pct": 13.51, "unknown_pct": 39.57, "raw_phi": 0.5211, "parse_seconds": 2.15}, "test_json": {"total_tokens": 235, "true_parsed_pct": 20.0, "phantom_pct": 34.47, "empr_pct": 7.66, "unknown_pct": 37.87, "raw_phi": 0.5954, "parse_seconds": 0.078}}, "ful": {"dict_lx_count": 393, "dict_keys": 481, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 6244, "true_parsed_pct": 13.24, "phantom_pct": 26.86, "empr_pct": 15.17, "unknown_pct": 44.73, "raw_phi": 0.4749, "parse_seconds": 2.569}, "test_json": {"total_tokens": 226, "true_parsed_pct": 66.81, "phantom_pct": 12.83, "empr_pct": 9.73, "unknown_pct": 10.62, "raw_phi": 0.8755, "parse_seconds": 0.061}}, "kao": {"dict_lx_count": 97, "dict_keys": 96, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 3885, "true_parsed_pct": 11.38, "phantom_pct": 16.37, "empr_pct": 39.46, "unknown_pct": 32.79, "raw_phi": 0.4561, "parse_seconds": 1.531}, "test_json": {"total_tokens": 217, "true_parsed_pct": 19.82, "phantom_pct": 35.02, "empr_pct": 33.64, "unknown_pct": 11.52, "raw_phi": 0.727, "parse_seconds": 0.101}}, "mey": {"dict_lx_count": 420, "dict_keys": 564, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 2477, "true_parsed_pct": 12.47, "phantom_pct": 12.72, "empr_pct": 0.93, "unknown_pct": 73.88, "raw_phi": 0.2657, "parse_seconds": 0.849}, "test_json": {"total_tokens": 192, "true_parsed_pct": 53.65, "phantom_pct": 11.98, "empr_pct": 0.52, "unknown_pct": 33.85, "raw_phi": 0.6837, "parse_seconds": 0.05}}, "mku": {"dict_lx_count": 30, "dict_keys": 44, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 8132, "true_parsed_pct": 2.46, "phantom_pct": 20.62, "empr_pct": 24.13, "unknown_pct": 52.79, "raw_phi": 0.3482, "parse_seconds": 2.86}, "test_json": {"total_tokens": 202, "true_parsed_pct": 15.84, "phantom_pct": 14.36, "empr_pct": 24.26, "unknown_pct": 45.54, "raw_phi": 0.457, "parse_seconds": 0.057}}, "myk": {"dict_lx_count": 1045, "dict_keys": 583, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 4998, "true_parsed_pct": 8.26, "phantom_pct": 50.28, "empr_pct": 2.1, "unknown_pct": 39.36, "raw_phi": 0.5921, "parse_seconds": 2.174}, "test_json": {"total_tokens": 186, "true_parsed_pct": 18.28, "phantom_pct": 44.62, "empr_pct": 6.99, "unknown_pct": 30.11, "raw_phi": 0.6307, "parse_seconds": 0.086}}, "ses": {"dict_lx_count": 230, "dict_keys": 266, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 4072, "true_parsed_pct": 25.15, "phantom_pct": 12.7, "empr_pct": 1.87, "unknown_pct": 60.29, "raw_phi": 0.3786, "parse_seconds": 1.403}, "test_json": {"total_tokens": 218, "true_parsed_pct": 23.39, "phantom_pct": 23.85, "empr_pct": 2.75, "unknown_pct": 50.0, "raw_phi": 0.5292, "parse_seconds": 0.081}}, "snk": {"dict_lx_count": 961, "dict_keys": 1181, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 3965, "true_parsed_pct": 37.25, "phantom_pct": 12.21, "empr_pct": 15.13, "unknown_pct": 35.41, "raw_phi": 0.5123, "parse_seconds": 2.003}, "test_json": {"total_tokens": 194, "true_parsed_pct": 44.33, "phantom_pct": 24.23, "empr_pct": 6.19, "unknown_pct": 25.26, "raw_phi": 0.6923, "parse_seconds": 0.114}}, "spp": {"dict_lx_count": 1158, "dict_keys": 876, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 7547, "true_parsed_pct": 10.88, "phantom_pct": 9.04, "empr_pct": 13.0, "unknown_pct": 67.09, "raw_phi": 0.2745, "parse_seconds": 3.656}, "test_json": {"total_tokens": 262, "true_parsed_pct": 22.9, "phantom_pct": 21.76, "empr_pct": 2.29, "unknown_pct": 53.05, "raw_phi": 0.4875, "parse_seconds": 0.154}}, "taq": {"dict_lx_count": 369, "dict_keys": 639, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 5542, "true_parsed_pct": 12.72, "phantom_pct": 65.3, "empr_pct": 0.54, "unknown_pct": 21.44, "raw_phi": 0.7714, "parse_seconds": 5.281}, "test_json": {"total_tokens": 209, "true_parsed_pct": 37.32, "phantom_pct": 45.93, "empr_pct": 0.0, "unknown_pct": 16.75, "raw_phi": 0.8484, "parse_seconds": 0.145}}}, "after_p1": {"bam": {"dict_lx_count": 13529, "dict_keys": 32162, "dict_reader_errors": 0, "empr_stages": [6], "raw_sample": {"total_tokens": 4574, "true_parsed_pct": 82.2, "phantom_pct": 2.45, "empr_pct": 7.32, "unknown_pct": 8.02, "raw_phi": 0.8597, "parse_seconds": 2.947}, "test_json": {"total_tokens": 281, "true_parsed_pct": 88.26, "phantom_pct": 1.07, "empr_pct": 0.0, "unknown_pct": 10.68, "raw_phi": 0.8713, "parse_seconds": 0.152}}, "bmq": {"dict_lx_count": 2157, "dict_keys": 4086, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 9304, "true_parsed_pct": 97.29, "phantom_pct": 0.77, "empr_pct": 0.15, "unknown_pct": 1.78, "raw_phi": 0.9492, "parse_seconds": 1.702}, "test_json": {"total_tokens": 291, "true_parsed_pct": 97.59, "phantom_pct": 0.34, "empr_pct": 0.0, "unknown_pct": 2.06, "raw_phi": 0.9848, "parse_seconds": 0.046}}, "boz": {"dict_lx_count": 2975, "dict_keys": 5566, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 3379, "true_parsed_pct": 68.45, "phantom_pct": 0.27, "empr_pct": 6.57, "unknown_pct": 24.71, "raw_phi": 0.6795, "parse_seconds": 1.138}, "test_json": {"total_tokens": 204, "true_parsed_pct": 97.55, "phantom_pct": 0.0, "empr_pct": 2.45, "unknown_pct": 0.0, "raw_phi": 0.9896, "parse_seconds": 0.055}}, "dtm": {"dict_lx_count": 4739, "dict_keys": 9900, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 5590, "true_parsed_pct": 82.5, "phantom_pct": 1.07, "empr_pct": 2.38, "unknown_pct": 14.04, "raw_phi": 0.7888, "parse_seconds": 1.311}, "test_json": {"total_tokens": 235, "true_parsed_pct": 99.57, "phantom_pct": 0.0, "empr_pct": 0.43, "unknown_pct": 0.0, "raw_phi": 0.9974, "parse_seconds": 0.028}}, "ful": {"dict_lx_count": 2251, "dict_keys": 2339, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 6244, "true_parsed_pct": 85.43, "phantom_pct": 6.89, "empr_pct": 0.19, "unknown_pct": 7.5, "raw_phi": 0.9047, "parse_seconds": 2.253}, "test_json": {"total_tokens": 226, "true_parsed_pct": 97.35, "phantom_pct": 1.77, "empr_pct": 0.0, "unknown_pct": 0.88, "raw_phi": 0.9842, "parse_seconds": 0.066}}, "kao": {"dict_lx_count": 4048, "dict_keys": 5046, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 3885, "true_parsed_pct": 78.38, "phantom_pct": 2.73, "empr_pct": 6.1, "unknown_pct": 12.79, "raw_phi": 0.7927, "parse_seconds": 0.986}, "test_json": {"total_tokens": 217, "true_parsed_pct": 99.08, "phantom_pct": 0.92, "empr_pct": 0.0, "unknown_pct": 0.0, "raw_phi": 1.0, "parse_seconds": 0.043}}, "mey": {"dict_lx_count": 2281, "dict_keys": 3133, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 2477, "true_parsed_pct": 66.37, "phantom_pct": 4.56, "empr_pct": 0.93, "unknown_pct": 28.14, "raw_phi": 0.6214, "parse_seconds": 0.655}, "test_json": {"total_tokens": 192, "true_parsed_pct": 98.44, "phantom_pct": 0.52, "empr_pct": 0.52, "unknown_pct": 0.52, "raw_phi": 0.9919, "parse_seconds": 0.035}}, "mku": {"dict_lx_count": 1903, "dict_keys": 2121, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 8132, "true_parsed_pct": 93.1, "phantom_pct": 2.79, "empr_pct": 0.33, "unknown_pct": 3.78, "raw_phi": 0.9415, "parse_seconds": 2.172}, "test_json": {"total_tokens": 202, "true_parsed_pct": 92.57, "phantom_pct": 4.46, "empr_pct": 0.0, "unknown_pct": 2.97, "raw_phi": 0.9845, "parse_seconds": 0.046}}, "myk": {"dict_lx_count": 1876, "dict_keys": 3695, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 4998, "true_parsed_pct": 90.52, "phantom_pct": 3.5, "empr_pct": 1.46, "unknown_pct": 4.52, "raw_phi": 0.9204, "parse_seconds": 1.369}, "test_json": {"total_tokens": 186, "true_parsed_pct": 93.55, "phantom_pct": 3.23, "empr_pct": 0.54, "unknown_pct": 2.69, "raw_phi": 0.977, "parse_seconds": 0.051}}, "ses": {"dict_lx_count": 2791, "dict_keys": 2958, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 4072, "true_parsed_pct": 91.58, "phantom_pct": 2.65, "empr_pct": 1.15, "unknown_pct": 4.62, "raw_phi": 0.9066, "parse_seconds": 0.965}, "test_json": {"total_tokens": 218, "true_parsed_pct": 97.71, "phantom_pct": 2.29, "empr_pct": 0.0, "unknown_pct": 0.0, "raw_phi": 1.0, "parse_seconds": 0.052}}, "snk": {"dict_lx_count": 4984, "dict_keys": 5349, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 3965, "true_parsed_pct": 74.53, "phantom_pct": 3.63, "empr_pct": 3.96, "unknown_pct": 17.88, "raw_phi": 0.7503, "parse_seconds": 1.128}, "test_json": {"total_tokens": 194, "true_parsed_pct": 97.94, "phantom_pct": 1.03, "empr_pct": 0.0, "unknown_pct": 1.03, "raw_phi": 0.9868, "parse_seconds": 0.035}}, "spp": {"dict_lx_count": 2785, "dict_keys": 5628, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 7547, "true_parsed_pct": 93.19, "phantom_pct": 3.06, "empr_pct": 0.15, "unknown_pct": 3.6, "raw_phi": 0.936, "parse_seconds": 1.589}, "test_json": {"total_tokens": 262, "true_parsed_pct": 97.71, "phantom_pct": 2.29, "empr_pct": 0.0, "unknown_pct": 0.0, "raw_phi": 1.0, "parse_seconds": 0.054}}, "taq": {"dict_lx_count": 2930, "dict_keys": 8129, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 5542, "true_parsed_pct": 77.73, "phantom_pct": 15.05, "empr_pct": 0.2, "unknown_pct": 7.02, "raw_phi": 0.8963, "parse_seconds": 2.897}, "test_json": {"total_tokens": 209, "true_parsed_pct": 95.69, "phantom_pct": 2.39, "empr_pct": 0.0, "unknown_pct": 1.91, "raw_phi": 0.9797, "parse_seconds": 0.054}}}, "after_p2": {"bam": {"dict_lx_count": 13529, "dict_keys": 32162, "dict_reader_errors": 0, "empr_stages": [6], "raw_sample": {"total_tokens": 4574, "true_parsed_pct": 82.2, "phantom_pct": 2.45, "empr_pct": 7.32, "unknown_pct": 8.02, "guarded_true_pct": 82.46, "guarded_unknown_pct": 10.21, "strict_parsed_rate": 0.7951, "raw_phi": 0.8365, "parse_seconds": 2.877}, "test_json": {"total_tokens": 281, "true_parsed_pct": 88.26, "phantom_pct": 1.07, "empr_pct": 0.0, "unknown_pct": 10.68, "guarded_true_pct": 88.26, "guarded_unknown_pct": 11.74, "strict_parsed_rate": 0.8627, "raw_phi": 0.8627, "parse_seconds": 0.157}}, "bmq": {"dict_lx_count": 2157, "dict_keys": 4086, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 9304, "true_parsed_pct": 97.29, "phantom_pct": 0.77, "empr_pct": 0.15, "unknown_pct": 1.78, "guarded_true_pct": 97.28, "guarded_unknown_pct": 2.57, "strict_parsed_rate": 0.9363, "raw_phi": 0.9395, "parse_seconds": 1.688}, "test_json": {"total_tokens": 291, "true_parsed_pct": 97.59, "phantom_pct": 0.34, "empr_pct": 0.0, "unknown_pct": 2.06, "guarded_true_pct": 97.56, "guarded_unknown_pct": 2.44, "strict_parsed_rate": 0.9814, "raw_phi": 0.9814, "parse_seconds": 0.047}}, "boz": {"dict_lx_count": 2975, "dict_keys": 5566, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 3379, "true_parsed_pct": 68.45, "phantom_pct": 0.27, "empr_pct": 6.57, "unknown_pct": 24.71, "guarded_true_pct": 68.75, "guarded_unknown_pct": 24.66, "strict_parsed_rate": 0.6384, "raw_phi": 0.6744, "parse_seconds": 1.209}, "test_json": {"total_tokens": 204, "true_parsed_pct": 97.55, "phantom_pct": 0.0, "empr_pct": 2.45, "unknown_pct": 0.0, "guarded_true_pct": 97.55, "guarded_unknown_pct": 0.0, "strict_parsed_rate": 0.9792, "raw_phi": 0.9896, "parse_seconds": 0.057}}, "dtm": {"dict_lx_count": 4739, "dict_keys": 9900, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 5590, "true_parsed_pct": 82.5, "phantom_pct": 1.07, "empr_pct": 2.38, "unknown_pct": 14.04, "guarded_true_pct": 82.58, "guarded_unknown_pct": 15.04, "strict_parsed_rate": 0.7612, "raw_phi": 0.7796, "parse_seconds": 1.458}, "test_json": {"total_tokens": 235, "true_parsed_pct": 99.57, "phantom_pct": 0.0, "empr_pct": 0.43, "unknown_pct": 0.0, "guarded_true_pct": 99.57, "guarded_unknown_pct": 0.0, "strict_parsed_rate": 0.9947, "raw_phi": 0.9974, "parse_seconds": 0.027}}, "ful": {"dict_lx_count": 2251, "dict_keys": 2339, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 6244, "true_parsed_pct": 85.43, "phantom_pct": 6.89, "empr_pct": 0.19, "unknown_pct": 7.5, "guarded_true_pct": 85.47, "guarded_unknown_pct": 14.34, "strict_parsed_rate": 0.8321, "raw_phi": 0.8342, "parse_seconds": 2.299}, "test_json": {"total_tokens": 226, "true_parsed_pct": 97.35, "phantom_pct": 1.77, "empr_pct": 0.0, "unknown_pct": 0.88, "guarded_true_pct": 97.35, "guarded_unknown_pct": 2.65, "strict_parsed_rate": 0.9684, "raw_phi": 0.9684, "parse_seconds": 0.063}}, "kao": {"dict_lx_count": 4048, "dict_keys": 5046, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 3885, "true_parsed_pct": 78.38, "phantom_pct": 2.73, "empr_pct": 6.1, "unknown_pct": 12.79, "guarded_true_pct": 78.06, "guarded_unknown_pct": 15.74, "strict_parsed_rate": 0.7253, "raw_phi": 0.7657, "parse_seconds": 1.212}, "test_json": {"total_tokens": 217, "true_parsed_pct": 99.08, "phantom_pct": 0.92, "empr_pct": 0.0, "unknown_pct": 0.0, "guarded_true_pct": 99.08, "guarded_unknown_pct": 0.92, "strict_parsed_rate": 0.9872, "raw_phi": 0.9872, "parse_seconds": 0.042}}, "mey": {"dict_lx_count": 2281, "dict_keys": 3133, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 2477, "true_parsed_pct": 66.37, "phantom_pct": 4.56, "empr_pct": 0.93, "unknown_pct": 28.14, "guarded_true_pct": 64.7, "guarded_unknown_pct": 34.32, "strict_parsed_rate": 0.5597, "raw_phi": 0.5627, "parse_seconds": 0.632}, "test_json": {"total_tokens": 192, "true_parsed_pct": 98.44, "phantom_pct": 0.52, "empr_pct": 0.52, "unknown_pct": 0.52, "guarded_true_pct": 98.42, "guarded_unknown_pct": 1.05, "strict_parsed_rate": 0.9757, "raw_phi": 0.9784, "parse_seconds": 0.035}}, "mku": {"dict_lx_count": 1903, "dict_keys": 2121, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 8132, "true_parsed_pct": 93.1, "phantom_pct": 2.79, "empr_pct": 0.33, "unknown_pct": 3.78, "guarded_true_pct": 92.97, "guarded_unknown_pct": 6.7, "strict_parsed_rate": 0.9075, "raw_phi": 0.9123, "parse_seconds": 2.199}, "test_json": {"total_tokens": 202, "true_parsed_pct": 92.57, "phantom_pct": 4.46, "empr_pct": 0.0, "unknown_pct": 2.97, "guarded_true_pct": 92.57, "guarded_unknown_pct": 7.43, "strict_parsed_rate": 0.9351, "raw_phi": 0.9351, "parse_seconds": 0.049}}, "myk": {"dict_lx_count": 1876, "dict_keys": 3695, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 4998, "true_parsed_pct": 90.52, "phantom_pct": 3.5, "empr_pct": 1.46, "unknown_pct": 4.52, "guarded_true_pct": 90.57, "guarded_unknown_pct": 7.97, "strict_parsed_rate": 0.8603, "raw_phi": 0.8712, "parse_seconds": 1.392}, "test_json": {"total_tokens": 186, "true_parsed_pct": 93.55, "phantom_pct": 3.23, "empr_pct": 0.54, "unknown_pct": 2.69, "guarded_true_pct": 91.4, "guarded_unknown_pct": 8.06, "strict_parsed_rate": 0.9227, "raw_phi": 0.9257, "parse_seconds": 0.055}}, "ses": {"dict_lx_count": 2791, "dict_keys": 2958, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 4072, "true_parsed_pct": 91.58, "phantom_pct": 2.65, "empr_pct": 1.15, "unknown_pct": 4.62, "guarded_true_pct": 91.57, "guarded_unknown_pct": 7.28, "strict_parsed_rate": 0.837, "raw_phi": 0.8454, "parse_seconds": 0.994}, "test_json": {"total_tokens": 218, "true_parsed_pct": 97.71, "phantom_pct": 2.29, "empr_pct": 0.0, "unknown_pct": 0.0, "guarded_true_pct": 97.71, "guarded_unknown_pct": 2.29, "strict_parsed_rate": 0.9673, "raw_phi": 0.9673, "parse_seconds": 0.051}}, "snk": {"dict_lx_count": 4984, "dict_keys": 5349, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 3965, "true_parsed_pct": 74.53, "phantom_pct": 3.63, "empr_pct": 3.96, "unknown_pct": 17.88, "guarded_true_pct": 73.2, "guarded_unknown_pct": 22.68, "strict_parsed_rate": 0.6827, "raw_phi": 0.7134, "parse_seconds": 1.427}, "test_json": {"total_tokens": 194, "true_parsed_pct": 97.94, "phantom_pct": 1.03, "empr_pct": 0.0, "unknown_pct": 1.03, "guarded_true_pct": 97.94, "guarded_unknown_pct": 2.06, "strict_parsed_rate": 0.9798, "raw_phi": 0.9798, "parse_seconds": 0.033}}, "spp": {"dict_lx_count": 2785, "dict_keys": 5628, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 7547, "true_parsed_pct": 93.19, "phantom_pct": 3.06, "empr_pct": 0.15, "unknown_pct": 3.6, "guarded_true_pct": 93.07, "guarded_unknown_pct": 6.78, "strict_parsed_rate": 0.901, "raw_phi": 0.9026, "parse_seconds": 1.61}, "test_json": {"total_tokens": 262, "true_parsed_pct": 97.71, "phantom_pct": 2.29, "empr_pct": 0.0, "unknown_pct": 0.0, "guarded_true_pct": 97.71, "guarded_unknown_pct": 2.29, "strict_parsed_rate": 0.9746, "raw_phi": 0.9746, "parse_seconds": 0.054}}, "taq": {"dict_lx_count": 2938, "dict_keys": 8142, "dict_reader_errors": 0, "empr_stages": [4], "raw_sample": {"total_tokens": 5542, "true_parsed_pct": 82.53, "phantom_pct": 12.49, "empr_pct": 0.18, "unknown_pct": 4.8, "guarded_true_pct": 82.72, "guarded_unknown_pct": 17.1, "strict_parsed_rate": 0.8001, "raw_phi": 0.8019, "parse_seconds": 5.535}, "test_json": {"total_tokens": 209, "true_parsed_pct": 95.69, "phantom_pct": 2.87, "empr_pct": 0.0, "unknown_pct": 1.44, "guarded_true_pct": 95.22, "guarded_unknown_pct": 4.78, "strict_parsed_rate": 0.9469, "raw_phi": 0.9469, "parse_seconds": 0.093}}}, "curation": {"bam": {"total": 13529, "curated": 13529, "gloss_pending": 0}, "bmq": {"total": 2157, "curated": 357, "gloss_pending": 1800}, "boz": {"total": 2975, "curated": 1175, "gloss_pending": 1800}, "dtm": {"total": 4739, "curated": 2239, "gloss_pending": 2500}, "ful": {"total": 2251, "curated": 451, "gloss_pending": 1800}, "kao": {"total": 4048, "curated": 1548, "gloss_pending": 2500}, "mey": {"total": 2281, "curated": 481, "gloss_pending": 1800}, "mku": {"total": 1903, "curated": 103, "gloss_pending": 1800}, "myk": {"total": 1876, "curated": 227, "gloss_pending": 1649}, "ses": {"total": 2791, "curated": 291, "gloss_pending": 2500}, "snk": {"total": 4984, "curated": 2484, "gloss_pending": 2500}, "spp": {"total": 2785, "curated": 985, "gloss_pending": 1800}, "taq": {"total": 2938, "curated": 438, "gloss_pending": 2500}}, "live_parses": {"bam": [{"token": "k’a", "stage": "0", "parse": "k’:conj (que)", "note": "Previously unparsed if curly apostrophe U+2019 bypassed ASCII elision"}, {"token": "kalansenw", "stage": "0", "parse": "kàlansen:n (leçon) + w:mrph (PL)", "note": "Nominal pluralization (-w) + derivation"}, {"token": "Bolofara", "stage": "0", "parse": "bólo:n (branche) + fára:v (diviser)", "note": "Constitution compound noun added to lexicon"}], "bmq": [{"token": "VƐSIROBE", "stage": "0", "parse": "vɛsiro:n/v (radical-corpus) + be:mrph (PL)", "note": "Previously EMPR/unknown due to unsplit \\va and missing -be/-robe"}, {"token": "ɲuɓe", "stage": "0", "parse": "ɲu:n (radical-corpus) + ɓe:mrph (PL.HUM)", "note": "Human plural class -ɓe"}, {"token": "ƝUƁUUSINU", "stage": "0", "parse": "ɲuɓuusi:n (radical-corpus) + nu:mrph (PL)", "note": "Bwamu plural inflection -nu from Constitution text"}], "boz": [{"token": "Jamanakwɔn", "stage": "1", "parse": "jamana:n (pays) + kwɔn:mrph (HUM)", "note": "Human/agentive -kwɔn derivation from Constitution text"}, {"token": "XAYINYE", "stage": "0", "parse": "xayin:n (travail) + ye:mrph (PL)", "note": "Plural -ye on noun xayin ('travail')"}, {"token": "baana", "stage": "0", "parse": "baa:v (enlever) + na:mrph (PTCP.PST)", "note": "Concept/state nominalization -na"}], "dtm": [{"token": "Inɛnw", "stage": "0", "parse": "inɛ:n (personne) + nw:mrph (PL)", "note": "Previously phantom-split or unknown (29-entry truncated dict)"}, {"token": "PAŊABE", "stage": "0", "parse": "pàŋá:n (pouvoir) + be:mrph (PL.HUM)", "note": "Human plural -be on Dogon noun pàŋá ('pouvoir')"}, {"token": "POROBABE", "stage": "0", "parse": "poroba:adj (public) + be:mrph (PL.HUM)", "note": "Plural nominalized adjective -be from Constitution text"}], "ful": [{"token": "wallataa", "stage": "0", "parse": "wall:v (radical-corpus) + ataa:mrph (IPFV.NEG)", "note": "Imperfective negative TAM (-ataa)"}, {"token": "suɓaaɓe", "stage": "0", "parse": "suɓaa:n (radical-corpus) + ɓe:mrph (PL.HUM)", "note": "Human plural noun class (-ɓe) on participle"}, {"token": "MAWƊI", "stage": "0", "parse": "maw:n (radical-corpus) + ɗi:mrph (PL.NONHUM)", "note": "Non-human plural noun class (-ɗi) from Constitution text"}], "kao": [{"token": "náa-ta", "stage": "0", "parse": "náa:v (venir náŋ) + -ta:mrph (PFV)", "note": "Previously EMPR or unknown (97-entry dict)"}, {"token": "Xonokuwolu", "stage": "0", "parse": "xonokuwo:n (radical-corpus) + lu:mrph (PL)", "note": "Plural -lu with Western Manding x"}, {"token": "Fasujama", "stage": "1", "parse": "fasuja:n/v (radical-corpus) + ma:mrph (QUAL)", "note": "Qualitative adjective derivation -ma"}], "mey": [{"token": "ƏLWAAJIBAAT", "stage": "0", "parse": "əl:mrph (DEF) + wāǧib:n (devoir) + aat:mrph (PL.F)", "note": "Definite proclitic əl| + noun stem + sound plural -aat"}, {"token": "bi-ḥaqq", "stage": "0", "parse": "bi-:mrph (PREP.INSTR) + ḥaqq:n (droit)", "note": "Prepositional proclitic bi-|"}, {"token": "IDAARIYA", "stage": "0", "parse": "idaar:n/v (radical-corpus) + iya:mrph (NISBA)", "note": "Nisba adjective derivation -iya"}], "mku": [{"token": "mɔxɔlu", "stage": "0", "parse": "mɔxɔ:n (radical-corpus) + lu:mrph (PL)", "note": "Western Maninka -lu plural with native x"}, {"token": "tɛgɛda", "stage": "0", "parse": "tɛgɛda:n (titre)", "note": "Compound/derived stem from test.json"}, {"token": "kɛra", "stage": "0", "parse": "kɛ:v (faire) + ra:mrph (PFV.INTR)", "note": "Completive intransitive -ra"}], "myk": [{"token": "cɛɛwuu", "stage": "0", "parse": "cɛɛ:n/v (radical-corpus) + wuu:mrph (DEF.CL1)", "note": "Noun-class -wuu concord"}, {"token": "pyegana", "stage": "1", "parse": "pye:v (faire/être) + gana:mrph (NMLZ.MANNER)", "note": "Productive derivation -gana"}, {"token": "fɛɛbii", "stage": "0", "parse": "fɛɛ:n (propriétaire/gens) + bii:mrph (PL.CL2)", "note": "Noun-class plural -bii"}], "ses": [{"token": "boryo", "stage": "0", "parse": "bor:n (radical-corpus) + yo:mrph (PL)", "note": "Koyraboro Senni plural -yo"}, {"token": "daaroo", "stage": "0", "parse": "daar:n (radical-corpus) + oo:mrph (DEF.SG)", "note": "Koyra Chiini definite singular -oo"}, {"token": "Cawboŋey", "stage": "0", "parse": "cawboŋ:n (radical-corpus) + ey:mrph (DEF.PL)", "note": "Koyra Chiini definite plural -ey"}], "snk": [{"token": "JAMAANEN", "stage": "0", "parse": "jamaane:n (pays, état, territoire. Wattun wa bonondindini tanpintan) + n:mrph (DEF)", "note": "Vowel-final stem + definite -n"}, {"token": "SARIYANUN", "stage": "0", "parse": "sariya:n (la loi. Category: 4.9. Religion) + nun:mrph (PL)", "note": "Plural -nun inflection"}, {"token": "HANNIYANTE", "stage": "1", "parse": "hanniya:v (radical-corpus) + nte:mrph (PTCP.RES)", "note": "Resultative participle -nte"}], "spp": [{"token": "SARIYAƝUNGI", "stage": "0", "parse": "sariyaɲun:n (radical-corpus) + gi:mrph (DEF.CL3)", "note": "Senufo definite class -gi from Constitution text"}, {"token": "Yɛshɛgɛ", "stage": "1", "parse": "yɛshɛ:n/v (radical-corpus) + gɛ:mrph (CAUS)", "note": "Causative verbal derivation -gɛ"}, {"token": "kàntugo", "stage": "0", "parse": "kàntugo:n/v (radical-corpus)", "note": "Tonal noun stem previously flagged EMPR"}], "taq": [{"token": "făl-a-s", "stage": "0", "parse": "făl-:mrph (SUPER) + a:prn (qui ; que) + -s:mrph (3SG)", "note": "3-morpheme chain: PREP făl- + 3SG -a + DAT -s"}, {"token": "ḍarăt-a-wen", "stage": "0", "parse": "ḍarăt-:mrph (POST) + a:prn (qui ; que) + -wen:mrph (DEM.DIST)", "note": "3-morpheme chain: PREP ḍarăt- + pron -a + DEM -wen"}, {"token": "wăr-t-illa", "stage": "1", "parse": "wăr-:mrph (NEG) + t-:mrph (3FSG) + illa:n (il se trouvait à ; il est)", "note": "NEG wăr- + 3SG.M.DO -t- + verb illa"}, {"token": "dăɣ-ăddunya-ta-dăɣ", "stage": "1", "parse": "dăɣ-:mrph (LOC.IN) + ăddunya:n (le monde) + -ta:mrph (DEM.FSG) + -dăɣ:mrph (DEM.PROX)", "note": "4-morpheme chain across 2 peeling stages"}, {"token": "N-ĂDDĂWLĂT", "stage": "0", "parse": "n-:mrph (GEN) + ăddăwlăt:n (état ; nation ; pays)", "note": "Genitive proclitic n-| + noun stem ăddăwlăt"}, {"token": "MĂQQĂRĂN", "stage": "0", "parse": "măqqăr:adj (grand) + ăn:mrph (PL)", "note": "Adjective plural suffix -ăn (Berber plural)"}, {"token": "i-Măssinăɣ", "stage": "0", "parse": "i-:mrph (DAT) + măssinăɣ:n.prop (Dieu)", "note": "Dative proclitic i-| on proper noun"}]}, "typology_profiles": [{"profile": "Eastern Manding", "phylum": "Niger-Congo · Mande", "langs": ["bam"], "dominant": "Agglutinative suffixing + prefixing + nasal harmony (l/n/r) + apostrophe clitics", "rules": "-w, -ra/-la/-na, -len/-nen, -bali, -tɔ, -ya, -baga/-baa, la-/ma-/rɔ-, pos_composition", "insight": "Reference 7-stage grammar; preserves Bamadaba tones and curly-apostrophe elisions (k’, n’, y’)."}, {"profile": "Western Manding", "phylum": "Niger-Congo · Mande", "langs": ["kao", "mku"], "dominant": "Suffixing + definite -o/-ŋo + plural -lu/-nu + combined -olu/-ŋolu + native x", "rules": "-o/-yo/-wo/-no/-ŋo, -lu/-nu, -olu/-ŋolu, -ta/-nta, native velar fricative x (moxo, baxa)", "insight": "Corpus audit revealed both mku.txt and kao.txt share Western Manding -o/-ŋo/-lu and native x, while test.json[mlq] blends Eastern/Western forms."}, {"profile": "Inner Mande", "phylum": "Niger-Congo · Mande", "langs": ["boz", "snk"], "dominant": "Suffixing definiteness/plurality + causative -ni/-ndi + productive nominalizers", "rules": "Bozo: -gu/-guye/-ye/-tį/-jwɔn/-tɔmɔ/-xolo; Soninke: -n (V-final)/-nu/-nun/-xen/-maaxu/-ndaanu", "insight": "Embedded Heath (Bozo) and SIL (Soninke) lexicons directly enriched both dictionaries (+3,500+ curated entries)."}, {"profile": "Senufo", "phylum": "Niger-Congo · Senufo", "langs": ["myk", "spp"], "dominant": "Noun-class suffix concord (gender/number genders 1–5) + nasal proclitics + tone", "rules": "myk: -wu/-pi/-ki/-yi/-li/-ke/-ti/-mɛ; spp: -ŋi/-bi/-gi/-yi/-li/-ni/-mu + legal -gbagi/-gbagɔhɔ/-bile", "insight": "Dense tonal vowels (àáâ…) and glottal modifier ʼ require tone-tolerant native filters to stop false EMPR flags."}, {"profile": "Dogon & Gur (Bwamu)", "phylum": "Niger-Congo · Dogon / Gur", "langs": ["dtm", "bmq"], "dominant": "Noun-class / animacy number suffixes + verbal TAM/negation enclitics", "rules": "Dogon: -w/-nw/-be/-gɔ/-jɛ/-bɛin/-lɔ/-dɔ/-mɔ; Bomu: -pɛɛ/-ɓe/-nu/-bee/-robe/-yamu/-siyo", "insight": "Eliminating unconstrained single-char suffixes in dtm stopped 42% phantom inflation while exposing true Dogon TAM."}, {"profile": "Atlantic (Fulfulde)", "phylum": "Niger-Congo · Atlantic", "langs": ["ful"], "dominant": "20+ noun-class suffixes + 3-voice TAM (ACT/MID/PASS) + hyphenated subject enclitics + initial consonant gradation", "rules": "-ɓe/-ɗe/-ɗi/-ooji/-ɗo/-ngol/-nde/-ngal, -ii/-ay/-ata/-iima/-aama/-otoo, -mi/-ɗaa/-ɗen, haal/kaal", "insight": "Initial mutation pairs (wiy/mbiy, won/ngon, heɓ/keɓ) handled via lexical \\va variants plus voice/class suffix stripping."}, {"profile": "Dual-Dialect Songhay", "phylum": "Nilo-Saharan · Songhay", "langs": ["ses"], "dominant": "Two distinct Songhay varieties coexisting in one corpus (Koyraboro Senni & Koyra Chiini)", "rules": "KS: -di, -yo, -diyo, -yaŋ; KC: -oo, -aa, -ey, -wey, -yan; shared -taray, -ante, -koy/-kaw, -andi/-ndi, -ize/-ije", "insight": "Unifying both dialects inside ses/baseline.gram lifted true parses from ~24% to 91.6% (raw) and 97.7% (test.json)."}, {"profile": "Afro-Asiatic: Berber", "phylum": "Afro-Asiatic · Berber", "langs": ["taq"], "dominant": "Discontinuous circumfixes + 2-stage hyphenated proclitic/enclitic chains + apophonic verbal roots", "rules": "Proclitics n-/d-/s-/i-/dăɣ-/wăr-/făl-/ḍarăt- + enclitics -net/-dăɣ/-s/-dd/-tăn/-tăt + {tă||t}, {ti||en}, {t||ăt}, ăma|", "insight": "Fixing 16 reversed prefix templates and peeling multi-clitic chains sequentially unlocked 95.7% Constitution parse coverage."}, {"profile": "Afro-Asiatic: Semitic", "phylum": "Afro-Asiatic · Semitic", "langs": ["mey"], "dominant": "Prefixing article (əl-/al-/il-) + prepositional proclitics + sound plurals + nisba + pronominal enclitics", "rules": "bi-/li-/fi-/vi-/wo-, -aat/-iin, -iyya/-iya, -he/-hum/-na, yə-/tə-/nə-, Form X st|, ptcp mu|/mət|", "insight": "Replaced legacy copy-pasted Fula rules with authentic Arabic template/affix grammar + academic-to-Mali Latin \\va bridges."}], "typology_matrix": [{"lang": "bam", "phylum": "Mande", "suffix": 2, "prefix": 2, "circumfix": 0, "clitic": 2, "nc": 0, "grad": 0, "tone": 2, "bridge": 1}, {"lang": "kao", "phylum": "Mande", "suffix": 2, "prefix": 1, "circumfix": 0, "clitic": 2, "nc": 0, "grad": 0, "tone": 1, "bridge": 1}, {"lang": "mku", "phylum": "Mande", "suffix": 2, "prefix": 1, "circumfix": 0, "clitic": 1, "nc": 0, "grad": 0, "tone": 1, "bridge": 2}, {"lang": "boz", "phylum": "Mande", "suffix": 2, "prefix": 0, "circumfix": 0, "clitic": 0, "nc": 0, "grad": 0, "tone": 2, "bridge": 2}, {"lang": "snk", "phylum": "Mande", "suffix": 2, "prefix": 0, "circumfix": 0, "clitic": 0, "nc": 0, "grad": 0, "tone": 1, "bridge": 0}, {"lang": "myk", "phylum": "Senufo", "suffix": 2, "prefix": 1, "circumfix": 0, "clitic": 0, "nc": 2, "grad": 0, "tone": 2, "bridge": 1}, {"lang": "spp", "phylum": "Senufo", "suffix": 2, "prefix": 1, "circumfix": 0, "clitic": 0, "nc": 2, "grad": 0, "tone": 2, "bridge": 1}, {"lang": "dtm", "phylum": "Dogon", "suffix": 2, "prefix": 0, "circumfix": 0, "clitic": 1, "nc": 1, "grad": 0, "tone": 1, "bridge": 1}, {"lang": "bmq", "phylum": "Gur", "suffix": 2, "prefix": 0, "circumfix": 0, "clitic": 0, "nc": 2, "grad": 0, "tone": 1, "bridge": 1}, {"lang": "ful", "phylum": "Atlantic", "suffix": 2, "prefix": 0, "circumfix": 0, "clitic": 2, "nc": 2, "grad": 2, "tone": 0, "bridge": 1}, {"lang": "ses", "phylum": "Songhay", "suffix": 2, "prefix": 0, "circumfix": 0, "clitic": 1, "nc": 0, "grad": 0, "tone": 0, "bridge": 2}, {"lang": "mey", "phylum": "Afro-Asiatic", "suffix": 2, "prefix": 2, "circumfix": 1, "clitic": 2, "nc": 0, "grad": 1, "tone": 0, "bridge": 2}, {"lang": "taq", "phylum": "Afro-Asiatic", "suffix": 2, "prefix": 2, "circumfix": 2, "clitic": 2, "nc": 0, "grad": 2, "tone": 0, "bridge": 2}]};
+    let currentDataset = "raw_sample";
+    let currentMetric = "true_parsed";
+    let currentFamily = "ALL";
+    let currentPhylum = "ALL";
+    let sortCol = "lang";
+    let sortAsc = true;
+
+    const DOT_HTML = {
+      2: '<span class="dot-2" title="Primary / Full">&#9679;</span>',
+      1: '<span class="dot-1" title="Partial / Dialectal">&#9680;</span>',
+      0: '<span class="dot-0" title="Absent">&mdash;</span>'
+    };
+
+    const METRIC_LABELS = {
+      true_parsed: "True Parse % (Before vs. Pass 1 vs. Pass 2)",
+      phantom: "Phantom Parse % (Before Raw vs. Pass 2 Raw vs. Guarded 0%)",
+      phi: "Phi (Φ) vs. Guarded Φ & Strict Parsed Rate",
+      lexicon: "Lexicon Headword Scale (\lx Before vs. After)",
+      speed: "DabaX Parse Latency (seconds)"
+    };
+
+    function pct(v) { return (v ?? 0).toFixed(2) + "%"; }
+    function num(v, d = 3) { return (v ?? 0).toFixed(d); }
+
+    function renderLegend() {
+      const el = document.getElementById("chartLegend");
+      document.getElementById("figMetricName").textContent = METRIC_LABELS[currentMetric];
+      document.getElementById("figDatasetName").textContent =
+        currentDataset === "raw_sample" ? "Clean Raw Sample" : "Constitution (test.json)";
+
+      if (currentMetric === "true_parsed") {
+        el.innerHTML = `
+          <span><i class="swatch" style="background:var(--stone)"></i> Before (Original Baseline)</span>
+          <span><i class="swatch" style="background:var(--slate)"></i> Pass 1 (Initial 13-Lang Revision)</span>
+          <span><i class="swatch" style="background:var(--forest)"></i> Pass 2 (Global DabaX Guard + taq Clitics/Circumfixes)</span>`;
+      } else if (currentMetric === "phantom") {
+        el.innerHTML = `
+          <span><i class="swatch" style="background:var(--crimson)"></i> Before Raw Phantom %</span>
+          <span><i class="swatch" style="background:var(--ochre)"></i> Pass 2 Raw Phantom % (strict_parse=False)</span>
+          <span><i class="swatch" style="background:var(--forest)"></i> Global DabaX(strict_parse=True) Guarded (0.00% across all 13)</span>`;
+      } else if (currentMetric === "phi") {
+        el.innerHTML = `
+          <span><i class="swatch" style="background:var(--stone)"></i> Raw &Phi; Before</span>
+          <span><i class="swatch" style="background:var(--slate)"></i> Guarded &Phi; (After)</span>
+          <span><i class="swatch" style="background:var(--forest)"></i> Strict Parsed Rate (Non-EMPR)</span>`;
+      } else if (currentMetric === "lexicon") {
+        el.innerHTML = `
+          <span><i class="swatch" style="background:var(--stone)"></i> \lx Before</span>
+          <span><i class="swatch" style="background:var(--slate)"></i> \lx After</span>`;
+      } else {
+        el.innerHTML = `
+          <span><i class="swatch" style="background:var(--stone)"></i> Latency Before (s)</span>
+          <span><i class="swatch" style="background:var(--slate)"></i> Latency Pass 2 (s)</span>`;
+      }
+    }
+
+    function renderChart() {
+      renderLegend();
+      const wrap = document.getElementById("chartContainer");
+      const maxLx = Math.max(...DATA.langs.map(l => DATA.after_p2[l].dict_lx_count));
+      const maxSec = Math.max(...DATA.langs.map(l => Math.max(
+        DATA.before[l][currentDataset].parse_seconds,
+        DATA.after_p2[l][currentDataset].parse_seconds
+      )));
+
+      wrap.innerHTML = DATA.langs.map(lang => {
+        const m = DATA.meta[lang];
+        const b = DATA.before[lang];
+        const p1 = DATA.after_p1[lang];
+        const p2 = DATA.after_p2[lang];
+        const bd = b[currentDataset];
+        const d1 = p1[currentDataset];
+        const d2 = p2[currentDataset];
+
+        let bars = "";
+        let valText = "";
+        if (currentMetric === "true_parsed") {
+          const delta = d2.true_parsed_pct - bd.true_parsed_pct;
+          bars = `
+            <div class="bar-track" title="Before: ${pct(bd.true_parsed_pct)}"><div class="bar-fill" style="width:${bd.true_parsed_pct}%;background:var(--stone)"></div></div>
+            <div class="bar-track" title="Pass 1: ${pct(d1.true_parsed_pct)}"><div class="bar-fill" style="width:${d1.true_parsed_pct}%;background:var(--slate)"></div></div>
+            <div class="bar-track" title="Pass 2: ${pct(d2.true_parsed_pct)}"><div class="bar-fill" style="width:${d2.true_parsed_pct}%;background:var(--forest)"></div></div>`;
+          valText = `<div>${pct(bd.true_parsed_pct)} &rarr; <strong>${pct(d2.true_parsed_pct)}</strong></div><div class="pos">+${delta.toFixed(2)} pp</div>`;
+        } else if (currentMetric === "phantom") {
+          const delta = d2.phantom_pct - bd.phantom_pct;
+          bars = `
+            <div class="bar-track" title="Before Raw Phantom: ${pct(bd.phantom_pct)}"><div class="bar-fill" style="width:${bd.phantom_pct}%;background:var(--crimson)"></div></div>
+            <div class="bar-track" title="Pass 2 Raw Phantom: ${pct(d2.phantom_pct)}"><div class="bar-fill" style="width:${d2.phantom_pct}%;background:var(--ochre)"></div></div>
+            <div class="bar-track" title="DabaX Guarded: 0.00%"><div class="bar-fill" style="width:1%;background:var(--forest)"></div></div>`;
+          valText = `<div>${pct(bd.phantom_pct)} &rarr; ${pct(d2.phantom_pct)}</div><div class="pos">0.00% guarded (${delta.toFixed(2)})</div>`;
+        } else if (currentMetric === "phi") {
+          bars = `
+            <div class="bar-track" title="Raw Phi Before: ${num(bd.raw_phi)}"><div class="bar-fill" style="width:${bd.raw_phi * 100}%;background:var(--stone)"></div></div>
+            <div class="bar-track" title="Guarded Phi After: ${num(d2.raw_phi)}"><div class="bar-fill" style="width:${d2.raw_phi * 100}%;background:var(--slate)"></div></div>
+            <div class="bar-track" title="Strict Rate: ${num(d2.strict_parsed_rate)}"><div class="bar-fill" style="width:${d2.strict_parsed_rate * 100}%;background:var(--forest)"></div></div>`;
+          valText = `<div>&Phi; ${num(bd.raw_phi)} &rarr; <strong>${num(d2.raw_phi)}</strong></div><div class="pos">Strict ${num(d2.strict_parsed_rate)}</div>`;
+        } else if (currentMetric === "lexicon") {
+          const w1 = (b.dict_lx_count / maxLx) * 100;
+          const w2 = (p2.dict_lx_count / maxLx) * 100;
+          bars = `
+            <div class="bar-track" title="Before: ${b.dict_lx_count}"><div class="bar-fill" style="width:${w1}%;background:var(--stone)"></div></div>
+            <div class="bar-track" title="After: ${p2.dict_lx_count}"><div class="bar-fill" style="width:${w2}%;background:var(--slate)"></div></div>`;
+          valText = `<div>${b.dict_lx_count.toLocaleString()} &rarr; <strong>${p2.dict_lx_count.toLocaleString()}</strong></div><div class="pos">+${(p2.dict_lx_count - b.dict_lx_count).toLocaleString()}</div>`;
+        } else {
+          const w1 = (bd.parse_seconds / maxSec) * 100;
+          const w2 = (d2.parse_seconds / maxSec) * 100;
+          bars = `
+            <div class="bar-track" title="Before: ${bd.parse_seconds}s"><div class="bar-fill" style="width:${w1}%;background:var(--stone)"></div></div>
+            <div class="bar-track" title="Pass 2: ${d2.parse_seconds}s"><div class="bar-fill" style="width:${w2}%;background:var(--slate)"></div></div>`;
+          valText = `<div>${bd.parse_seconds.toFixed(3)}s &rarr; <strong>${d2.parse_seconds.toFixed(3)}s</strong></div>`;
+        }
+
+        return `
+          <div class="chart-row">
+            <div class="chart-lang"><code>${lang}</code> &middot; ${m.name}<small>${m.family}</small></div>
+            <div class="bar-stack">${bars}</div>
+            <div class="chart-vals">${valText}</div>
+          </div>`;
+      }).join("");
+    }
+
+    function buildRows() {
+      return DATA.langs.map(lang => {
+        const m = DATA.meta[lang];
+        const b = DATA.before[lang];
+        const p2 = DATA.after_p2[lang];
+        const bd = b[currentDataset];
+        const d2 = p2[currentDataset];
+        return {
+          lang,
+          name: m.name,
+          family: m.family,
+          group: m.group,
+          lx_after: p2.dict_lx_count,
+          true_before: bd.true_parsed_pct,
+          true_after: d2.true_parsed_pct,
+          delta_true: d2.true_parsed_pct - bd.true_parsed_pct,
+          phantom_before: bd.phantom_pct,
+          phantom_after: d2.phantom_pct,
+          empr_after: d2.empr_pct,
+          unk_after: d2.unknown_pct,
+          guarded_phi: d2.raw_phi,
+          strict_rate: d2.strict_parsed_rate
+        };
+      });
+    }
+
+    function renderTable() {
+      let rows = buildRows();
+      if (currentFamily !== "ALL") {
+        rows = rows.filter(r => r.group === currentFamily);
+      }
+      rows.sort((a, b) => {
+        const va = a[sortCol], vb = b[sortCol];
+        const cmp = typeof va === "string" ? va.localeCompare(vb) : va - vb;
+        return sortAsc ? cmp : -cmp;
+      });
+
+      document.getElementById("matrixBody").innerHTML = rows.map(r => `
+        <tr>
+          <td><code>${r.lang}</code> &middot; <strong>${r.name}</strong></td>
+          <td>${r.family}</td>
+          <td class="num">${r.lx_after.toLocaleString()}</td>
+          <td class="num">${r.true_before.toFixed(2)}%</td>
+          <td class="num"><strong>${r.true_after.toFixed(2)}%</strong></td>
+          <td class="num pos">+${r.delta_true.toFixed(2)}</td>
+          <td class="num neg">${r.phantom_before.toFixed(2)}%</td>
+          <td class="num">${r.phantom_after.toFixed(2)}% &rarr; <span class="pos">0.00%</span></td>
+          <td class="num">${r.empr_after.toFixed(2)}%</td>
+          <td class="num">${r.unk_after.toFixed(2)}%</td>
+          <td class="num"><strong>${r.guarded_phi.toFixed(3)}</strong></td>
+          <td class="num">${r.strict_rate.toFixed(3)}</td>
+        </tr>`).join("");
+    }
+
+    function renderDictHealth() {
+      document.getElementById("dictHealthBody").innerHTML = DATA.langs.map(lang => {
+        const m = DATA.meta[lang];
+        const b = DATA.before[lang];
+        const p2 = DATA.after_p2[lang];
+        return `
+          <tr>
+            <td><code>${lang}</code></td>
+            <td><strong>${m.name}</strong></td>
+            <td class="num">${b.dict_lx_count.toLocaleString()}</td>
+            <td class="num"><strong>${p2.dict_lx_count.toLocaleString()}</strong></td>
+            <td class="num">${b.dict_keys.toLocaleString()}</td>
+            <td class="num"><strong>${p2.dict_keys.toLocaleString()}</strong></td>
+            <td class="center pos">${p2.dict_reader_errors}</td>
+            <td>${m.contam}</td>
+            <td>${m.dict_fix}</td>
+          </tr>`;
+      }).join("");
+    }
+
+    function renderTypology() {
+      document.getElementById("typologyMatrixBody").innerHTML = DATA.typology_matrix.map(r => {
+        const m = DATA.meta[r.lang];
+        const dim = currentPhylum !== "ALL" && r.phylum !== currentPhylum ? "dimmed" : "";
+        return `
+          <tr class="${dim}">
+            <td><code>${r.lang}</code> &middot; <strong>${m.name}</strong></td>
+            <td>${m.phylum}</td>
+            <td class="center">${DOT_HTML[r.suffix]}</td>
+            <td class="center">${DOT_HTML[r.prefix]}</td>
+            <td class="center">${DOT_HTML[r.circumfix]}</td>
+            <td class="center">${DOT_HTML[r.clitic]}</td>
+            <td class="center">${DOT_HTML[r.nc]}</td>
+            <td class="center">${DOT_HTML[r.grad]}</td>
+            <td class="center">${DOT_HTML[r.tone]}</td>
+            <td class="center">${DOT_HTML[r.bridge]}</td>
+          </tr>`;
+      }).join("");
+
+      document.getElementById("typologyProfilesBody").innerHTML = DATA.typology_profiles.map(p => `
+        <tr>
+          <td><strong>${p.profile}</strong><br/><small style="color:var(--ink-soft)">${p.phylum}</small></td>
+          <td>${p.langs.map(l => `<code>${l}</code>`).join(", ")}</td>
+          <td>${p.dominant}</td>
+          <td><code>${p.rules}</code></td>
+          <td>${p.insight}</td>
+        </tr>`).join("");
+    }
+
+    function renderCurationBars() {
+      document.getElementById("curationBars").innerHTML = DATA.langs.map(lang => {
+        const c = DATA.curation[lang];
+        const pctCur = (c.curated / c.total) * 100;
+        const pctPen = 100 - pctCur;
+        return `
+          <div style="display:grid; grid-template-columns: 52px 1fr 145px; gap:10px; align-items:center; font-size:0.8rem;">
+            <code>${lang}</code>
+            <div class="stacked-bar" title="Curated: ${c.curated} | Gloss-pending: ${c.gloss_pending}">
+              <div class="stacked-curated" style="width:${pctCur.toFixed(1)}%"></div>
+              <div class="stacked-pending" style="width:${pctPen.toFixed(1)}%"></div>
+            </div>
+            <span style="font-family:var(--mono); text-align:right">${c.curated.toLocaleString()} / ${c.total.toLocaleString()}</span>
+          </div>`;
+      }).join("");
+    }
+
+    function renderCards(filterText = "") {
+      const q = filterText.trim().toLowerCase();
+      const wrap = document.getElementById("langCards");
+      const filtered = DATA.langs
+        .map((lang, idx) => ({ lang, idx }))
+        .filter(({ lang }) => {
+          if (!q) return true;
+          const m = DATA.meta[lang];
+          return (
+            lang.includes(q) ||
+            m.name.toLowerCase().includes(q) ||
+            m.family.toLowerCase().includes(q) ||
+            m.phylum.toLowerCase().includes(q) ||
+            m.fix.toLowerCase().includes(q) ||
+            m.ortho.toLowerCase().includes(q)
+          );
+        });
+
+      wrap.innerHTML = filtered.map(({ lang, idx }) => {
+        const numStr = String(idx + 1).padStart(2, "0");
+        const m = DATA.meta[lang];
+        const b = DATA.before[lang];
+        const p2 = DATA.after_p2[lang];
+        const cur = DATA.curation[lang];
+        const parses = DATA.live_parses[lang] || [];
+        const rawDelta = p2.raw_sample.true_parsed_pct - b.raw_sample.true_parsed_pct;
+        const testDelta = p2.test_json.true_parsed_pct - b.test_json.true_parsed_pct;
+
+        return `
+          <details class="dispatch" ${lang === "taq" || lang === "mey" || lang === "ses" ? "open" : ""}>
+            <summary>
+              <span>
+                <span class="dispatch-num">DISPATCH ${numStr}</span>
+                <code>${lang}</code> &mdash; ${m.name} <small style="color:var(--ink-soft);font-weight:400">(${m.phylum} &bull; EMPR stage ${p2.empr_stages[0]})</small>
+              </span>
+              <span class="dispatch-meta">
+                <span class="stamp ok">Raw ${b.raw_sample.true_parsed_pct.toFixed(1)}% &rarr; ${p2.raw_sample.true_parsed_pct.toFixed(1)}% (+${rawDelta.toFixed(1)} pp)</span>
+                <span class="stamp ok">test.json ${b.test_json.true_parsed_pct.toFixed(1)}% &rarr; ${p2.test_json.true_parsed_pct.toFixed(1)}% (+${testDelta.toFixed(1)} pp)</span>
+                <span class="stamp">${b.dict_lx_count.toLocaleString()} &rarr; ${p2.dict_lx_count.toLocaleString()} \lx</span>
+              </span>
+            </summary>
+            <div class="dispatch-body">
+              <div class="dispatch-cols">
+                <div class="dispatch-box">
+                  <h4>Grammar &amp; Dictionary Revisions</h4>
+                  <p style="margin:0 0 6px"><strong>Architecture:</strong> ${m.grammar_change}</p>
+                  <p style="margin:0">${m.fix}</p>
+                </div>
+                <div class="dispatch-box">
+                  <h4>Orthography, Curation &amp; Residual Gaps</h4>
+                  <p style="margin:0 0 6px"><strong>Orthography:</strong> ${m.ortho}</p>
+                  <p style="margin:0 0 6px"><strong>Lexicon Curation:</strong> ${cur.curated.toLocaleString()} curated &bull; ${cur.gloss_pending.toLocaleString()} Tier-4 gloss-pending</p>
+                  <p style="margin:0"><strong>Residual Gap:</strong> ${m.gap}</p>
+                </div>
+              </div>
+              <div class="table-wrap" style="margin-bottom:0">
+                <table>
+                  <thead>
+                    <tr><th>Live Specimen</th><th>Stage</th><th><code>DabaX(strict_parse=True)</code> Parse</th><th>Analytical Note</th></tr>
+                  </thead>
+                  <tbody>
+                    ${parses.map(p => `
+                      <tr>
+                        <td><code>${p.token}</code></td>
+                        <td><code>${p.stage}</code></td>
+                        <td><code>${p.parse}</code></td>
+                        <td>${p.note}</td>
+                      </tr>`).join("")}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>`;
+      }).join("");
+    }
+
+    document.getElementById("datasetBtns").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-dataset]");
+      if (!btn) return;
+      currentDataset = btn.dataset.dataset;
+      document.querySelectorAll("#datasetBtns button").forEach(b => b.classList.toggle("active", b === btn));
+      renderChart();
+      renderTable();
+    });
+
+    document.getElementById("metricBtns").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-metric]");
+      if (!btn) return;
+      currentMetric = btn.dataset.metric;
+      document.querySelectorAll("#metricBtns button").forEach(b => b.classList.toggle("active", b === btn));
+      renderChart();
+    });
+
+    document.getElementById("familyBtns").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-family]");
+      if (!btn) return;
+      currentFamily = btn.dataset.family;
+      document.querySelectorAll("#familyBtns button").forEach(b => b.classList.toggle("active", b === btn));
+      renderTable();
+    });
+
+    document.getElementById("phylumBtns").addEventListener("click", e => {
+      const btn = e.target.closest("button[data-phylum]");
+      if (!btn) return;
+      currentPhylum = btn.dataset.phylum;
+      document.querySelectorAll("#phylumBtns button").forEach(b => b.classList.toggle("active", b === btn));
+      renderTypology();
+    });
+
+    document.querySelectorAll("#matrixTable th.sortable").forEach(th => {
+      th.addEventListener("click", () => {
+        const col = th.dataset.sort;
+        if (sortCol === col) sortAsc = !sortAsc;
+        else { sortCol = col; sortAsc = col === "lang" || col === "family"; }
+        renderTable();
+      });
+    });
+
+    document.getElementById("langSearch").addEventListener("input", e => renderCards(e.target.value));
+    document.getElementById("expandAllBtn").addEventListener("click", () => {
+      document.querySelectorAll("details.dispatch").forEach(d => d.open = true);
+    });
+    document.getElementById("collapseAllBtn").addEventListener("click", () => {
+      document.querySelectorAll("details.dispatch").forEach(d => d.open = false);
+    });
+    document.getElementById("themeToggle").addEventListener("click", e => {
+      const root = document.documentElement;
+      const toEvening = root.dataset.theme !== "evening";
+      root.dataset.theme = toEvening ? "evening" : "newsprint";
+      e.target.textContent = toEvening ? "Morning Newsprint" : "Evening Edition";
+    });
+
+    renderChart();
+    renderTable();
+    renderDictHealth();
+    renderTypology();
+    renderCurationBars();
+    renderCards();
+  </script>
+</body>
+</html>

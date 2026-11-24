@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="newsprint">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE SEBENI CHRONICLE — MALI13 Benchmark Prototype Mock-Up</title>
+  <style>
+    :root {
+      --paper: #f5f1e6;
+      --paper-card: #fbf8f0;
+      --paper-alt: #ece5d4;
+      --ink: #181613;
+      --ink-muted: #554f47;
+      --ink-soft: #787064;
+      --rule-heavy: #1c1915;
+      --rule-hair: #cbc2af;
+      --crimson: #8c1d24;
+      --slate: #1b4d6e;
+      --forest: #1e5c3a;
+      --ochre: #9a6314;
+      --stone: #8a8275;
+      --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Times New Roman", serif;
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    [data-theme="evening"] {
+      --paper: #161412;
+      --paper-card: #1e1b18;
+      --paper-alt: #27221d;
+      --ink: #ede6d8;
+      --ink-muted: #b8ae9e;
+      --ink-soft: #8f8577;
+      --rule-heavy: #d8cebd;
+      --rule-hair: #3e3830;
+      --crimson: #e06c75;
+      --slate: #61afef;
+      --forest: #6cc08a;
+      --ochre: #e5c07b;
+      --stone: #7f786c;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--serif);
+      line-height: 1.56;
+      font-size: 16px;
+    }
+    code {
+      font-family: var(--mono);
+      font-size: 0.84em;
+      background: var(--paper-alt);
+      padding: 1px 4px;
+    }
+    a { color: var(--crimson); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .mock-ribbon {
+      background: var(--crimson);
+      color: #fff8f2;
+      text-align: center;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+    }
+
+    .sheet {
+      max-width: 1340px;
+      margin: 0 auto;
+      padding: 14px 24px 56px;
+    }
+
+    .folio-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      padding: 6px 0 10px;
+      border-bottom: 1px solid var(--rule-heavy);
+    }
+    .folio-controls { display: flex; gap: 8px; align-items: center; }
+
+    .masthead {
+      text-align: center;
+      padding: 18px 8px 14px;
+      border-bottom: 3px double var(--rule-heavy);
+    }
+    .masthead .kicker {
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .masthead h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(2.1rem, 4.5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      line-height: 1.05;
+    }
+    .masthead .subtitle {
+      margin: 8px auto 0;
+      max-width: 900px;
+      font-style: italic;
+      font-size: 1.02rem;
+      color: var(--ink-muted);
+    }
+
+    nav.ed-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 18px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--rule-heavy);
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+    nav.ed-nav a { color: var(--ink); }
+    nav.ed-nav a:hover { color: var(--crimson); }
+
+    button, .pill {
+      font-family: var(--sans);
+      font-size: 0.73rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: var(--paper-card);
+      color: var(--ink);
+      border: 1px solid var(--rule-heavy);
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    button:hover, .pill:hover { background: var(--paper-alt); }
+    button.active, .pill.active { background: var(--ink); color: var(--paper); }
+
+    .section-kicker {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-bottom: 4px;
+    }
+
+    /* Front Page */
+    .front-spread {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(290px, 1fr);
+      gap: 28px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--rule-heavy);
+      margin-bottom: 26px;
+    }
+    .lead-story {
+      padding-right: 26px;
+      border-right: 1px solid var(--rule-hair);
+    }
+    .lead-headline {
+      margin: 0 0 8px;
+      font-size: clamp(1.65rem, 2.8vw, 2.35rem);
+      line-height: 1.12;
+      font-weight: 700;
+    }
+    .deck {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      color: var(--ink-muted);
+      font-style: italic;
+    }
+    .byline {
+      font-family: var(--sans);
+      font-size: 0.73rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      padding: 6px 0 12px;
+      border-top: 1px solid var(--rule-hair);
+      border-bottom: 1px solid var(--rule-hair);
+      margin-bottom: 14px;
+    }
+    .news-cols-2 {
+      column-count: 2;
+      column-gap: 24px;
+      column-rule: 1px solid var(--rule-hair);
+      text-align: justify;
+      hyphens: auto;
+    }
+    .news-cols-2 p { margin: 0 0 12px; }
+    .dropcap::first-letter {
+      float: left;
+      font-size: 3.35rem;
+      line-height: 0.85;
+      padding: 4px 8px 0 0;
+      font-weight: 700;
+      color: var(--crimson);
+    }
+    blockquote.pull-quote {
+      margin: 14px 0 4px;
+      padding: 11px 16px;
+      border-top: 2px solid var(--rule-heavy);
+      border-bottom: 2px solid var(--rule-heavy);
+      background: var(--paper-card);
+      font-size: 1.04rem;
+      font-style: italic;
+      text-align: center;
+    }
+    blockquote.pull-quote cite {
+      display: block;
+      margin-top: 5px;
+      font-family: var(--sans);
+      font-style: normal;
+      font-size: 0.71rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .factbox {
+      background: var(--paper-card);
+      border: 1px solid var(--rule-heavy);
+      border-top: 4px solid var(--rule-heavy);
+      padding: 16px 18px;
+    }
+    .factbox h3 {
+      margin: 0 0 10px;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--rule-heavy);
+      padding-bottom: 6px;
+    }
+    .spec-item {
+      border-bottom: 1px dotted var(--rule-hair);
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+    }
+    .spec-item .lbl {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+    }
+    .spec-item .val {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .spec-item .sub {
+      font-size: 0.81rem;
+      color: var(--ink-muted);
+    }
+    .mock-disclaimer {
+      font-family: var(--sans);
+      font-size: 0.77rem;
+      background: var(--paper-alt);
+      border-left: 3px solid var(--crimson);
+      padding: 8px 10px;
+      margin-top: 10px;
+    }
+
+    .broadsheet-sec {
+      padding-bottom: 26px;
+      margin-bottom: 26px;
+      border-bottom: 2px solid var(--rule-heavy);
+    }
+    .sec-head {
+      border-bottom: 1px solid var(--rule-heavy);
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+    .sec-head h2 { margin: 0; font-size: 1.52rem; }
+    .sec-intro { margin: 0 0 14px; color: var(--ink-muted); font-size: 0.95rem; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-top: 2px solid var(--rule-heavy);
+      border-bottom: 2px solid var(--rule-heavy);
+      background: var(--paper-card);
+      margin-bottom: 14px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td {
+      padding: 7px 9px;
+      border-bottom: 1px solid var(--rule-hair);
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      background: var(--paper-alt);
+      border-bottom: 1px solid var(--rule-heavy);
+      white-space: nowrap;
+    }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--crimson); }
+    td.num, th.num {
+      text-align: right;
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums;
+    }
+    td.center, th.center { text-align: center; }
+    tr:hover td { background: var(--paper-alt); }
+    .tag {
+      font-family: var(--sans);
+      font-size: 0.67rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border: 1px solid var(--rule-hair);
+      background: var(--paper);
+      display: inline-block;
+    }
+    .tag.sebeni { border-color: var(--forest); color: var(--forest); }
+    .tag.api { border-color: var(--slate); color: var(--slate); }
+    .tag.slm { border-color: var(--ochre); color: var(--ochre); }
+
+    .figure-frame {
+      background: var(--paper-card);
+      border: 1px solid var(--rule-heavy);
+      padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+    .fig-caption {
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--ink-muted);
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* Pareto Grid */
+    .pareto-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    svg.pareto-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: var(--paper);
+      border: 1px solid var(--rule-hair);
+    }
+
+    /* Heatmap cells */
+    td.heat {
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 0.79rem;
+      font-variant-numeric: tabular-nums;
+      border-left: 1px solid var(--rule-hair);
+    }
+
+    /* Subword Shatter */
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 20px;
+    }
+    .token-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+    }
+    .tchip {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      padding: 3px 7px;
+      border: 1px solid var(--rule-heavy);
+      background: var(--paper);
+    }
+    .tchip.alt { background: var(--paper-alt); }
+    .bar-track {
+      height: 10px;
+      background: var(--paper-alt);
+      border: 1px solid var(--rule-hair);
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; }
+
+    /* Sample Inspector */
+    .inspect-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 14px;
+    }
+    .inspect-card {
+      background: var(--paper-card);
+      border: 1px solid var(--rule-hair);
+      border-top: 3px solid var(--rule-heavy);
+      padding: 12px 14px;
+      font-size: 0.86rem;
+    }
+    .inspect-card.oracle { border-top-color: var(--forest); }
+    .inspect-card.tuned { border-top-color: var(--slate); }
+    .inspect-card.base { border-top-color: var(--crimson); }
+    .inspect-card h4 {
+      margin: 0 0 8px;
+      font-family: var(--sans);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px dotted var(--rule-hair);
+      padding-bottom: 4px;
+    }
+    pre.snippet {
+      background: var(--paper);
+      border: 1px solid var(--rule-hair);
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      margin: 6px 0;
+    }
+
+    footer.colophon {
+      text-align: center;
+      font-family: var(--sans);
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      padding-top: 10px;
+    }
+
+    @media (max-width: 960px) {
+      .front-spread, .pareto-grid { grid-template-columns: 1fr; }
+      .lead-story { padding-right: 0; border-right: none; }
+      .news-cols-2 { column-count: 1; }
+    }
+    @media print {
+      .folio-controls, .toolbar, nav.ed-nav { display: none !important; }
+      body { background: #ffffff; color: #000000; font-size: 11pt; }
+    }
+  </style>
+</head>
+<body>
+  <div class="mock-ribbon">
+    PROTOTYPE DESIGN MOCK-UP &bull; ILLUSTRATIVE SIMULATED LEADERBOARD DATA &bull; SEE BENCHMARK_MALI13.MD FOR SPEC
+  </div>
+
+  <div class="sheet">
+    <div class="folio-bar">
+      <span>VOL. III &bull; NO. 1 &bull; MALI13 MULTI-AXIS MODEL EFFICIENCY BENCHMARK</span>
+      <span>PROTOTYPE UI MOCK-UP &bull; K-VERITAS READY</span>
+      <div class="folio-controls">
+        <button id="themeToggle" type="button">Evening Edition</button>
+        <button type="button" onclick="window.print()">Print Edition</button>
+      </div>
+    </div>
+
+    <header class="masthead">
+      <div class="kicker">Sebeni Benchmark Series &bull; Multi-Model Comparative Leaderboard</div>
+      <h1>The Sebeni Chronicle</h1>
+      <p class="subtitle">MALI13 Edition: Measuring Linguistic Fidelity, Cross-Language Equity, Tokenizer Fragmentation &amp; Compute Pareto Efficiency Across All 13 National Languages of Mali</p>
+    </header>
+
+    <nav class="ed-nav">
+      <a href="#front">Overview</a>
+      <a href="#sec-leaderboard">I. Leaderboard</a>
+      <a href="#sec-pareto">II. Pareto Frontier</a>
+      <a href="#sec-equity">III. 13-Language Equity</a>
+      <a href="#sec-tokenizer">IV. Tokenizer &amp; Diacritic Penalty</a>
+      <a href="#sec-lid">V. LID Confusions</a>
+      <a href="#sec-inspector">VI. Sample Inspector</a>
+    </nav>
+
+    <!-- FRONT PAGE -->
+    <div id="front" class="front-spread">
+      <article class="lead-story">
+        <div class="section-kicker">Benchmark Design Preview &bull; From Baseline Coverage to Model Efficiency</div>
+        <h2 class="lead-headline">How Efficiently Do Small &amp; Frontier Models Reason Across Mali&rsquo;s 13 Languages?</h2>
+        <p class="deck">By pairing strict DabaX morphological validation with tokenizer fertility, bits-per-byte compression, and cross-language equity metrics, MALI13 turns Sebeni&rsquo;s revised baselines into a reproducible comparative yardstick.</p>
+        <div class="byline">Sebeni Evaluation Architecture Preview &bull; Mock-Up Render for <code>benchmark_mali13.md</code></div>
+
+        <div class="news-cols-2">
+          <p class="dropcap">With clean grammars and 49,957 data-reinforced dictionary entries now active across all thirteen <code>MULTI13</code> languages, the next milestone is measuring how foundation models&mdash;both compact Sebeni-trained checkpoints and frontier commercial APIs&mdash;perform on Mali&rsquo;s linguistic diversity relative to their compute and token budgets.</p>
+          <p><strong>Beyond Bambara-Centric Averages:</strong> A model scoring strongly on Bambara while collapsing on Dogon, Bozo, Hassaniya, or Tamasheq fails Malian digital inclusion. <code>MALI13</code> pairs the macro headline <code>MALI13-Q</code> with <code>Q_min3</code> (worst-three-language average) and <code>Q_gap</code> so cross-family disparities are impossible to obscure.</p>
+          <p><strong>True Cost of Missing African Subwords:</strong> Standard byte-level BPE tokenizers frequently shatter Malian extended Latin vowels and Berber clitic chains into single-byte fragments, doubling or tripling sequence length, KV-cache footprint, and API billing on equal semantic content. Section&nbsp;IV isolates this exact <em>Diacritic Penalty</em>.</p>
+          <p><strong>Unified Local &amp; API Harness:</strong> <code>sebeni bench run</code> evaluates local HuggingFace/LoRA adapters (recording exact causal <code>BPB</code> and GPU VRAM) alongside OpenAI-compatible, Gemini, and Anthropic models on identical frozen splits with crash-safe resumable checkpointing and optional K-Veritas sealing.</p>
+        </div>
+
+        <blockquote class="pull-quote">
+          &ldquo;Model efficiency in low-resource Africa is two-dimensional: quality per parameter AND tokens wasted per real linguistic morpheme.&rdquo;
+          <cite>&mdash; Sebeni MALI13 Design Specification (Mock-Up Preview)</cite>
+        </blockquote>
+      </article>
+
+      <aside class="factbox">
+        <h3>MALI13 Benchmark Blueprint</h3>
+        <div class="spec-item">
+          <div class="lbl">Frozen Splits (Anti-Leakage Audited)</div>
+          <div class="val">5 Tasks &bull; 3,510 Full / 728 Dev-Mini</div>
+          <div class="sub"><code>morph</code> (650), <code>gen</code> (390), <code>lid</code> (650), <code>cloze</code> (520), <code>lm_efficiency</code> (1,300)</div>
+        </div>
+        <div class="spec-item">
+          <div class="lbl">Composite &amp; Equity Metrics</div>
+          <div class="val"><code>MALI13-Q</code> &bull; <code>Q_min3</code> &bull; <code>Q_gap</code></div>
+          <div class="sub">Equal 25% weight on Morphology (strict DabaX), Gen Purity, 13-Way LID, and Morpho-Cloze MCQ</div>
+        </div>
+        <div class="spec-item">
+          <div class="lbl">Efficiency &amp; Pareto Axes</div>
+          <div class="val">Fertility &bull; Diacritic Penalty &bull; BPB</div>
+          <div class="sub">Plus Latency (s), Throughput (tok/s), Params (B), Peak VRAM (MB), and USD Cost</div>
+        </div>
+        <div class="spec-item">
+          <div class="lbl">Attestation &amp; Human Loop</div>
+          <div class="val"><code>kveritas run --seal</code> + Label Studio</div>
+          <div class="sub">SHA-256 split manifest + <code>sebeni bench export-ls</code> review workflow</div>
+        </div>
+        <div class="mock-disclaimer">
+          <strong>Prototype Notice:</strong> Numbers displayed below are <em>illustrative mock-up projections</em> showing how real evaluation runs will render once executed via <code>sebeni bench run</code>.
+        </div>
+      </aside>
+    </div>
+
+    <!-- SECTION I: LEADERBOARD -->
+    <section id="sec-leaderboard" class="broadsheet-sec">
+      <div class="sec-head">
+        <div class="section-kicker">Section I &bull; Multi-Model Standings (Mock-Up Data)</div>
+        <h2>MALI13 Overall Leaderboard &amp; Efficiency Ledger</h2>
+      </div>
+      <div class="toolbar">
+        <div class="btn-group" id="backendFilter">
+          <button class="pill active" data-filter="ALL">All Models (6)</button>
+          <button class="pill" data-filter="Sebeni">Sebeni-Trained</button>
+          <button class="pill" data-filter="SLM">Local SLM Base</button>
+          <button class="pill" data-filter="API">Frontier API</button>
+        </div>
+        <span style="font-family:var(--sans);font-size:0.76rem;color:var(--ink-soft)">Click any column header to sort</span>
+      </div>
+      <div class="table-wrap">
+        <table id="lbTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-sort="name">Model</th>
+              <th>Track</th>
+              <th class="sortable num" data-sort="q">MALI13-Q</th>
+              <th class="sortable num" data-sort="q_min3">Q_min3</th>
+              <th class="sortable num" data-sort="morph">Morph (M)</th>
+              <th class="sortable num" data-sort="gen">Gen (G)</th>
+              <th class="sortable num" data-sort="lid">LID (L)</th>
+              <th class="sortable num" data-sort="cloze">Cloze (C)</th>
+              <th class="sortable num" data-sort="fert">Fertility</th>
+              <th class="sortable num" data-sort="diac">Diacritic Pen.</th>
+              <th class="sortable num" data-sort="bpb">BPB</th>
+              <th class="sortable num" data-sort="lat">Latency (s)</th>
+              <th class="num">Compute / Cost</th>
+            </tr>
+          </thead>
+          <tbody id="lbBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION II: PARETO FRONTIER -->
+    <section id="sec-pareto" class="broadsheet-sec">
+      <div class="sec-head">
+        <div class="section-kicker">Section II &bull; Multi-Objective Tradeoffs</div>
+        <h2>Efficiency Pareto Frontier: Quality vs. Resource Footprint</h2>
+      </div>
+      <div class="toolbar">
+        <div class="btn-group" id="paretoAxisBtns">
+          <button class="pill active" data-axis="fert">X: Tokenizer Fertility (tok/w)</button>
+          <button class="pill" data-axis="lat">X: Mean Latency (s/sample)</button>
+          <button class="pill" data-axis="params">X: Active Params (B, log)</button>
+          <button class="pill" data-axis="cost">X: Est. Full-Run Cost ($ USD)</button>
+        </div>
+      </div>
+      <div class="pareto-grid">
+        <div class="figure-frame" style="margin-bottom:0">
+          <div class="fig-caption">
+            <span><strong>FIG. 1</strong> &mdash; <code>MALI13-Q</code> vs. <span id="paretoXTitle">Tokenizer Fertility</span> (Top-Left = Pareto Optimal)</span>
+            <span>Dashed line joins non-dominated models</span>
+          </div>
+          <svg id="paretoSvg" class="pareto-svg" viewBox="0 0 680 340" role="img" aria-label="Pareto Frontier Chart"></svg>
+        </div>
+        <div class="factbox" style="border-top-color:var(--slate)">
+          <h3>Pareto Takeaways (Mock View)</h3>
+          <p style="font-size:0.88rem;margin:0 0 10px;">Notice how an RL-aligned 0.6B checkpoint (<code>Sebeni-Qwen3-0.6B-GRPO</code>) dominates larger zero-shot models on <strong>morphological schema compliance &amp; <code>DabaX</code> integrity</strong>, keeping it on the upper-left Pareto envelope against latency and cost.</p>
+          <p style="font-size:0.88rem;margin:0 0 10px;">Meanwhile, frontier API models retain an edge in open-domain generalization (<code>Cloze</code> &amp; cross-lingual <code>LID</code>) while paying a higher API cost per correctly parsed Malian morpheme.</p>
+          <div id="paretoFrontierList" style="font-family:var(--mono);font-size:0.8rem;background:var(--paper);padding:8px 10px;border:1px solid var(--rule-hair)"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION III: 13-LANGUAGE EQUITY HEATMAP -->
+    <section id="sec-equity" class="broadsheet-sec">
+      <div class="sec-head">
+        <div class="section-kicker">Section III &bull; Cross-Family Fairness Across Niger-Congo, Songhay &amp; Afro-Asiatic</div>
+        <h2>Thirteen-Language Equity Heatmap &amp; Collapse Detector</h2>
+      </div>
+      <div class="toolbar">
+        <div class="btn-group" id="heatMetricBtns">
+          <button class="pill active" data-hm="q">Composite Q (0–100)</button>
+          <button class="pill" data-hm="morph">Morphology (M)</button>
+          <button class="pill" data-hm="fert">Word Fertility (lower = better)</button>
+        </div>
+        <span style="font-family:var(--sans);font-size:0.75rem;color:var(--ink-soft)">Compare Bambara (<code>bam</code>) vs. ultra-low-resource tails (<code>dtm</code>, <code>boz</code>, <code>taq</code>, <code>mey</code>)</span>
+      </div>
+      <div class="table-wrap">
+        <table id="heatTable">
+          <thead>
+            <tr id="heatHeadRow"></tr>
+          </thead>
+          <tbody id="heatBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION IV: TOKENIZER & DIACRITIC PENALTY -->
+    <section id="sec-tokenizer" class="broadsheet-sec">
+      <div class="sec-head">
+        <div class="section-kicker">Section IV &bull; Orthography Compression Audit</div>
+        <h2>Tokenizer Fragmentation &amp; The Malian Diacritic Penalty</h2>
+      </div>
+      <div class="two-col">
+        <div class="figure-frame" style="margin-bottom:0">
+          <div class="fig-caption">
+            <span><strong>FIG. 2</strong> &mdash; Subword Shatter Inspector (Real Attested Tokens)</span>
+            <span>Simulated BPE Cuts</span>
+          </div>
+          <div class="toolbar" style="margin-bottom:8px">
+            <select id="shatterLang" style="font-family:var(--sans);font-size:0.8rem;padding:4px 8px;border:1px solid var(--rule-heavy);background:var(--paper);color:var(--ink)">
+              <option value="taq">taq — dăɣ-ăddunya-ta-dăɣ (4-morpheme chain)</option>
+              <option value="ful">ful — suɓaaɓe (suɓaa + -ɓe PL.HUM)</option>
+              <option value="spp">spp — SARIYAƝUNGI (sariyaɲun + -gi CL3)</option>
+              <option value="mey">mey — ƏLWAAJIBAAT (əl- + wājib + -aat)</option>
+              <option value="dtm">dtm — PÀŊÁBE (pàŋá + -be PL.HUM)</option>
+            </select>
+          </div>
+          <div id="shatterContainer"></div>
+        </div>
+
+        <div class="figure-frame" style="margin-bottom:0">
+          <div class="fig-caption">
+            <span><strong>FIG. 3</strong> &mdash; ASCII vs. Extended Diacritic Fertility</span>
+            <span>Green: ASCII &bull; Crimson: Extended Latin</span>
+          </div>
+          <div id="diacBars" style="display:grid;gap:10px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION V: LID CONFUSION MATRIX -->
+    <section id="sec-lid" class="broadsheet-sec">
+      <div class="sec-head">
+        <div class="section-kicker">Section V &bull; Typological Confusability</div>
+        <h2>13 &times; 13 Language Identification Confusion Matrix</h2>
+      </div>
+      <div class="toolbar">
+        <div class="btn-group" id="lidModelBtns">
+          <button class="pill active" data-lid="Sebeni-Qwen3-0.6B-GRPO">Sebeni-Qwen3-0.6B-GRPO (Mock)</button>
+          <button class="pill" data-lid="Qwen3-0.6B (Base)">Qwen3-0.6B Base (Mock)</button>
+        </div>
+        <span style="font-family:var(--sans);font-size:0.75rem;color:var(--ink-soft)">Notice Manding (<code>bam/mku/kao</code>) &amp; Senufo (<code>myk/spp</code>) off-diagonal clusters</span>
+      </div>
+      <div class="table-wrap">
+        <table id="lidTable">
+          <thead id="lidHead"></thead>
+          <tbody id="lidBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION VI: SAMPLE INSPECTOR -->
+    <section id="sec-inspector" class="broadsheet-sec">
+      <div class="sec-head">
+        <div class="section-kicker">Section VI &bull; Qualitative Output Audit</div>
+        <h2>Side-by-Side Sample Output Inspector</h2>
+      </div>
+      <div class="toolbar">
+        <div class="btn-group" id="inspLangBtns">
+          <button class="pill active" data-lang="taq">taq (Tamasheq)</button>
+          <button class="pill" data-lang="ful">ful (Fulfulde)</button>
+          <button class="pill" data-lang="mey">mey (Hassaniya)</button>
+          <button class="pill" data-lang="dtm">dtm (Dogon)</button>
+        </div>
+      </div>
+      <div id="inspectorContainer"></div>
+    </section>
+
+    <footer class="colophon">
+      THE SEBENI CHRONICLE &bull; MALI13 BENCHMARK MOCK-UP PROTOTYPE &bull; ALL METRIC VALUES ILLUSTRATIVE &bull; SPEC IN BENCHMARK_MALI13.MD
+    </footer>
+  </div>
+
+  <script>
+    const LANGS = ["bam","bmq","boz","dtm","ful","kao","mey","mku","myk","ses","snk","spp","taq"];
+
+    const MODELS = [
+      {
+        id: "Sebeni-Qwen3-0.6B-GRPO",
+        track: "Sebeni",
+        trackCls: "sebeni",
+        q: 72.4, q_min3: 61.8, morph: 79.2, gen: 73.5, lid: 81.0, cloze: 55.9,
+        fert: 2.38, diac: 1.54, bpb: 1.18, lat: 0.42, params: 0.6, cost: 0.00,
+        compute: "0.6B · 1.4 GB VRAM"
+      },
+      {
+        id: "Gemini 2.5 Pro",
+        track: "API",
+        trackCls: "api",
+        q: 74.1, q_min3: 58.6, morph: 64.0, gen: 74.8, lid: 88.4, cloze: 69.2,
+        fert: 2.21, diac: 1.48, bpb: null, lat: 1.35, params: null, cost: 14.80,
+        compute: "API · ~$14.80 / full"
+      },
+      {
+        id: "Claude Sonnet 4",
+        track: "API",
+        trackCls: "api",
+        q: 71.8, q_min3: 55.4, morph: 61.5, gen: 72.1, lid: 86.2, cloze: 67.4,
+        fert: 2.45, diac: 1.62, bpb: null, lat: 1.48, params: null, cost: 18.20,
+        compute: "API · ~$18.20 / full"
+      },
+      {
+        id: "Gemma-4-E2B",
+        track: "SLM",
+        trackCls: "slm",
+        q: 56.2, q_min3: 39.1, morph: 42.8, gen: 58.4, lid: 72.5, cloze: 51.1,
+        fert: 2.12, diac: 1.41, bpb: 1.34, lat: 0.78, params: 2.0, cost: 0.00,
+        compute: "2.0B (4-bit) · 2.3 GB VRAM"
+      },
+      {
+        id: "Qwen3-0.6B (Base)",
+        track: "SLM",
+        trackCls: "slm",
+        q: 38.9, q_min3: 24.5, morph: 28.4, gen: 41.2, lid: 52.0, cloze: 34.0,
+        fert: 2.38, diac: 1.54, bpb: 1.69, lat: 0.41, params: 0.6, cost: 0.00,
+        compute: "0.6B · 1.4 GB VRAM"
+      },
+      {
+        id: "SmolLM2-135M (Base)",
+        track: "SLM",
+        trackCls: "slm",
+        q: 21.4, q_min3: 11.2, morph: 11.5, gen: 22.8, lid: 28.4, cloze: 22.9,
+        fert: 2.89, diac: 1.92, bpb: 2.14, lat: 0.14, params: 0.135, cost: 0.00,
+        compute: "0.135B · 0.4 GB VRAM"
+      }
+    ];
+
+    const PER_LANG = {
+      q: {
+        "Sebeni-Qwen3-0.6B-GRPO": [84.2,71.5,64.8,61.0,75.4,74.8,63.2,76.1,72.0,78.5,73.9,71.8,60.4],
+        "Gemini 2.5 Pro":         [86.5,70.2,61.0,58.4,78.9,74.2,76.0,75.8,68.4,81.2,74.0,71.4,57.3],
+        "Claude Sonnet 4":        [84.0,68.1,58.0,55.2,77.1,72.5,73.8,73.4,66.2,79.5,72.1,70.2,53.3],
+        "Gemma-4-E2B":            [71.4,53.8,43.0,39.5,63.2,57.4,56.0,58.2,49.8,65.1,58.4,56.5,38.3],
+        "Qwen3-0.6B (Base)":      [54.2,37.0,26.8,24.1,44.5,39.2,37.0,40.8,33.5,48.2,41.0,36.8,22.6],
+        "SmolLM2-135M (Base)":    [33.0,19.4,13.2,10.5,25.0,22.1,18.4,23.5,18.0,28.9,24.0,21.8,10.4]
+      },
+      morph: {
+        "Sebeni-Qwen3-0.6B-GRPO": [89.0,79.4,72.5,70.1,82.0,81.4,71.8,83.2,78.5,84.0,80.2,79.6,68.9],
+        "Gemini 2.5 Pro":         [78.2,62.0,52.4,50.8,69.5,65.4,67.1,66.8,59.2,71.0,64.8,62.9,51.9],
+        "Claude Sonnet 4":        [75.4,59.8,50.2,48.0,67.2,62.5,64.0,63.8,56.5,68.4,62.0,60.1,49.6],
+        "Gemma-4-E2B":            [58.0,41.2,33.5,31.0,49.0,43.8,42.5,45.2,37.4,51.2,44.0,42.0,27.6],
+        "Qwen3-0.6B (Base)":      [41.5,27.0,20.2,18.5,34.0,29.5,26.8,31.2,24.5,36.8,30.1,26.4,16.7],
+        "SmolLM2-135M (Base)":    [19.2,11.0,7.5,6.2,14.8,12.1,9.8,13.4,9.5,16.0,12.5,11.2,5.3]
+      },
+      fert: {
+        "Sebeni-Qwen3-0.6B-GRPO": [1.85,2.28,2.42,2.54,2.14,2.20,2.62,2.18,2.49,2.10,2.25,2.52,3.35],
+        "Gemini 2.5 Pro":         [1.76,2.14,2.26,2.38,2.02,2.08,2.41,2.04,2.31,1.98,2.11,2.34,2.90],
+        "Claude Sonnet 4":        [1.92,2.34,2.50,2.64,2.20,2.28,2.68,2.24,2.56,2.18,2.32,2.60,3.39],
+        "Gemma-4-E2B":            [1.68,2.05,2.18,2.29,1.94,2.01,2.30,1.96,2.24,1.90,2.03,2.25,2.73],
+        "Qwen3-0.6B (Base)":      [1.85,2.28,2.42,2.54,2.14,2.20,2.62,2.18,2.49,2.10,2.25,2.52,3.35],
+        "SmolLM2-135M (Base)":    [2.18,2.76,2.95,3.12,2.58,2.65,3.15,2.64,3.04,2.52,2.70,3.06,4.22]
+      }
+    };
+
+    const SHATTER_SAMPLES = {
+      taq: {
+        word: "dăɣ-ăddunya-ta-dăɣ",
+        oracle: ["dăɣ-", "ăddunya", "-ta", "-dăɣ"],
+        gemma:  ["d", "ă", "ɣ", "-", "ă", "dd", "unya", "-ta", "-", "d", "ă", "ɣ"],
+        qwen:   ["d", "ă", "ɣ", "-ă", "dd", "un", "ya", "-ta", "-d", "ă", "ɣ"],
+        smol:   ["d", "Ä", "ƒ", "ɣ", "-", "Ä", "ƒ", "dd", "un", "ya", "-", "ta", "-", "d", "Ä", "ƒ", "ɣ"]
+      },
+      ful: {
+        word: "suɓaaɓe",
+        oracle: ["suɓaa", "ɓe"],
+        gemma:  ["su", "ɓ", "aa", "ɓ", "e"],
+        qwen:   ["su", "ɓ", "aa", "ɓ", "e"],
+        smol:   ["su", "É", "“", "aa", "É", "“", "e"]
+      },
+      spp: {
+        word: "SARIYAƝUNGI",
+        oracle: ["sariyaɲun", "gi"],
+        gemma:  ["SAR", "IYA", "Ɲ", "UN", "GI"],
+        qwen:   ["S", "ARI", "YA", "Ɲ", "UNG", "I"],
+        smol:   ["S", "A", "RI", "YA", "Æ", "", "UN", "GI"]
+      },
+      mey: {
+        word: "ƏLWAAJIBAAT",
+        oracle: ["əl", "wāǧib", "aat"],
+        gemma:  ["Ə", "LW", "AA", "JI", "BA", "AT"],
+        qwen:   ["Ə", "L", "WAA", "J", "IB", "AAT"],
+        smol:   ["Æ", "", "L", "W", "AA", "JI", "BA", "AT"]
+      },
+      dtm: {
+        word: "PÀŊÁBE",
+        oracle: ["pàŋá", "be"],
+        gemma:  ["P", "À", "Ŋ", "Á", "BE"],
+        qwen:   ["P", "À", "Ŋ", "Á", "BE"],
+        smol:   ["P", "Ã", "€", "Å", "Š", "Ã", "", "BE"]
+      }
+    };
+
+    const INSPECT_DATA = {
+      taq: {
+        prompt: "Dăɣ-ăddunya-ta-dăɣ făl-a-s wăr-t-illa.",
+        oracle: '{"tokens": [{"surface": "Dăɣ-ăddunya-ta-dăɣ", "stage": "1", "morphemes": ["dăɣ-", "ăddunya", "-ta", "-dăɣ"]}, {"surface": "făl-a-s", "stage": "0", "morphemes": ["făl-", "a", "-s"]}, {"surface": "wăr-t-illa", "stage": "1", "morphemes": ["wăr-", "t-", "illa"]}]}',
+        tuned:  '{"tokens": [{"surface": "Dăɣ-ăddunya-ta-dăɣ", "stage": "1", "morphemes": ["dăɣ-", "ăddunya", "-ta", "-dăɣ"]}, {"surface": "făl-a-s", "stage": "0", "morphemes": ["făl-", "a", "-s"]}, {"surface": "wăr-t-illa", "stage": "1", "morphemes": ["wăr-", "t-", "illa"]}]}',
+        base:   'The Tamasheq sentence contains prefixes dăɣ- and făl- meaning...\n[Invalid JSON — Format Rate 0.0, M=0.0]',
+        notes:  "Base model fails JSON schema constraint and hallucinates gloss prose; Sebeni GRPO recovers the 4-morpheme circumfixal clitic chain matching DabaX stage 1."
+      },
+      ful: {
+        prompt: "Suɓaaɓe mawɗi wallataa yimɓe.",
+        oracle: '{"tokens": [{"surface": "Suɓaaɓe", "stage": "0", "morphemes": ["suɓaa", "ɓe"]}, {"surface": "mawɗi", "stage": "0", "morphemes": ["maw", "ɗi"]}, {"surface": "wallataa", "stage": "0", "morphemes": ["wall", "ataa"]}]}',
+        tuned:  '{"tokens": [{"surface": "Suɓaaɓe", "stage": "0", "morphemes": ["suɓaa", "ɓe"]}, {"surface": "mawɗi", "stage": "0", "morphemes": ["maw", "ɗi"]}, {"surface": "wallataa", "stage": "0", "morphemes": ["wall", "ataa"]}]}',
+        base:   '{"tokens": [{"surface": "Suɓaaɓe", "stage": "0", "morphemes": ["suɓaaɓe"]}, {"surface": "mawɗi", "stage": "-1", "morphemes": ["mawɗi"]}]}',
+        notes:  "Base model fails to split Fula noun-class suffixes (-ɓe PL.HUM, -ɗi PL.NONHUM) and IPFV.NEG (-ataa); MER rises sharply."
+      },
+      mey: {
+        prompt: "Əlwaajibaat bi-ḥaqq əljumḥuriyya.",
+        oracle: '{"tokens": [{"surface": "Əlwaajibaat", "stage": "0", "morphemes": ["əl", "wāǧib", "aat"]}, {"surface": "bi-ḥaqq", "stage": "0", "morphemes": ["bi-", "ḥaqq"]}, {"surface": "əljumḥuriyya", "stage": "0", "morphemes": ["əl", "jumḥūriyya"]}]}',
+        tuned:  '{"tokens": [{"surface": "Əlwaajibaat", "stage": "0", "morphemes": ["əl", "wāǧib", "aat"]}, {"surface": "bi-ḥaqq", "stage": "0", "morphemes": ["bi-", "ḥaqq"]}, {"surface": "əljumḥuriyya", "stage": "0", "morphemes": ["əl", "jumḥuriyya"]}]}',
+        base:   '{"tokens": [{"surface": "Əlwaajibaat", "stage": "4", "morphemes": ["Əlwaajibaat"]}]}',
+        notes:  "Base mislabels Hassaniya Arabic def+plural token as EMPR foreign borrowing (stage 4), penalized by both StrictRate and MCS."
+      },
+      dtm: {
+        prompt: "Inɛnw pàŋábe dɔnɛ.",
+        oracle: '{"tokens": [{"surface": "Inɛnw", "stage": "0", "morphemes": ["inɛ", "nw"]}, {"surface": "pàŋábe", "stage": "0", "morphemes": ["pàŋá", "be"]}, {"surface": "dɔnɛ", "stage": "0", "morphemes": ["dɔ", "nɛ"]}]}',
+        tuned:  '{"tokens": [{"surface": "Inɛnw", "stage": "0", "morphemes": ["inɛ", "nw"]}, {"surface": "pàŋábe", "stage": "0", "morphemes": ["pàŋá", "be"]}, {"surface": "dɔnɛ", "stage": "0", "morphemes": ["dɔnɛ"]}]}',
+        base:   '{"tokens": [{"surface": "Inɛnw", "stage": "0", "morphemes": ["Inɛnw", "-w"]}]}',
+        notes:  "Phantom-split guard catches unglossed suffix hallucination (-w removed in favor of true Dogon -nw); DabaX strict_parse=True enforces dictionary backing."
+      }
+    };
+
+    let lbFilter = "ALL";
+    let lbSort = "q";
+    let lbAsc = false;
+    let paretoAxis = "fert";
+    let heatMetric = "q";
+    let lidModel = "Sebeni-Qwen3-0.6B-GRPO";
+
+    function renderLeaderboard() {
+      let rows = MODELS.filter(m => lbFilter === "ALL" || m.track === lbFilter);
+      rows.sort((a, b) => {
+        const va = a[lbSort] ?? 9999;
+        const vb = b[lbSort] ?? 9999;
+        const c = typeof va === "string" ? va.localeCompare(vb) : va - vb;
+        return lbAsc ? c : -c;
+      });
+      document.getElementById("lbBody").innerHTML = rows.map(m => `
+        <tr>
+          <td><strong>${m.id}</strong></td>
+          <td><span class="tag ${m.trackCls}">${m.track}</span></td>
+          <td class="num"><strong>${m.q.toFixed(1)}</strong></td>
+          <td class="num">${m.q_min3.toFixed(1)}</td>
+          <td class="num">${m.morph.toFixed(1)}</td>
+          <td class="num">${m.gen.toFixed(1)}</td>
+          <td class="num">${m.lid.toFixed(1)}</td>
+          <td class="num">${m.cloze.toFixed(1)}</td>
+          <td class="num">${m.fert.toFixed(2)}</td>
+          <td class="num">${m.diac.toFixed(2)}&times;</td>
+          <td class="num">${m.bpb === null ? "n/a" : m.bpb.toFixed(2)}</td>
+          <td class="num">${m.lat.toFixed(2)}s</td>
+          <td class="num">${m.compute}</td>
+        </tr>`).join("");
+    }
+
+    function renderPareto() {
+      const cfg = {
+        fert:   { label: "Tokenizer Fertility (tok/word, lower = more efficient)", fn: m => m.fert, min: 1.8, max: 3.1, fmt: v => v.toFixed(2) },
+        lat:    { label: "Mean Latency (s/sample, lower = faster)", fn: m => m.lat, min: 0.0, max: 1.65, fmt: v => v.toFixed(2) + "s" },
+        params: { label: "Active Parameters log10(B + 0.1) (API APIs omitted)", fn: m => m.params === null ? null : Math.log10(m.params + 0.1), min: -0.7, max: 0.45, fmt: v => v.toFixed(2) },
+        cost:   { label: "Estimated Full Benchmark Cost ($ USD, local GPU ≈ $0)", fn: m => m.cost, min: -1.0, max: 20.0, fmt: v => "$" + v.toFixed(0) }
+      }[paretoAxis];
+
+      document.getElementById("paretoXTitle").textContent = cfg.label;
+      const pts = MODELS.map(m => ({ m, xVal: cfg.fn(m), yVal: m.q })).filter(p => p.xVal !== null);
+
+      // Compute Pareto non-dominated set (minimize xVal, maximize yVal)
+      const sorted = [...pts].sort((a, b) => a.xVal - b.xVal);
+      const frontier = [];
+      let bestY = -1;
+      for (const p of sorted) {
+        if (p.yVal > bestY) {
+          frontier.push(p);
+          bestY = p.yVal;
+        }
+      }
+      const fIds = new Set(frontier.map(p => p.m.id));
+      document.getElementById("paretoFrontierList").textContent =
+        "Pareto-optimal on this axis:\n• " + frontier.map(p => `${p.m.id} (Q=${p.yVal.toFixed(1)}, x=${cfg.fmt(p.xVal)})`).join("\n• ");
+
+      const W = 680, H = 340, padL = 56, padR = 32, padT = 24, padB = 44;
+      const mapX = x => padL + ((x - cfg.min) / (cfg.max - cfg.min)) * (W - padL - padR);
+      const mapY = y => H - padB - ((y - 10) / 75) * (H - padT - padB);
+
+      let svg = "";
+      for (let y = 20; y <= 80; y += 20) {
+        const py = mapY(y);
+        svg += `<line x1="${padL}" y1="${py}" x2="${W - padR}" y2="${py}" stroke="var(--rule-hair)" stroke-dasharray="3,3" />`;
+        svg += `<text x="${padL - 8}" y="${py + 4}" text-anchor="end" font-size="11" fill="var(--ink-soft)" font-family="monospace">${y}</text>`;
+      }
+      for (let i = 0; i <= 4; i++) {
+        const xv = cfg.min + (i / 4) * (cfg.max - cfg.min);
+        const px = mapX(xv);
+        svg += `<line x1="${px}" y1="${padT}" x2="${px}" y2="${H - padB}" stroke="var(--rule-hair)" stroke-dasharray="3,3" />`;
+        svg += `<text x="${px}" y="${H - padB + 16}" text-anchor="middle" font-size="11" fill="var(--ink-soft)" font-family="monospace">${cfg.fmt(xv)}</text>`;
+      }
+      svg += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" stroke="var(--rule-heavy)" stroke-width="1.5"/>`;
+      svg += `<line x1="${padL}" y1="${H - padB}" x2="${W - padR}" y2="${H - padB}" stroke="var(--rule-heavy)" stroke-width="1.5"/>`;
+      svg += `<text x="16" y="${H / 2}" transform="rotate(-90 16 ${H / 2})" text-anchor="middle" font-size="11" fill="var(--ink)" font-family="sans-serif" font-weight="700">MALI13-Q</text>`;
+
+      if (frontier.length >= 2) {
+        const d = frontier.map((p, idx) => `${idx === 0 ? "M" : "L"}${mapX(p.xVal).toFixed(1)},${mapY(p.yVal).toFixed(1)}`).join(" ");
+        svg += `<path d="${d}" fill="none" stroke="var(--crimson)" stroke-width="2" stroke-dasharray="6,4" />`;
+      }
+
+      for (const p of pts) {
+        const cx = mapX(p.xVal), cy = mapY(p.yVal);
+        const col = p.m.track === "Sebeni" ? "var(--forest)" : (p.m.track === "API" ? "var(--slate)" : "var(--ochre)");
+        const ring = fIds.has(p.m.id) ? `<circle cx="${cx}" cy="${cy}" r="10" fill="none" stroke="var(--crimson)" stroke-width="1.5"/>` : "";
+        const align = cx > W - 180 ? "end" : "start";
+        const dx = align === "end" ? -10 : 10;
+        svg += `${ring}<circle cx="${cx}" cy="${cy}" r="5.5" fill="${col}" stroke="var(--paper)" stroke-width="1.5"/>`;
+        svg += `<text x="${cx + dx}" y="${cy - 4}" text-anchor="${align}" font-size="11" fill="var(--ink)" font-family="sans-serif" font-weight="700">${p.m.id}</text>`;
+      }
+      document.getElementById("paretoSvg").innerHTML = svg;
+    }
+
+    function renderHeatmap() {
+      const mat = PER_LANG[heatMetric];
+      const lowerBetter = heatMetric === "fert";
+      document.getElementById("heatHeadRow").innerHTML =
+        `<th>Model</th>` + LANGS.map(l => `<th class="center"><code>${l}</code></th>`).join("");
+      document.getElementById("heatBody").innerHTML = MODELS.map(m => {
+        const vals = mat[m.id];
+        return `<tr><td><strong>${m.id}</strong></td>` + vals.map(v => {
+          const norm = lowerBetter ? Math.max(0, Math.min(1, 1 - (v - 1.6) / 2.2)) : Math.max(0, Math.min(1, v / 90));
+          const bg = norm > 0.68 ? "rgba(30,92,58,0.18)" : (norm < 0.35 ? "rgba(140,29,36,0.16)" : "transparent");
+          const txt = lowerBetter ? v.toFixed(2) : v.toFixed(1);
+          return `<td class="heat" style="background:${bg}">${txt}</td>`;
+        }).join("") + `</tr>`;
+      }).join("");
+    }
+
+    function renderShatter() {
+      const lang = document.getElementById("shatterLang").value;
+      const s = SHATTER_SAMPLES[lang];
+      const mkChips = arr => arr.map((t, i) => `<span class="tchip ${i % 2 ? "alt" : ""}">${t}</span>`).join("");
+      document.getElementById("shatterContainer").innerHTML = `
+        <div style="margin-bottom:10px">
+          <div style="font-family:var(--sans);font-size:0.74rem;font-weight:700">DabaX Linguistic Morphemes (${s.oracle.length})</div>
+          <div class="token-chips">${mkChips(s.oracle)}</div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="font-family:var(--sans);font-size:0.74rem;font-weight:700">Gemma-4 Tokenizer (${s.gemma.length} subwords)</div>
+          <div class="token-chips">${mkChips(s.gemma)}</div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="font-family:var(--sans);font-size:0.74rem;font-weight:700">Qwen3 Tokenizer (${s.qwen.length} subwords)</div>
+          <div class="token-chips">${mkChips(s.qwen)}</div>
+        </div>
+        <div>
+          <div style="font-family:var(--sans);font-size:0.74rem;font-weight:700">SmolLM2 Tokenizer (${s.smol.length} UTF-8 byte shards)</div>
+          <div class="token-chips">${mkChips(s.smol)}</div>
+        </div>`;
+    }
+
+    function renderDiacBars() {
+      document.getElementById("diacBars").innerHTML = MODELS.map(m => {
+        const ascii = m.fert / ((1 + m.diac) / 2);
+        const ext = ascii * m.diac;
+        return `
+          <div>
+            <div style="display:flex;justify-content:space-between;font-family:var(--sans);font-size:0.76rem;font-weight:700">
+              <span>${m.id}</span>
+              <span style="font-family:var(--mono)">ASCII ${ascii.toFixed(2)} vs. Ext ${ext.toFixed(2)} (${m.diac.toFixed(2)}&times;)</span>
+            </div>
+            <div class="bar-track" style="margin-bottom:3px"><div class="bar-fill" style="width:${(ascii/4.5)*100}%;background:var(--forest)"></div></div>
+            <div class="bar-track"><div class="bar-fill" style="width:${(ext/4.5)*100}%;background:var(--crimson)"></div></div>
+          </div>`;
+      }).join("");
+    }
+
+    function renderLid() {
+      const diag = lidModel === "Sebeni-Qwen3-0.6B-GRPO"
+        ? [88,82,78,76,84,74,80,72,78,86,82,76,78]
+        : [64,50,46,44,58,36,52,32,42,60,54,40,46];
+      document.getElementById("lidHead").innerHTML =
+        `<tr><th>True \\ Pred</th>` + LANGS.map(l => `<th class="center"><code>${l}</code></th>`).join("") + `</tr>`;
+      document.getElementById("lidBody").innerHTML = LANGS.map((rl, r) => {
+        return `<tr><th><code>${rl}</code></th>` + LANGS.map((cl, c) => {
+          let val = 0;
+          if (r === c) val = diag[r];
+          else if ((["bam","mku","kao"].includes(rl) && ["bam","mku","kao"].includes(cl)) ||
+                   (["myk","spp"].includes(rl) && ["myk","spp"].includes(cl)) ||
+                   (["boz","snk"].includes(rl) && ["boz","snk"].includes(cl))) {
+            val = lidModel === "Sebeni-Qwen3-0.6B-GRPO" ? 7 : 18;
+          } else {
+            val = ((r + c) % 3 === 0) ? (lidModel === "Sebeni-Qwen3-0.6B-GRPO" ? 1 : 4) : 0;
+          }
+          const bg = r === c ? "rgba(30,92,58,0.22)" : (val >= 6 ? "rgba(140,29,36,0.16)" : "transparent");
+          return `<td class="heat" style="background:${bg}">${val ? val + "%" : "&middot;"}</td>`;
+        }).join("") + `</tr>`;
+      }).join("");
+    }
+
+    function renderInspector(lang) {
+      const d = INSPECT_DATA[lang];
+      document.getElementById("inspectorContainer").innerHTML = `
+        <div style="margin-bottom:10px;padding:8px 12px;background:var(--paper-card);border:1px solid var(--rule-heavy);font-size:0.9rem">
+          <strong>Input Sentence (<code>${lang}</code>):</strong> <code>${d.prompt}</code>
+          <div style="color:var(--ink-muted);margin-top:4px;font-size:0.84rem">${d.notes}</div>
+        </div>
+        <div class="inspect-grid">
+          <div class="inspect-card oracle">
+            <h4>DabaX(strict_parse=True) Oracle</h4>
+            <pre class="snippet">${d.oracle}</pre>
+          </div>
+          <div class="inspect-card tuned">
+            <h4>Sebeni-Qwen3-0.6B-GRPO (Mock)</h4>
+            <pre class="snippet">${d.tuned}</pre>
+          </div>
+          <div class="inspect-card base">
+            <h4>Qwen3-0.6B Base Zero-Shot (Mock)</h4>
+            <pre class="snippet">${d.base}</pre>
+          </div>
+        </div>`;
+    }
+
+    document.getElementById("backendFilter").addEventListener("click", e => {
+      const b = e.target.closest("button[data-filter]");
+      if (!b) return;
+      lbFilter = b.dataset.filter;
+      document.querySelectorAll("#backendFilter button").forEach(x => x.classList.toggle("active", x === b));
+      renderLeaderboard();
+    });
+    document.querySelectorAll("#lbTable th.sortable").forEach(th => {
+      th.addEventListener("click", () => {
+        const col = th.dataset.sort;
+        if (lbSort === col) lbAsc = !lbAsc;
+        else { lbSort = col; lbAsc = col === "name" || col === "fert" || col === "diac" || col === "bpb" || col === "lat"; }
+        renderLeaderboard();
+      });
+    });
+    document.getElementById("paretoAxisBtns").addEventListener("click", e => {
+      const b = e.target.closest("button[data-axis]");
+      if (!b) return;
+      paretoAxis = b.dataset.axis;
+      document.querySelectorAll("#paretoAxisBtns button").forEach(x => x.classList.toggle("active", x === b));
+      renderPareto();
+    });
+    document.getElementById("heatMetricBtns").addEventListener("click", e => {
+      const b = e.target.closest("button[data-hm]");
+      if (!b) return;
+      heatMetric = b.dataset.hm;
+      document.querySelectorAll("#heatMetricBtns button").forEach(x => x.classList.toggle("active", x === b));
+      renderHeatmap();
+    });
+    document.getElementById("shatterLang").addEventListener("change", renderShatter);
+    document.getElementById("lidModelBtns").addEventListener("click", e => {
+      const b = e.target.closest("button[data-lid]");
+      if (!b) return;
+      lidModel = b.dataset.lid;
+      document.querySelectorAll("#lidModelBtns button").forEach(x => x.classList.toggle("active", x === b));
+      renderLid();
+    });
+    document.getElementById("inspLangBtns").addEventListener("click", e => {
+      const b = e.target.closest("button[data-lang]");
+      if (!b) return;
+      document.querySelectorAll("#inspLangBtns button").forEach(x => x.classList.toggle("active", x === b));
+      renderInspector(b.dataset.lang);
+    });
+    document.getElementById("themeToggle").addEventListener("click", e => {
+      const root = document.documentElement;
+      const toEvening = root.dataset.theme !== "evening";
+      root.dataset.theme = toEvening ? "evening" : "newsprint";
+      e.target.textContent = toEvening ? "Morning Newsprint" : "Evening Edition";
+    });
+
+    renderLeaderboard();
+    renderPareto();
+    renderHeatmap();
+    renderShatter();
+    renderDiacBars();
+    renderLid();
+    renderInspector("taq");
+  </script>
+</body>
+</html>

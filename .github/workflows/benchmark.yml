@@ -1,0 +1,69 @@
+name: Refresh Live MALI13 Leaderboard
+
+on:
+  workflow_dispatch:
+    inputs:
+      models:
+        description: "Model selector (all-api, adaption, nim, vertex, or comma-separated slugs)"
+        required: false
+        default: "all-api"
+      tasks:
+        description: "Tasks to run"
+        required: false
+        default: "all"
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: write
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install transformers sentencepiece google-auth
+          if [ -n "${{ secrets.SEBENI_REPO_URL }}" ]; then
+            pip install "${{ secrets.SEBENI_REPO_URL }}"
+          fi
+
+      - name: Verify frozen dev-mini manifest
+        run: python -m bench.cli build --verify-only
+
+      - name: Run API benchmarks (if sebi/beni is installed)
+        env:
+          ADOPTION_KEY: ${{ secrets.ADOPTION_KEY }}
+          NVIDIA_KEY: ${{ secrets.NVIDIA_KEY }}
+          HF_KEY: ${{ secrets.HF_KEY }}
+          VERTEX_USE_SERVICE_ACCOUNT: "1"
+        run: |
+          if python -c "import beni" 2>/dev/null; then
+            python -m bench.cli run --models "${{ github.event.inputs.models || 'all-api' }}" --tasks "${{ github.event.inputs.tasks || 'all' }}" --resume
+            python -m bench.cli score
+            python -m bench.cli publish --out-dir site/data
+          else
+            echo "beni package not available in CI (set SEBENI_REPO_URL secret); skipping scoring."
+          fi
+
+      - name: Commit updated leaderboard JSON as s7d11
+        run: |
+          git config user.name "s7d11"
+          git config user.email "sebastcode@outlook.com"
+          if ! git diff --quiet site/data/; then
+            git add site/data/
+            git commit -m "chore(bench): refresh live MALI13 leaderboard standings"
+            git push
+          else
+            echo "No leaderboard changes to commit."
+          fi

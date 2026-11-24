@@ -1,0 +1,137 @@
+{
+  "taq": {
+    "lang": "taq",
+    "lang_name": "Tamasheq (Tuareg)",
+    "sample_id": "taq-morph-0001",
+    "prompt": "ĂLBAB II : ĂLXORIYYĂT N-ĂDDĂWLĂT   9",
+    "oracle": "{\n  \"lang\": \"taq\",\n  \"tokens\": [\n    {\n      \"surface\": \"ĂLBAB\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"ălbab\"\n      ]\n    },\n    {\n      \"surface\": \"II\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"ii\"\n      ]\n    },\n    {\n      \"surface\": \"ĂLXORIYYĂT\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"ălxoriyyăt\"\n      ]\n    },\n    {\n      \"surface\": \"N-ĂDDĂWLĂT\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"n-\",\n        \"ăddăwlăt\"\n      ]\n    },\n    {\n      \"surface\": \"9\",\n      \"stage\": \"tokenizer\",\n      \"morphemes\": [\n        \"9\"\n      ]\n    }\n  ]\n}",
+    "models": [
+      {
+        "id": "Sebeni-Gemma-4-E2B-GRPO-50",
+        "track": "Sebeni",
+        "trackCls": "sebeni",
+        "output": "{\n  \"text\": \"ĂLBAB II : ĂLXORIYYĂT N-ĂDDĂWLĂT   9\",\n  \"lang\": \"taq\",\n  \"tokens\": [\n    {\n      \"surface\": \"ĂLBAB\",\n      \"stage\": 0,\n      \"analyses\": [\n        {\n          \"form\": \"ĂLBAB\",\n          \"ps\": [\n            \"n\",\n            \"n\"\n          ],\n          \"gloss\": \"n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n.n"
+      },
+      {
+        "id": "Gemini 3.1 Pro",
+        "track": "Google",
+        "trackCls": "api",
+        "output": "{\n  \"text\": \"ĂLBAB II : ĂLXORIYYĂT N-ĂDDĂWLĂT   9\",\n  \"lang\": \"taq\",\n  \"tokens\": [\n    {\n      \"surface\": \"ĂLBAB\",\n      \"stage\": \"tokenizer\",\n      \"analyses\": [\n        {\n          \"form\": \"ălbab\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"chapter\",\n          \"morphemes\": [\n            {\n              \"form\": \"ălbab\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"chapter\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"II\",\n      \"stage\": \"tokenizer\",\n      \"analyses\": [\n        {\n          \"form\": \"II\",\n          \"ps\": [\"num\"],\n          \"gloss\": \"two\",\n          \"morphemes\": [\n            {\n              \"form\": \"II\",\n              \"ps\": [\"num\"],\n              \"gloss\": \"two\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \":\",\n      \"stage\": \"tokenizer\",\n      \"analyses\": [\n        {\n          \"form\": \":\",\n          \"ps\": [\"p\n... [truncated]"
+      },
+      {
+        "id": "glm-5.3-flash",
+        "track": "Open Frontier",
+        "trackCls": "slm",
+        "output": "{\n  \"text\": \"ĂLBAB II : ĂLXORIYYĂT N-ĂDDĂWLĂT   9\",\n  \"lang\": \"taq\",\n  \"tokens\": [\n    {\n      \"surface\": \"ĂLBAB\",\n      \"stage\": \"tokenizer\",\n      \"analyses\": [\n        {\n          \"form\": \"ălbab\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"chapter (from Arabic al-bāb)\",\n          \"morphemes\": [\n            {\n              \"form\": \"ăl-\",\n              \"ps\": [\"det\"],\n              \"gloss\": \"Arabic definite article\",\n              \"morphemes\": []\n            },\n            {\n              \"form\": \"bab\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"chapter, door\",\n              \"morphemes\": []\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"II\",\n      \"stage\": \"tokenizer\",\n      \"analyses\": [\n        {\n          \"form\": \"II\",\n          \"ps\": [\"num\"],\n          \"gloss\": \"two (Roman numeral)\",\n          \"morphemes\": [\n            {\n              \"form\": \"II\"\n... [truncated]"
+      }
+    ]
+  },
+  "ful": {
+    "lang": "ful",
+    "lang_name": "Fula (Fulfulde)",
+    "sample_id": "ful-morph-0001",
+    "prompt": "Nden, neɗɗo fuu nodduɗo innde Joomiraaɗo hisinte.>>",
+    "oracle": "{\n  \"lang\": \"ful\",\n  \"tokens\": [\n    {\n      \"surface\": \"Nden\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"nd\",\n        \"en\"\n      ]\n    },\n    {\n      \"surface\": \"neɗɗo\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"neɗ\",\n        \"ɗo\"\n      ]\n    },\n    {\n      \"surface\": \"fuu\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"fú\"\n      ]\n    },\n    {\n      \"surface\": \"nodduɗo\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"noddu\",\n        \"ɗo\"\n      ]\n    },\n    {\n      \"surface\": \"innde\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"in\",\n        \"nde\"\n      ]\n    },\n    {\n      \"surface\": \"Joomiraaɗo\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"joomiraa\",\n        \"ɗo\"\n      ]\n    },\n    {\n      \"surface\": \"hisinte\",\n      \"stage\": \"3\",\n      \"morphemes\": [\n        \"hisi\",\n        \"ntè\"\n      ]\n    }\n  ]\n}",
+    "models": [
+      {
+        "id": "Sebeni-Gemma-4-E2B-GRPO-50",
+        "track": "Sebeni",
+        "trackCls": "sebeni",
+        "output": "{\n  \"text\": \"Nden, neɗɗo fuu nodduɗo innde Joomiraaɗo hisinte.\",\n  \"lang\": \"ful\",\n  \"tokens\": [\n    {\n      \"surface\": \"Nden\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"Nden\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"noun\",\n          \"morphemes\": [\n            {\n              \"form\": \"Nden\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"noun\",\n              \"morphemes\": []\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"neɗɗo\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"neɗɗo\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"noun\",\n          \"morphemes\": [\n            {\n              \"form\": \"neɗɗo\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"noun\",\n              \"morphemes\": []\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"fuu\",\n      \"stage\": 1,\n      \"analyses\": [\n       \n... [truncated]"
+      },
+      {
+        "id": "Gemini 3.1 Pro",
+        "track": "Google",
+        "trackCls": "api",
+        "output": "{\n  \"text\": \"Nden, neɗɗo fuu nodduɗo innde Joomiraaɗo hisinte.\",\n  \"lang\": \"ful\",\n  \"tokens\": [\n    {\n      \"surface\": \"Nden\",\n      \"stage\": \"tokenizer\",\n      \"analyses\": [\n        {\n          \"form\": \"nden\",\n          \"ps\": [\"adv\"],\n          \"gloss\": \"then\",\n          \"morphemes\": [\n            {\n              \"form\": \"nden\",\n              \"ps\": [\"adv\"],\n              \"gloss\": \"then\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \",\",\n      \"stage\": \"tokenizer\",\n      \"analyses\": [\n        {\n          \"form\": \",\",\n          \"ps\": [\"punct\"],\n          \"gloss\": \",\",\n          \"morphemes\": [\n            {\n              \"form\": \",\",\n              \"ps\": [\"punct\"],\n              \"gloss\": \",\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"neɗɗo\",\n      \"stage\": \"tokenizer\",\n      \"analyses\": [\n        {\n          \"form\": \"neɗɗo\",\n      \n... [truncated]"
+      },
+      {
+        "id": "glm-5.3-flash",
+        "track": "Open Frontier",
+        "trackCls": "slm",
+        "output": "{\n  \"text\": \"Nden, neɗɗo fuu nodduɗo innde Joomiraaɗo hisinte.>>\",\n  \"lang\": \"ful\",\n  \"tokens\": [\n    {\n      \"surface\": \"Nden\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"nden\",\n          \"ps\": [\"conj\", \"interj\"],\n          \"gloss\": \"then, so, well\",\n          \"morphemes\": [\n            {\n              \"form\": \"nden\",\n              \"ps\": [\"conj\"],\n              \"gloss\": \"then/so\",\n              \"morphemes\": []\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"neɗɗo\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"neɗɗo\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"person, human being\",\n          \"morphemes\": [\n            {\n              \"form\": \"neɗɗ-\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"person (stem)\",\n              \"morphemes\": []\n            },\n            {\n              \"form\": \"-o\",\n              \n... [truncated]"
+      }
+    ]
+  },
+  "mey": {
+    "lang": "mey",
+    "lang_name": "Hassaniya Arabic",
+    "sample_id": "mey-morph-0001",
+    "prompt": "ougiya /u : gi: ya/",
+    "oracle": "{\n  \"lang\": \"mey\",\n  \"tokens\": [\n    {\n      \"surface\": \"ougiya\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"oug\",\n        \"iya\"\n      ]\n    },\n    {\n      \"surface\": \"u\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"ù\"\n      ]\n    },\n    {\n      \"surface\": \"gi\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"gi\"\n      ]\n    },\n    {\n      \"surface\": \"ya\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"ya\"\n      ]\n    }\n  ]\n}",
+    "models": [
+      {
+        "id": "Sebeni-Gemma-4-E2B-GRPO-50",
+        "track": "Sebeni",
+        "trackCls": "sebeni",
+        "output": "{\n  \"text\": \"ougiya /u : gi: ya/\",\n  \"lang\": \"mey\",\n  \"tokens\": [\n    {\n      \"surface\": \"ougiya\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"ougiya\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"noun\",\n          \"morphemes\": [\n            {\n              \"form\": \"ou\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"noun\",\n              \"morphemes\": []\n            },\n            {\n              \"form\": \"gi\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"noun\",\n              \"morphemes\": []\n            },\n            {\n              \"form\": \"ya\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"noun\",\n              \"morphemes\": []\n            }\n          ]\n        }\n      ]\n    }\n  ]\n}"
+      },
+      {
+        "id": "Gemini 3.1 Pro",
+        "track": "Google",
+        "trackCls": "api",
+        "output": "{\n  \"text\": \"ougiya /u : gi: ya/\",\n  \"lang\": \"mey\",\n  \"tokens\": [\n    {\n      \"surface\": \"ougiya\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"ougiya\",\n          \"ps\": [\n            \"n\"\n          ],\n          \"gloss\": \"Ouguiya (currency)\",\n          \"morphemes\": [\n            {\n              \"form\": \"ougiya\",\n              \"ps\": [\n                \"n\"\n              ],\n              \"gloss\": \"Ouguiya\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"/\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"/\",\n          \"ps\": [\n            \"punct\"\n          ],\n          \"gloss\": null,\n          \"morphemes\": []\n        }\n      ]\n    },\n    {\n      \"surface\": \"u\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"u\",\n          \"ps\": [\n            \"x\"\n          ],\n          \"gloss\": \"phonetic\",\n          \"morphemes\n... [truncated]"
+      },
+      {
+        "id": "glm-5.3-flash",
+        "track": "Open Frontier",
+        "trackCls": "slm",
+        "output": "{\n  \"text\": \"ougiya /u : gi: ya/\",\n  \"lang\": \"mey\",\n  \"tokens\": [\n    {\n      \"surface\": \"ougiya\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"uqiya\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"ouguiya (Mauritanian currency unit)\",\n          \"morphemes\": [\n            {\n              \"form\": \"u-\",\n              \"ps\": [\"art\"],\n              \"gloss\": \"definite/indefinite article (vocalic onset)\",\n              \"morphemes\": []\n            },\n            {\n              \"form\": \"giy\",\n              \"ps\": [\"n:stem\"],\n              \"gloss\": \"root: currency unit (borrowed, cf. Arabic uqiyya 'ounce')\",\n              \"morphemes\": [\n                {\n                  \"form\": \"g\",\n                  \"ps\": [\"rad\"],\n                  \"gloss\": \"root consonant 1\",\n                  \"morphemes\": []\n                },\n                {\n                  \"form\": \"y\",\n               \n... [truncated]"
+      }
+    ]
+  },
+  "dtm": {
+    "lang": "dtm",
+    "lang_name": "Dogon",
+    "sample_id": "dtm-morph-0001",
+    "prompt": "Depitebe ginrun kubaŋa inɛ turu obojɛ",
+    "oracle": "{\n  \"lang\": \"dtm\",\n  \"tokens\": [\n    {\n      \"surface\": \"Depitebe\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"depite\",\n        \"be\"\n      ]\n    },\n    {\n      \"surface\": \"ginrun\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"ginrun\"\n      ]\n    },\n    {\n      \"surface\": \"kubaŋa\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"kubaŋa\"\n      ]\n    },\n    {\n      \"surface\": \"inɛ\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"inɛ\"\n      ]\n    },\n    {\n      \"surface\": \"turu\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"tùru\"\n      ]\n    },\n    {\n      \"surface\": \"obojɛ\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"obo\",\n        \"jɛ\"\n      ]\n    }\n  ]\n}",
+    "models": [
+      {
+        "id": "Sebeni-Gemma-4-E2B-GRPO-50",
+        "track": "Sebeni",
+        "trackCls": "sebeni",
+        "output": "{\n  \"text\": \"Depitebe ginrun kubaŋa inɛ turu obojɛ\",\n  \"lang\": \"dtm\",\n  \"tokens\": [\n    {\n      \"surface\": \"depitebe\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"depitebe\",\n          \"ps\": [\"n\", \"n\"],\n          \"gloss\": \"noun\",\n          \"morphemes\": [\n            {\n              \"form\": \"dep\",\n              \"ps\": [\"n\", \"n\"],\n              \"gloss\": \"noun\",\n              \"morphemes\": []\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"ginrun\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"ginrun\",\n          \"ps\": [\"v\", \"v\"],\n          \"gloss\": \"verb\",\n          \"morphemes\": [\n            {\n              \"form\": \"gin\",\n              \"ps\": [\"v\", \"v\"],\n              \"gloss\": \"verb\",\n              \"morphemes\": []\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"kubaŋa\",\n      \"stage\": 1,\n      \"an\n... [truncated]"
+      },
+      {
+        "id": "Gemini 3.1 Pro",
+        "track": "Google",
+        "trackCls": "api",
+        "output": "{\n  \"text\": \"Depitebe ginrun kubaŋa inɛ turu obojɛ\",\n  \"lang\": \"dtm\",\n  \"tokens\": [\n    {\n      \"surface\": \"Depitebe\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"Depitebe\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"deputies\",\n          \"morphemes\": [\n            {\n              \"form\": \"Depite\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"deputy\"\n            },\n            {\n              \"form\": \"be\",\n              \"ps\": [\"pl\"],\n              \"gloss\": \"plural\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"ginrun\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"ginrun\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"house\",\n          \"morphemes\": [\n            {\n              \"form\": \"ginrun\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"house\"\n            }\n          ]\n        }\n      ]\n    },\n    {\n     \n... [truncated]"
+      },
+      {
+        "id": "glm-5.3-flash",
+        "track": "Open Frontier",
+        "trackCls": "slm",
+        "output": "{\n  \"text\": \"Depitebe ginrun kubaŋa inɛ turu obojɛ\",\n  \"lang\": \"dtm\",\n  \"tokens\": [\n    {\n      \"surface\": \"Depitebe\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"depitebe\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"chief (French 'député' loan + plural)\",\n          \"morphemes\": [\n            {\"form\": \"depite\", \"ps\": [\"n\"], \"gloss\": \"deputy/chief\"},\n            {\"form\": \"be\", \"ps\": [\"sf\"], \"gloss\": \"PL\"}\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"ginrun\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"ginrun\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"meeting/gathering\",\n          \"morphemes\": [\n            {\"form\": \"gin\", \"ps\": [\"n\"], \"gloss\": \"assembly\"},\n            {\"form\": \"run\", \"ps\": [\"sf\"], \"gloss\": \"place/collective\"}\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"kubaŋa\",\n      \"stage\": 1,\n      \"analys\n... [truncated]"
+      }
+    ]
+  },
+  "bam": {
+    "lang": "bam",
+    "lang_name": "Bambara",
+    "sample_id": "bam-morph-0001",
+    "prompt": "an bɛ laban ka taa.",
+    "oracle": "{\n  \"lang\": \"bam\",\n  \"tokens\": [\n    {\n      \"surface\": \"an\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"án\"\n      ]\n    },\n    {\n      \"surface\": \"bɛ\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"bɛ\"\n      ]\n    },\n    {\n      \"surface\": \"laban\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"lá\",\n        \"bán\"\n      ]\n    },\n    {\n      \"surface\": \"ka\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"ka\"\n      ]\n    },\n    {\n      \"surface\": \"taa\",\n      \"stage\": \"0\",\n      \"morphemes\": [\n        \"tàa\"\n      ]\n    }\n  ]\n}",
+    "models": [
+      {
+        "id": "Sebeni-Gemma-4-E2B-GRPO-50",
+        "track": "Sebeni",
+        "trackCls": "sebeni",
+        "output": "{\n  \"text\": \"an bɛ laban ka taa\",\n  \"lang\": \"bam\",\n  \"tokens\": [\n    {\n      \"surface\": \"an\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"an\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"noun\",\n          \"morphemes\": [\n            {\n              \"form\": \"an\",\n              \"ps\": [\"n\"],\n              \"gloss\": \"noun\",\n              \"morphemes\": []\n            }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"bɛ\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"bɛ\",\n          \"ps\": [\"v\"],\n          \"gloss\": \"verb\",\n          \"morphemes\": []\n        }\n      ]\n    },\n    {\n      \"surface\": \"laban\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"laban\",\n          \"ps\": [\"n\"],\n          \"gloss\": \"noun\",\n          \"morphemes\": []\n        }\n      ]\n    },\n    {\n      \"surface\": \"ka\",\n      \"stage\": 1,\n      \"analyses\": [\n \n... [truncated]"
+      },
+      {
+        "id": "Gemini 3.1 Pro",
+        "track": "Google",
+        "trackCls": "api",
+        "output": "{\n  \"text\": \"an bɛ laban ka taa.\",\n  \"lang\": \"bam\",\n  \"tokens\": [\n    {\n      \"surface\": \"an\",\n      \"stage\": \"g.disamb\",\n      \"analyses\": [\n        {\n          \"form\": \"an\",\n          \"ps\": [\n            \"pers\"\n          ],\n          \"gloss\": \"1PL\"\n        }\n      ]\n    },\n    {\n      \"surface\": \"bɛ\",\n      \"stage\": \"g.disamb\",\n      \"analyses\": [\n        {\n          \"form\": \"bɛ\",\n          \"ps\": [\n            \"pm\"\n          ],\n          \"gloss\": \"IPFV.AFF\"\n        }\n      ]\n    },\n    {\n      \"surface\": \"laban\",\n      \"stage\": \"g.disamb\",\n      \"analyses\": [\n        {\n          \"form\": \"laban\",\n          \"ps\": [\n            \"v\"\n          ],\n          \"gloss\": \"end.up\",\n          \"morphemes\": [\n            {\n              \"form\": \"la\",\n              \"ps\": [\n                \"pref\"\n              ],\n              \"gloss\": \"CAUS\"\n            },\n            {\n              \"form\": \"ban\",\n  \n... [truncated]"
+      },
+      {
+        "id": "glm-5.3-flash",
+        "track": "Open Frontier",
+        "trackCls": "slm",
+        "output": "{\n  \"text\": \"an bɛ laban ka taa.\",\n  \"lang\": \"bam\",\n  \"tokens\": [\n    {\n      \"surface\": \"an\",\n      \"stage\": 1,\n      \"analyses\": [\n        {\n          \"form\": \"an\",\n          \"ps\": [\"pron\"],\n          \"gloss\": \"we (inclusive)\",\n          \"morphemes\": [\n            { \"form\": \"an\", \"ps\": [\"pron\"], \"gloss\": \"1PL inclusive\" }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"bɛ\",\n      \"stage\": 2,\n      \"analyses\": [\n        {\n          \"form\": \"bɛ\",\n          \"ps\": [\"aux\"],\n          \"gloss\": \"imperfective/habitual aspect marker\",\n          \"morphemes\": [\n            { \"form\": \"bɛ\", \"ps\": [\"aux\"], \"gloss\": \"IPFV\" }\n          ]\n        }\n      ]\n    },\n    {\n      \"surface\": \"laban\",\n      \"stage\": 3,\n      \"analyses\": [\n        {\n          \"form\": \"laban\",\n          \"ps\": [\"adv\"],\n          \"gloss\": \"finally, at the end\",\n          \"morphemes\": [\n            {\n              \"fo\n... [truncated]"
+      }
+    ]
+  }
+}

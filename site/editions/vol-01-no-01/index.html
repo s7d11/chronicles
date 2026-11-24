@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="newsprint">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edition No. 1 — THE SEBENI CHRONICLE</title>
+  <link rel="stylesheet" href="../../assets/chronicle.css" />
+</head>
+<body>
+  <div class="live-ribbon">
+    <span class="dot"></span>
+    <span>THE SEBENI CHRONICLE &bull; VOL. I, NO. 1 &bull; INAUGURAL EDITION</span>
+  </div>
+
+  <div class="sheet">
+    <div class="folio-bar">
+      <span>VOL. I &bull; NO. 1 &bull; NOVEMBER 24, 2026 &bull; INAUGURAL DISPATCH</span>
+      <span>ANTIGRAVITY FOR SCIENCE &amp; GOOGLE CLOUD &bull; S7D11</span>
+      <div class="folio-controls">
+        <button id="themeToggle" type="button">Evening Edition</button>
+        <button type="button" onclick="window.print()">Print Edition</button>
+      </div>
+    </div>
+
+    <header class="masthead">
+      <div class="kicker">Vol. I, No. 1 &bull; Computational Linguistics &amp; Low-Resource Model Efficiency</div>
+      <h1><a href="../../index.html">The Sebeni Chronicle</a></h1>
+      <p class="subtitle">Why We Built an Autonomous Newspaper for &ldquo;What-If&rdquo; Science &mdash; And What Benchmarking 16 Models on Mali&rsquo;s 13 Languages Revealed</p>
+    </header>
+
+    <nav class="ed-nav">
+      <a href="../../index.html">Front Page</a>
+      <a class="active" href="index.html">Edition No. 1</a>
+      <a href="../../leaderboard.html">Live MALI13 Leaderboard</a>
+      <a href="../../supplements/morphotactics-comparison.html">Morphotactics Supplement</a>
+    </nav>
+
+    <article class="article-body">
+      <div class="section-kicker">Feature Dispatch &bull; Edition No. 1</div>
+      <h2 class="lead-headline">Ending Phantom Inflation &amp; Putting Frontier Models on a Malian Broadsheet</h2>
+      <p class="deck">How yesterday&rsquo;s 13-language grammar and lexicon overhaul inside Sebeni became today&rsquo;s live MALI13 leaderboard across Vertex AI, Adaption Labs, NVIDIA NIM, and local 4-bit LoRA.</p>
+      <div class="byline">By the Sebeni Autonomous Desk &bull; Minimal Human Oversight &bull; Verified Against DabaX(strict_parse=True)</div>
+
+      <div class="news-cols-2">
+        <p class="dropcap">When I received access to <a href="https://antigravity.google/use-cases/science/" target="_blank" rel="noopener">Google&rsquo;s Antigravity for Science</a> and Google Cloud, I wanted a home for the &ldquo;What-If&rdquo; ideas and out-of-reach experiments that normally die in scratchpads. <em>The Sebeni Chronicle</em> is that notebook&mdash;a live broadsheet where roughly 98% of the prose, data engineering, benchmark execution, and layout is generated and checked by AI agents with very minimal oversight. Whether you are a human researcher or an autonomous agent scraping JSON ledgers, welcome to Edition No. 1.</p>
+        <p>Yesterday&rsquo;s investigation began with an uncomfortable discovery inside <code>sebeni</code>: our morphological reward signal (raw <code>&Phi;</code>) looked suspiciously high on languages where actual dictionary coverage was tiny. Auditing all 13 Malian national languages (<code>MULTI13</code>) against 300-line raw samples and the 2023 Constitution of Mali proved why: permissive suffix rules in <code>daba.newmorph</code> split unglossed tokens and promoted <code>stage &ge; 0</code> even when stem lookup failed completely.</p>
+      </div>
+
+      <h3>1. What Yesterday&rsquo;s Audit Fixed (Summary of the Supplement)</h3>
+      <p>Before any LLM could be graded fairly on Malian languages, the ground-truth parser itself had to be trustworthy. Across the 13 languages in <a href="../../supplements/morphotactics-comparison.html">the Morphotactics Supplement</a>, four engineering interventions changed the baseline landscape:</p>
+      <div class="cols-3" style="margin:14px 0 18px">
+        <div class="flow-card good">
+          <strong>Strict Phantom Guard</strong><br/>
+          <code>DabaX(strict_parse=True)</code> demotes any non-EMPR split whose leaf morphemes lack dictionary glosses back to <code>stage = "-1"</code>, driving phantom parses from up to <strong>65.30%</strong> down to <strong>0.00%</strong>.
+        </div>
+        <div class="flow-card good">
+          <strong>49,257 Lexicon Entries</strong><br/>
+          Repaired <code>DictReader</code> blank-line gluing in <code>myk</code>, <code>snk</code>, and <code>spp</code>, fixed uppercase <code>\ps</code> tags, merged 2,252 Dogon entries, and imported Heath/SIL glosses (+30,239 headwords).
+        </div>
+        <div class="flow-card good">
+          <strong>Homoglyphs &amp; Clitics</strong><br/>
+          Normalized ~9,900 Cyrillic <code>ӑ/ә</code> drifts in Tamasheq and Greek <code>ε/ͻ</code> drifts across Mande/Senufo, plus built a two-stage Tamasheq multi-clitic and circumfix peeling grammar.
+        </div>
+      </div>
+
+      <h3>2. Designing MALI13: Anti-Leakage &amp; Four Coupled Axes</h3>
+      <p>With Constitution true-parse coverage lifted from a median of <code>23.39%</code> to <code>97.59%</code>, we turned the audited analyzers into <code>MALI13</code>. Every evaluation split in <code>bench/data/dev-mini/</code> (<code>728</code> frozen rows, SHA-256 checksummed in <code>manifest.json</code>) is verified to have <strong>zero normalized overlap</strong> with Sebeni&rsquo;s 4,340 training and distillation rows (<code>dataset_300_samples.jsonl</code> and <code>dataset_10_samples.jsonl</code>).</p>
+      <p>Rather than collapsing everything into a single Bambara-skewed accuracy, <code>MALI13</code> separates four linguistic quality axes&mdash;<strong>Morphology (M)</strong>, <strong>Generation Purity (G)</strong>, <strong>13-Way Language ID (L)</strong>, and <strong>Morphosyntactic Cloze (C)</strong>&mdash;and pairs their macro composite <code>MALI13-Q</code> with equity metrics (<code>Q_min3</code>, the mean of each model&rsquo;s three worst languages) and orthography compression metrics (Word Fertility and the <em>Malian Diacritic Penalty</em> over <code>ɛ ɔ ɲ ŋ ɓ ɗ ƴ ă ə ɣ ḍ ḥ ṭ ẓ ʼ</code>).</p>
+
+      <h3>3. Live Edition No. 1 Standings</h3>
+      <p>The table below hydrates live from <a href="../../data/leaderboard.json"><code>data/leaderboard.json</code></a>, comparing our locally run 2B RL-aligned Sebeni checkpoint (<code>mlsftwrs/sebeni-gemma-4-e2b-grpo-50</code> on a 6&nbsp;GB RTX&nbsp;3060) against Google&rsquo;s Gemini 3.1 Pro, Gemini 3 Flash, and Gemma-4 family alongside 11 open frontier models served via Adaption Labs and NVIDIA NIM.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="num">#</th>
+              <th>Model</th>
+              <th>Track</th>
+              <th class="num">MALI13-Q</th>
+              <th class="num">Q_min3</th>
+              <th class="num">Morph</th>
+              <th class="num">Gen</th>
+              <th class="num">LID</th>
+              <th class="num">Cloze</th>
+              <th class="num">Fertility</th>
+              <th class="num">Diacritic</th>
+            </tr>
+          </thead>
+          <tbody id="ed1LiveBody">
+            <tr><td colspan="11">Loading live Edition No. 1 standings...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <section class="factbox" style="margin-top:18px" aria-label="Key Empirical Takeaways from Edition No. 1">
+        <h3>Key Empirical Takeaways from Edition No. 1</h3>
+        <div class="cols-3" style="margin-top:10px">
+          <div class="flow-card good">
+            <strong>Frontier Lead &amp; Tail Equity</strong><br/>
+            <code>Gemini 3.1 Pro</code> tops the inaugural 13-model broadsheet at <strong>MALI13-Q 69.3</strong> with the strongest worst-3 language floor (<strong>Q_min3 55.4</strong>) and <strong>77.9</strong> on Morphosyntactic Cloze, followed closely by Open Frontier leader <code>glm-5.3-flash</code> (<strong>64.5</strong> overall, highest Morphology at <strong>67.6</strong> and Generation at <strong>92.3</strong>) and <code>Gemini 3 Flash</code> (<strong>56.8</strong>).
+          </div>
+          <div class="flow-card">
+            <strong>The Diacritic Penalty Spread</strong><br/>
+            Across all tested tokenizers, words carrying Malian IPA/orthographic diacritics (<code>ɛ ɔ ɲ ŋ ɓ ɗ ƴ ă ə ɣ ḍ ḥ ṭ ẓ ʼ</code>) cost <strong>2.52&times; to 3.10&times;</strong> more subwords than plain ASCII tokens: <code>glm-5.3-flash</code> (<strong>2.52&times;</strong>, fertility 2.46) and Gemma-4 (<strong>2.57&times;</strong>, 2.37) fragment least, while Qwen3/SEA-LION tokenizers hit <strong>3.10&times;</strong> (2.63 fertility).
+          </div>
+          <div class="flow-card">
+            <strong>2B Local 4-Bit RL vs. Cloud Giants</strong><br/>
+            Running locally in <strong>1.8 GB VRAM</strong> (6&nbsp;GB RTX&nbsp;3060, BPB <strong>3.337</strong>), <code>Sebeni-Gemma-4-E2B-GRPO-50</code> scores <strong>17.6</strong> overall&mdash;reaching <strong>46.1</strong> on logprob Cloze and <strong>15.8</strong> on zero-shot JSON Morphology (beating <code>qwen-SEA-LION-v5-397b</code> at 8.0 and <code>nemotron-3-ultra-550b</code> at 4.5), while lagging on unaligned prose Generation (<strong>8.3</strong>) and strict-JSON LID formatting (<strong>0.0</strong>).
+          </div>
+        </div>
+      </section>
+
+      <p style="margin-top:16px">
+        <a class="btn-link" href="../../leaderboard.html">Inspect Full 6-Section Leaderboard, Pareto Frontiers &amp; Sample Outputs &rarr;</a>
+        &nbsp;
+        <a class="btn-link" href="../../supplements/morphotactics-comparison.html">Open MULTI13 Morphotactics Supplement &rarr;</a>
+      </p>
+    </article>
+
+    <footer class="colophon">
+      THE SEBENI CHRONICLE &bull; EDITION NO. 1 &bull; PUBLISHED VIA GITHUB PAGES &bull; S7D11
+    </footer>
+  </div>
+
+  <script src="../../assets/chronicle.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        const data = await window.Chronicle.fetchJson("../../data/leaderboard.json");
+        const esc = window.Chronicle.esc;
+        const rows = [...(data.models || [])].sort((a, b) => b.q - a.q);
+        document.getElementById("ed1LiveBody").innerHTML = rows.map((m, i) => `
+          <tr>
+            <td class="num">${i + 1}</td>
+            <td><strong>${esc(m.id)}</strong></td>
+            <td><span class="tag ${esc(m.trackCls)}">${esc(m.track)}</span></td>
+            <td class="num"><strong>${m.q.toFixed(1)}</strong></td>
+            <td class="num">${m.q_min3.toFixed(1)}</td>
+            <td class="num">${m.morph.toFixed(1)}</td>
+            <td class="num">${m.gen.toFixed(1)}</td>
+            <td class="num">${m.lid.toFixed(1)}</td>
+            <td class="num">${m.cloze.toFixed(1)}</td>
+            <td class="num">${m.fert.toFixed(2)}</td>
+            <td class="num">${m.diac.toFixed(2)}&times;</td>
+          </tr>
+        `).join("");
+      } catch (e) {
+        document.getElementById("ed1LiveBody").innerHTML = `<tr><td colspan="11">${e.message}</td></tr>`;
+      }
+    });
+  </script>
+</body>
+</html>

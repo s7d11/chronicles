@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="newsprint">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE SEBENI CHRONICLE — Live MALI13 Benchmark Leaderboard</title>
+  <link rel="stylesheet" href="assets/chronicle.css" />
+</head>
+<body>
+  <div class="live-ribbon">
+    <span class="dot"></span>
+    <span id="lbLiveBanner">LIVE MALI13 BENCHMARK &bull; LOADING TELEMETRY FROM DATA/LEADERBOARD.JSON...</span>
+  </div>
+
+  <div class="sheet">
+    <div class="folio-bar">
+      <span>VOL. I &bull; NO. 1 &bull; MALI13 LIVE MODEL EFFICIENCY LEADERBOARD</span>
+      <span>SCORED BY DABAX(STRICT_PARSE=TRUE) &bull; ANTI-LEAKAGE FROZEN DEV-MINI</span>
+      <div class="folio-controls">
+        <button id="themeToggle" type="button">Evening Edition</button>
+        <button type="button" onclick="window.print()">Print Edition</button>
+      </div>
+    </div>
+
+    <header class="masthead">
+      <div class="kicker">Sebeni Benchmark Series &bull; Live Multi-Model Standings</div>
+      <h1><a href="index.html">The Sebeni Chronicle</a></h1>
+      <p class="subtitle">MALI13 Live Leaderboard: Measuring Linguistic Fidelity, Cross-Language Equity, Tokenizer Fragmentation &amp; Compute Pareto Efficiency Across All 13 National Languages of Mali</p>
+    </header>
+
+    <nav class="ed-nav">
+      <a href="index.html">Front Page</a>
+      <a href="editions/vol-01-no-01/index.html">Edition No. 1</a>
+      <a class="active" href="leaderboard.html">Live Leaderboard</a>
+      <a href="#sec-pareto">Pareto Frontier</a>
+      <a href="#sec-equity">13-Language Equity</a>
+      <a href="#sec-tokenizer">Tokenizer &amp; Diacritics</a>
+      <a href="#sec-lid">LID Confusions</a>
+      <a href="#sec-inspector">Sample Inspector</a>
+      <a href="supplements/morphotactics-comparison.html">Morphotactics Supplement</a>
+    </nav>
+
+    <!-- SECTION I: LEADERBOARD -->
+    <section id="sec-leaderboard" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section I &bull; Live Model Standings (Click Any Header to Sort)</div>
+          <h2>MALI13 Overall Leaderboard &amp; Efficiency Ledger</h2>
+        </div>
+      </div>
+      <div id="pendingModelsNote" class="invariants-note" style="display:none;margin-bottom:12px;"></div>
+      <div class="toolbar">
+        <div class="btn-group" id="backendFilter">
+          <button class="pill active" data-filter="ALL">All Models</button>
+          <button class="pill" data-filter="Sebeni">Sebeni-Trained</button>
+          <button class="pill" data-filter="Google">Google (Vertex &amp; Gemma)</button>
+          <button class="pill" data-filter="Open Frontier">Open Frontier</button>
+        </div>
+        <span style="font-family:var(--sans);font-size:0.76rem;color:var(--ink-soft)">M = Morph &bull; G = Gen Purity &bull; L = 13-Way LID &bull; C = Cloze &bull; Q_min3 = Worst-3 Mean</span>
+      </div>
+      <div class="table-wrap">
+        <table id="lbTable">
+          <thead>
+            <tr>
+              <th class="num">#</th>
+              <th class="sortable" data-sort="id">Model</th>
+              <th>Track</th>
+              <th class="sortable num" data-sort="q">MALI13-Q</th>
+              <th class="sortable num" data-sort="q_min3">Q_min3</th>
+              <th class="sortable num" data-sort="morph">Morph (M)</th>
+              <th class="sortable num" data-sort="gen">Gen (G)</th>
+              <th class="sortable num" data-sort="lid">LID (L)</th>
+              <th class="sortable num" data-sort="cloze">Cloze (C)</th>
+              <th class="sortable num" data-sort="fert">Fertility</th>
+              <th class="sortable num" data-sort="diac">Diacritic Pen.</th>
+              <th class="sortable num" data-sort="bpb">BPB</th>
+              <th class="sortable num" data-sort="lat">Latency (s)</th>
+              <th class="num">Compute / Endpoint</th>
+            </tr>
+          </thead>
+          <tbody id="lbBody">
+            <tr><td colspan="14">Loading live leaderboard...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION II: PARETO FRONTIER -->
+    <section id="sec-pareto" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section II &bull; Multi-Objective Tradeoffs</div>
+          <h2>Efficiency Pareto Frontier: Quality vs. Resource Footprint</h2>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="btn-group" id="paretoAxisBtns">
+          <button class="pill active" data-axis="fert">X: Word Fertility (tok/w)</button>
+          <button class="pill" data-axis="lat">X: Mean Latency (s/sample)</button>
+          <button class="pill" data-axis="params">X: Active Params log10(B + 0.1)</button>
+          <button class="pill" data-axis="cost">X: Est. Run Cost ($ USD)</button>
+        </div>
+      </div>
+      <div class="pareto-grid">
+        <div class="figure-frame" style="margin-bottom:0">
+          <div class="fig-caption">
+            <span><strong>FIG. 1</strong> &mdash; <code>MALI13-Q</code> vs. <span id="paretoXTitle">Word Fertility</span> (Top-Left = Pareto Optimal)</span>
+            <span>Green: Sebeni &bull; Slate: Google &bull; Amber: Open Frontier</span>
+          </div>
+          <svg id="paretoSvg" class="pareto-svg" viewBox="0 0 720 370" role="img" aria-label="Pareto Frontier Chart"></svg>
+        </div>
+        <div class="factbox" style="border-top-color:var(--slate)">
+          <h3>Pareto Envelope</h3>
+          <p style="font-size:0.88rem;margin:0 0 10px;">Models circled in crimson sit on the non-dominated efficiency frontier: no other evaluated model achieves both higher <code>MALI13-Q</code> and lower resource footprint on the selected X-axis.</p>
+          <div id="paretoFrontierList" style="font-family:var(--mono);font-size:0.78rem;background:var(--paper);padding:8px 10px;border:1px solid var(--rule-hair);white-space:pre-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION III: 13-LANGUAGE EQUITY HEATMAP -->
+    <section id="sec-equity" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section III &bull; Cross-Family Fairness Across Niger-Congo, Songhay &amp; Afro-Asiatic</div>
+          <h2>Thirteen-Language Equity Heatmap &amp; Collapse Detector</h2>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="btn-group" id="heatMetricBtns">
+          <button class="pill active" data-hm="q">Composite Q (0&ndash;100)</button>
+          <button class="pill" data-hm="morph">Morphology (M)</button>
+          <button class="pill" data-hm="gen">Generation (G)</button>
+          <button class="pill" data-hm="lid">LID (L)</button>
+          <button class="pill" data-hm="cloze">Cloze (C)</button>
+          <button class="pill" data-hm="fert">Word Fertility (lower = better)</button>
+        </div>
+        <span style="font-family:var(--sans);font-size:0.75rem;color:var(--ink-soft)">Compare Bambara (<code>bam</code>) against <code>dtm</code>, <code>boz</code>, <code>taq</code>, and <code>mey</code></span>
+      </div>
+      <div class="table-wrap">
+        <table id="heatTable">
+          <thead><tr id="heatHeadRow"></tr></thead>
+          <tbody id="heatBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION IV: TOKENIZER & DIACRITIC PENALTY -->
+    <section id="sec-tokenizer" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section IV &bull; Orthography Compression Audit</div>
+          <h2>Tokenizer Fragmentation &amp; The Malian Diacritic Penalty</h2>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="figure-frame" style="margin-bottom:0">
+          <div class="fig-caption">
+            <span><strong>FIG. 2</strong> &mdash; Subword Shatter Inspector (Real Tokenizers vs. DabaX Morphemes)</span>
+            <span>Live Tokenizer Cuts</span>
+          </div>
+          <div class="toolbar" style="margin-bottom:8px">
+            <select id="shatterLang" style="font-family:var(--sans);font-size:0.8rem;padding:4px 8px;border:1px solid var(--rule-heavy);background:var(--paper);color:var(--ink)">
+              <option value="taq">taq &mdash; dăɣ-ăddunya-ta-dăɣ (4-morpheme chain)</option>
+              <option value="ful">ful &mdash; suɓaaɓe (suɓaa + -ɓe PL.HUM)</option>
+              <option value="spp">spp &mdash; SARIYAƝUNGI (sariyaɲun + -gi CL3)</option>
+              <option value="mey">mey &mdash; ƏLWAAJIBAAT (əl- + wājib + -aat)</option>
+              <option value="dtm">dtm &mdash; PÀŊÁBE (pàŋá + -be PL.HUM)</option>
+            </select>
+          </div>
+          <div id="shatterContainer"></div>
+        </div>
+
+        <div class="figure-frame" style="margin-bottom:0">
+          <div class="fig-caption">
+            <span><strong>FIG. 3</strong> &mdash; ASCII vs. Extended Diacritic Fertility</span>
+            <span>Green: ASCII &bull; Crimson: Extended Latin</span>
+          </div>
+          <div id="diacBars" style="display:grid;gap:10px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION V: LID CONFUSION MATRIX -->
+    <section id="sec-lid" class="broadsheet-sec">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section V &bull; Typological Confusability</div>
+          <h2>13 &times; 13 Language Identification Confusion Matrix</h2>
+        </div>
+      </div>
+      <div class="toolbar">
+        <label style="font-family:var(--sans);font-size:0.78rem;font-weight:700">
+          Model:
+          <select id="lidModelSelect" style="margin-left:6px;font-family:var(--sans);font-size:0.8rem;padding:4px 8px;border:1px solid var(--rule-heavy);background:var(--paper);color:var(--ink)"></select>
+        </label>
+        <span style="font-family:var(--sans);font-size:0.75rem;color:var(--ink-soft)">Inspect Manding (<code>bam/mku/kao</code>), Senufo (<code>myk/spp</code>) &amp; Inner Mande (<code>boz/snk</code>) confusions</span>
+      </div>
+      <div class="table-wrap">
+        <table id="lidTable">
+          <thead id="lidHead"></thead>
+          <tbody id="lidBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION VI: SAMPLE INSPECTOR -->
+    <section id="sec-inspector" class="broadsheet-sec" style="border-bottom:none;margin-bottom:0">
+      <div class="sec-head">
+        <div>
+          <div class="section-kicker">Section VI &bull; Qualitative Output Audit</div>
+          <h2>Side-by-Side Live Completion Inspector</h2>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="btn-group" id="inspLangBtns">
+          <button class="pill active" data-lang="taq">taq (Tamasheq)</button>
+          <button class="pill" data-lang="ful">ful (Fulfulde)</button>
+          <button class="pill" data-lang="mey">mey (Hassaniya)</button>
+          <button class="pill" data-lang="dtm">dtm (Dogon)</button>
+          <button class="pill" data-lang="bam">bam (Bambara)</button>
+        </div>
+      </div>
+      <div id="inspectorContainer"></div>
+    </section>
+
+    <footer class="colophon">
+      THE SEBENI CHRONICLE &bull; LIVE MALI13 BENCHMARK &bull; DATA FROM SITE/DATA/LEADERBOARD.JSON &bull; COMMITS BY S7D11
+    </footer>
+  </div>
+
+  <script src="assets/chronicle.js"></script>
+  <script src="assets/leaderboard.js"></script>
+</body>
+</html>

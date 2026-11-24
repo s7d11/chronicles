@@ -1,0 +1,29 @@
+[
+  {
+    "vol_issue": "VOL. I · NO. 1",
+    "date": "2026-11-24",
+    "title": "Edition No. 1: From Phantom Parses to Live 13-Language Model Efficiency",
+    "summary": "Launching The Sebeni Chronicle with Antigravity for Science & Google Cloud: auditing Mali's 13 national languages, eliminating 65% phantom inflation, and benchmarking 16 models live on MALI13.",
+    "url": "editions/vol-01-no-01/index.html",
+    "kind": "Lead Edition",
+    "tagCls": "sebeni"
+  },
+  {
+    "vol_issue": "LIVE BENCHMARK",
+    "date": "2026-11-24",
+    "title": "MALI13 Live Leaderboard: Multi-Axis Model Efficiency & Equity Ledger",
+    "summary": "Interactive 6-section standings comparing Sebeni-Gemma-4-E2B-GRPO-50, Vertex AI Gemini 3/3.1, Gemma-4, and Open Frontier models across Morphology, Generation, LID, Cloze, Fertility, and Diacritic Penalty.",
+    "url": "leaderboard.html",
+    "kind": "Live Data",
+    "tagCls": "api"
+  },
+  {
+    "vol_issue": "SUPPLEMENT",
+    "date": "2026-11-24",
+    "title": "MULTI13 Morphotactics, Typology & Four-Tier Lexicon Supplement",
+    "summary": "Deep analytical broadsheet detailing the ground-up grammar rewrites, 49,257 lexicon entries, Unicode homoglyph repairs, and 13-language Field Gazette.",
+    "url": "supplements/morphotactics-comparison.html",
+    "kind": "Technical Supplement",
+    "tagCls": "slm"
+  }
+]
