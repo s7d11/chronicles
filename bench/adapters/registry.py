@@ -28,7 +28,7 @@ MODEL_REGISTRY: Dict[str, ModelSpec] = {
         track="Google",
         price_in_per_1m=2.00,
         price_out_per_1m=12.00,
-        compute_label="Vertex AI (gravityx)",
+        compute_label="Vertex AI",
     ),
     "gemini-3-flash-preview": ModelSpec(
         slug="gemini-3-flash-preview",
@@ -38,7 +38,7 @@ MODEL_REGISTRY: Dict[str, ModelSpec] = {
         track="Google",
         price_in_per_1m=0.50,
         price_out_per_1m=3.00,
-        compute_label="Vertex AI (gravityx)",
+        compute_label="Vertex AI",
     ),
     "gemma-4-31b-it": ModelSpec(
         slug="gemma-4-31b-it",
@@ -142,7 +142,7 @@ MODEL_REGISTRY: Dict[str, ModelSpec] = {
         track="Open Frontier",
         active_params_b=52.0,
         total_params_b=1000.0,
-        compute_label="NVIDIA NIM · 52B act / 1T",
+        compute_label="NVIDIA Build (NIM) · 52B act / 1T",
     ),
     "minimax-m3": ModelSpec(
         slug="minimax-m3",
@@ -151,7 +151,7 @@ MODEL_REGISTRY: Dict[str, ModelSpec] = {
         model_id="minimaxai/minimax-m3.1-flash",
         hf_tokenizer_id="MiniMaxAI/MiniMax-M3.1-Flash",
         track="Open Frontier",
-        compute_label="NVIDIA NIM",
+        compute_label="NVIDIA Build (NIM)",
     ),
     "muse-glimmer-30": ModelSpec(
         slug="muse-glimmer-30",
@@ -162,7 +162,7 @@ MODEL_REGISTRY: Dict[str, ModelSpec] = {
         track="Open Frontier",
         active_params_b=30.0,
         total_params_b=30.0,
-        compute_label="NVIDIA NIM · 30B",
+        compute_label="NVIDIA Build (NIM) · 30B",
     ),
     "nemotron-3-ultra-550b-a55b": ModelSpec(
         slug="nemotron-3-ultra-550b-a55b",
@@ -173,7 +173,7 @@ MODEL_REGISTRY: Dict[str, ModelSpec] = {
         track="Open Frontier",
         active_params_b=55.0,
         total_params_b=550.0,
-        compute_label="NVIDIA NIM · 55B act / 550B",
+        compute_label="NVIDIA Build (NIM) · 55B act / 550B",
     ),
 }
 
