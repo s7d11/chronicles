@@ -158,3 +158,83 @@ def test_end_to_end_mock_swarm_and_publish(tmp_path: Path) -> None:
     events_doc = json.loads((out_dir / "edition2_events.json").read_text(encoding="utf-8"))
     kinds = {e["kind"] for e in events_doc["events_by_lang"]["taq"]}
     assert {"coordinator_brief", "cluster_spawn", "agent_exchange", "consensus_reached", "shadow_patch", "native_generation", "run_complete"}.issubset(kinds)
+
+
+def test_pack_sebeni_runtime_minimal(tmp_path: Path) -> None:
+    import tarfile
+    from swarm_lab.hf_sync import pack_sebeni_runtime
+
+    tar_path = pack_sebeni_runtime(tmp_path / "sebeni_runtime.tar.gz")
+    assert tar_path.is_file()
+    assert tar_path.stat().st_size < 25 * 1024 * 1024
+    with tarfile.open(tar_path, "r:gz") as tf:
+        names = set(tf.getnames())
+    assert "beni/__init__.py" in names
+    assert "beni/data/test.json" in names
+    assert "beni/data/baselines/taq/baseline.dict" in names
+    assert any(n.startswith("daba/") and n.endswith(".py") for n in names)
+    assert not any(".env" in n or "dataset_300_samples" in n for n in names)
+
+
+def test_viz_server_health_cors_and_admin_auth(tmp_path: Path, monkeypatch) -> None:
+    import threading
+    import urllib.error
+    import urllib.request
+    from http.server import ThreadingHTTPServer
+    from swarm_lab.viz_server import LiveSwarmController, make_handler_class
+
+    monkeypatch.setenv("SWARM_ADMIN_TOKEN", "unit-test-secret-token")
+    runs_dir = tmp_path / "runs"
+    site_dir = tmp_path / "site"
+    (site_dir / "data").mkdir(parents=True)
+    runs_dir.mkdir(parents=True)
+
+    called_langs = []
+
+    def _fake_run(lang: str, rd: Path, resume: bool) -> None:
+        called_langs.append(lang)
+
+    ctrl = LiveSwarmController(runs_dir=runs_dir, site_dir=site_dir, run_fn=_fake_run)
+    cls = make_handler_class(runs_dir=runs_dir, site_dir=site_dir, controller=ctrl)
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), cls)
+    port = srv.server_address[1]
+    t = threading.Thread(target=srv.serve_forever, daemon=True)
+    t.start()
+    try:
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/health", timeout=5) as r:
+            assert r.status == 200
+            assert r.headers.get("Access-Control-Allow-Origin") == "*"
+            h = json.loads(r.read().decode("utf-8"))
+            assert h["total_langs"] == 13
+
+        with urllib.request.urlopen(f"http://127.0.0.1:{port}/api/runs", timeout=5) as r:
+            assert r.status == 200
+            runs = json.loads(r.read().decode("utf-8"))["runs"]
+            assert len(runs) == 13
+
+        req_no_auth = urllib.request.Request(
+            f"http://127.0.0.1:{port}/api/admin/trigger",
+            data=b'{"langs": ["bmq"]}',
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            urllib.request.urlopen(req_no_auth, timeout=5)
+            raise AssertionError("Expected 401 without Bearer token")
+        except urllib.error.HTTPError as e:
+            assert e.code == 401
+
+        req_ok = urllib.request.Request(
+            f"http://127.0.0.1:{port}/api/admin/trigger",
+            data=b'{"langs": ["bmq"]}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": "Bearer unit-test-secret-token",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req_ok, timeout=5) as r:
+            assert r.status == 202
+    finally:
+        srv.shutdown()
+        srv.server_close()

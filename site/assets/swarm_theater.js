@@ -88,7 +88,11 @@ class SwarmTheater {
   constructor(rootEl, opts = {}) {
     this.root = rootEl;
     this.dataPrefix = opts.dataPrefix || "../../data";
+    this.liveOrigin = (opts.liveOrigin || "").replace(/\/$/, "");
+    this.apiBase = null;
     this.eventsByLang = {};
+    this.runsMeta = [];
+    this.healthSnap = null;
     this.selectedLang = opts.defaultLang || "taq";
     this.selectedCluster = "ALL";
     this.cursor = 0;
@@ -110,6 +114,10 @@ class SwarmTheater {
 
   _mountDom(fullscreen) {
     this.root.innerHTML = `
+      <div class="lang-ribbon" id="stLangRibbon">
+        <span style="font-weight:700;margin-right:4px">MULTI13:</span>
+        <span style="color:var(--ink-soft)">Connecting to live telemetry...</span>
+      </div>
       <div class="theater-toolbar">
         <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
           <label>Lang <select id="stLang"></select></label>
@@ -125,11 +133,20 @@ class SwarmTheater {
               <option value="8">8x</option>
             </select>
           </label>
+          <button type="button" id="stAdminBtn" style="display:none">Admin</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:210px;max-width:360px">
           <input id="stScrub" type="range" min="0" max="0" value="0" style="flex:1" />
           <span id="stStepLbl" style="font-family:var(--mono);font-size:0.72rem;min-width:62px;text-align:right">0 / 0</span>
         </div>
+      </div>
+      <div class="admin-drawer" id="stAdminDrawer">
+        <strong>Admin Trigger:</strong>
+        <input id="stAdminTok" type="password" placeholder="SWARM_ADMIN_TOKEN" style="width:170px" />
+        <button type="button" id="stTrigLang">Re-run Selected Lang</button>
+        <button type="button" id="stTrigAll">Run Pending All-13</button>
+        <button type="button" id="stTrigStop">Stop After Current</button>
+        <span id="stAdminMsg" style="font-family:var(--mono);font-size:0.72rem"></span>
       </div>
       <div class="theater-wrap ${fullscreen ? "fullscreen" : ""}">
         <div>
@@ -172,6 +189,29 @@ class SwarmTheater {
     this.$labels = this.root.querySelector("#stLabels");
     this.$strip = this.root.querySelector("#stClusterStrip");
     this.$feed = this.root.querySelector("#stFeed");
+    this.$langRibbon = this.root.querySelector("#stLangRibbon");
+    this.$adminBtn = this.root.querySelector("#stAdminBtn");
+    this.$adminDrawer = this.root.querySelector("#stAdminDrawer");
+    this.$adminTok = this.root.querySelector("#stAdminTok");
+    this.$adminMsg = this.root.querySelector("#stAdminMsg");
+
+    const savedTok = sessionStorage.getItem("swarm_admin_tok") || "";
+    if (savedTok) this.$adminTok.value = savedTok;
+    this.$adminBtn.addEventListener("click", () => {
+      this.$adminDrawer.classList.toggle("open");
+    });
+    this.$adminTok.addEventListener("input", () => {
+      sessionStorage.setItem("swarm_admin_tok", this.$adminTok.value);
+    });
+    this.root.querySelector("#stTrigLang").addEventListener("click", () =>
+      this._adminPost("/api/admin/trigger", { langs: [this.selectedLang], resume: false })
+    );
+    this.root.querySelector("#stTrigAll").addEventListener("click", () =>
+      this._adminPost("/api/admin/trigger", { langs: "all", resume: true })
+    );
+    this.root.querySelector("#stTrigStop").addEventListener("click", () =>
+      this._adminPost("/api/admin/stop", {})
+    );
 
     for (const slug of CLUSTER_SLUGS) {
       const opt = document.createElement("option");
@@ -362,28 +402,120 @@ class SwarmTheater {
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   }
 
-  async _loadDataSource() {
-    // Detect live local SSE server first
+  async _fetchJsonTimeout(url, ms = 3000) {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), ms);
     try {
-      const r = await fetch("/api/runs", { cache: "no-store" });
-      if (r.ok) {
-        const j = await r.json();
-        if (Array.isArray(j.runs) && j.runs.length > 0) {
+      const r = await fetch(url, { cache: "no-store", signal: ctrl.signal });
+      if (!r.ok) return null;
+      return await r.json();
+    } catch (_) {
+      return null;
+    } finally {
+      clearTimeout(tid);
+    }
+  }
+
+  async _adminPost(path, body) {
+    if (this.apiBase === null) return;
+    const tok = (this.$adminTok.value || "").trim();
+    if (!tok) {
+      this.$adminMsg.textContent = "Enter admin token first.";
+      return;
+    }
+    try {
+      const r = await fetch(`${this.apiBase}${path}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tok}`,
+        },
+        body: JSON.stringify(body),
+      });
+      const j = await r.json();
+      this.$adminMsg.textContent = r.ok ? JSON.stringify(j) : `HTTP ${r.status}: ${j.error || "failed"}`;
+      this._refreshLiveStatus();
+    } catch (e) {
+      this.$adminMsg.textContent = e.message;
+    }
+  }
+
+  async _refreshLiveStatus() {
+    if (this.apiBase === null) return;
+    const [h, rr] = await Promise.all([
+      this._fetchJsonTimeout(`${this.apiBase}/api/health`, 3000),
+      this._fetchJsonTimeout(`${this.apiBase}/api/runs`, 3000),
+    ]);
+    if (h) this.healthSnap = h;
+    if (rr && Array.isArray(rr.runs)) {
+      this.runsMeta = rr.runs;
+      this._renderLangRibbon();
+    }
+  }
+
+  _renderLangRibbon() {
+    const items = this.runsMeta.length
+      ? this.runsMeta
+      : Object.keys(this.eventsByLang).map((l) => ({ lang: l, done: true, active: false, events: (this.eventsByLang[l] || []).length }));
+    const modeNote = this.apiBase !== null
+      ? (this.healthSnap?.running ? `LIVE · running ${(this.healthSnap.active_lang || "").toUpperCase()}` : "LIVE SPACE READY")
+      : "STATIC REPLAY";
+    const doneCnt = items.filter((x) => x.done).length;
+    this.$langRibbon.innerHTML = [
+      `<span style="font-weight:700;margin-right:4px">MULTI13 (${doneCnt}/${items.length} · ${esc(modeNote)}):</span>`,
+      ...items.map((r) => {
+        const cls = [
+          "lang-pill",
+          r.done ? "done" : "",
+          r.active ? "live" : "",
+          r.lang === this.selectedLang ? "selected" : "",
+        ].filter(Boolean).join(" ");
+        const icon = r.active ? "●" : r.done ? "✓" : "○";
+        return `<button type="button" class="${cls}" data-pick-lang="${esc(r.lang)}">${esc(r.lang.toUpperCase())} ${icon}</button>`;
+      }),
+    ].join("");
+    this.$langRibbon.querySelectorAll("[data-pick-lang]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const lang = btn.dataset.pickLang;
+        this.$lang.value = lang;
+        this._switchLang(lang);
+      });
+    });
+  }
+
+  async _loadDataSource() {
+    const candidates = [];
+    if (window.location.protocol.startsWith("http")) candidates.push("");
+    if (this.liveOrigin && !window.location.origin.startsWith(this.liveOrigin)) {
+      candidates.push(this.liveOrigin);
+    }
+
+    for (const base of candidates) {
+      const h = await this._fetchJsonTimeout(`${base}/api/health`, 3000);
+      if (h && h.status === "ok") {
+        const rr = await this._fetchJsonTimeout(`${base}/api/runs`, 3000);
+        if (rr && Array.isArray(rr.runs) && rr.runs.length > 0) {
+          this.apiBase = base;
           this.liveAvailable = true;
+          this.healthSnap = h;
+          this.runsMeta = rr.runs;
           this.$live.style.display = "inline-block";
-          for (const run of j.runs) {
+          this.$adminBtn.style.display = "inline-block";
+          for (const run of rr.runs) {
             this.eventsByLang[run.lang] = [];
           }
-          this.selectedLang = String(j.runs[0].lang);
+          const active = rr.runs.find((r) => r.active);
+          const firstWithEvents = rr.runs.find((r) => Number(r.events) > 0);
+          this.selectedLang = String((active || firstWithEvents || rr.runs[0]).lang);
           this.followLive = true;
           this.$live.classList.add("active");
-          this._populateLangSelect(j.runs.map((x) => x.lang));
+          this._populateLangSelect(rr.runs.map((x) => x.lang));
+          this._renderLangRibbon();
           this._connectSse(this.selectedLang);
+          setInterval(() => this._refreshLiveStatus(), 15000);
           return;
         }
       }
-    } catch (_) {
-      // Static GitHub Pages fallback
     }
 
     try {
@@ -393,6 +525,7 @@ class SwarmTheater {
         this.eventsByLang = j.events_by_lang || {};
         const langs = j.langs || Object.keys(this.eventsByLang);
         this._populateLangSelect(langs);
+        this._renderLangRibbon();
         if (langs.length) this._switchLang(langs[0]);
       }
     } catch (err) {
@@ -413,7 +546,7 @@ class SwarmTheater {
     }
     this.eventsByLang[lang] = [];
     this.seekTo(0);
-    const sse = new EventSource(`/api/stream?lang=${encodeURIComponent(lang)}`);
+    const sse = new EventSource(`${this.apiBase}/api/stream?lang=${encodeURIComponent(lang)}`);
     sse.onmessage = (msg) => {
       try {
         const ev = JSON.parse(msg.data);
@@ -430,6 +563,7 @@ class SwarmTheater {
 
   _switchLang(lang) {
     this.selectedLang = lang;
+    this._renderLangRibbon();
     if (this.followLive && this.liveAvailable) {
       this._connectSse(lang);
       return;
@@ -708,6 +842,7 @@ window.addEventListener("DOMContentLoaded", () => {
     new SwarmTheater(el, {
       fullscreen: el.dataset.fullscreen === "1",
       dataPrefix: el.dataset.prefix || "../../data",
+      liveOrigin: el.dataset.liveOrigin || "",
     });
   }
 });

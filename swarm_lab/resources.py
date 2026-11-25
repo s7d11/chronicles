@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import re
 import shutil
 import unicodedata
@@ -20,7 +21,24 @@ from bench.metrics import _EN_FR_NOISE, _WORD_RE
 from swarm_lab import ALL_LANGS, normalize_lang_code
 from swarm_lab.schema import DictDelta, NativeGenResult, ShadowPatchResult
 
-SEBENI_DATA_DIR = Path("/home/seb/sebenx/sebeni/beni/data")
+
+def _resolve_sebeni_data_dir() -> Path:
+    """Resolve packaged/vendored beni/data directory without hardcoding local host paths."""
+    env_dir = os.environ.get("SEBENI_DATA_DIR")
+    if env_dir:
+        return Path(env_dir)
+    try:
+        import beni
+
+        cand = Path(beni.__file__).resolve().parent / "data"
+        if cand.is_dir():
+            return cand
+    except Exception:
+        pass
+    return Path("/home/seb/sebenx/sebeni/beni/data")
+
+
+SEBENI_DATA_DIR = _resolve_sebeni_data_dir()
 TEST_JSON_PATH = SEBENI_DATA_DIR / "test.json"
 BASELINES_DIR = SEBENI_DATA_DIR / "baselines"
 PROMPT_NATIVE_PATH = Path(__file__).resolve().parent.parent / "prompt_native.csv"
@@ -284,6 +302,10 @@ def _devmini_texts_for_lang(lang: str) -> List[str]:
     canon = normalize_lang_code(lang)
     if canon in _DEVMINI_MORPH_CACHE:
         return _DEVMINI_MORPH_CACHE[canon]
+    morph_file = DEFAULT_OUT_DIR / "morph.jsonl"
+    if not morph_file.is_file():
+        _DEVMINI_MORPH_CACHE[canon] = []
+        return []
     samples = load_split(DEFAULT_OUT_DIR, "morph")
     texts = [s.text for s in samples if s.lang == canon]
     _DEVMINI_MORPH_CACHE[canon] = texts

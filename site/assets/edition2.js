@@ -61,12 +61,37 @@
   }
 
   async function initEdition2() {
-    let data;
-    try {
-      data = await window.Chronicle.fetchJson("../../data/edition2.json");
-    } catch (err) {
+    let data = null;
+    const mount = document.getElementById("swarmTheaterMount");
+    const liveOrigin = mount && mount.dataset.liveOrigin ? mount.dataset.liveOrigin.replace(/\/$/, "") : "";
+    const candidates = [];
+    if (window.location.protocol.startsWith("http")) {
+      candidates.push("/api/edition2.json");
+    }
+    if (liveOrigin && !window.location.origin.startsWith(liveOrigin)) {
+      candidates.push(`${liveOrigin}/api/edition2.json`);
+    }
+    candidates.push("../../data/edition2.json");
+
+    for (const url of candidates) {
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 3500);
+        const resp = await fetch(url, { cache: "no-store", signal: ctrl.signal });
+        clearTimeout(timer);
+        if (resp.ok) {
+          const parsed = await resp.json();
+          if (parsed && Array.isArray(parsed.langs) && parsed.langs.length > 0) {
+            data = parsed;
+            break;
+          }
+        }
+      } catch (_) {}
+    }
+
+    if (!data) {
       document.getElementById("ed2LedgerBody").innerHTML =
-        `<tr><td colspan="10">Awaiting published <code>data/edition2.json</code> (${esc(err.message)}).</td></tr>`;
+        `<tr><td colspan="10">Awaiting published <code>data/edition2.json</code>.</td></tr>`;
       return;
     }
 
