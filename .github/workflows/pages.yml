@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validate Chronicle layout & publication graph
+        run: python3 scripts/check_chronicle.py --skip-git-staged
       - name: Setup Pages
         uses: actions/configure-pages@v6
       - name: Upload artifact

@@ -40,6 +40,13 @@ python3 -m bench.cli publish --out-dir site/data
 
 ## Adding a New Newspaper Edition
 
-1. Create `site/editions/vol-01-no-XX/index.html` reusing `site/assets/chronicle.css` and `site/assets/chronicle.js`.
-2. Append an entry to `site/data/editions.json` (which automatically updates the Archive Ledger on the Front Page).
-3. Commit and push to `main`; `.github/workflows/pages.yml` deploys `site/` to GitHub Pages automatically.
+> Before editing or committing, read [AGENTS.md](AGENTS.md) for the mandatory commit, layout, and publication-connectivity rules.
+
+1. Activate the versioned git hook on fresh clones:
+   ```bash
+   git config core.hooksPath .githooks
+   ```
+2. Create `site/editions/vol-01-no-XX/index.html` using the shared Newsprint shell (`data-theme="newsprint"`, `data-root="../.."`, `data-page-id="vol-01-no-XX"`, `.sheet`, `.folio-bar`, `<header class="masthead">`, `<nav class="ed-nav" data-chronicle-nav="1">`, `<footer class="colophon">`, and `../../assets/chronicle.js`).
+3. Register the new page in `site/data/editions.json` with `id`, `short_title`, `issue_num`, `is_edition`, `parent_edition`, and `builds_on` links back to earlier work (`chronicle.js` automatically builds forward references on all older editions and backward links on the new one).
+4. Promote the newest numbered edition on `site/index.html` (Front Page lead) while preserving previous issues in the Archive.
+5. Validate locally (`python3 scripts/check_chronicle.py` and `pytest -q tests/`), commit with author `s7d11 <sebastcode@outlook.com>`, and push to `main`; `.github/workflows/pages.yml` validates the publication graph and deploys `site/` to GitHub Pages.

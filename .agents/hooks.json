@@ -1,0 +1,16 @@
+{
+  "chronicle-pre-commit-gate": {
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./hooks/pre_commit_gate.py",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}
