@@ -1,5 +1,23 @@
 [
   {
+    "vol_issue": "VOL. I · NO. 2",
+    "date": "2026-11-25",
+    "title": "Edition No. 2: Self-Organizing Polyglot Swarms & Light 3D Swarm Theater",
+    "summary": "Coordinated by nvidia/nemotron-3-ultra-550b-a55b across 9 self-organized Adaption Labs clusters (2-5 agents, chosen topologies) reinforcing test.json texts with baseline gram/dict, Shadow DabaX patch verification, prompt_native.csv generation, and real-time Newsprint Three.js visualization.",
+    "url": "editions/vol-01-no-02/index.html",
+    "kind": "Lead Edition",
+    "tagCls": "api"
+  },
+  {
+    "vol_issue": "3D OBSERVATORY",
+    "date": "2026-11-25",
+    "title": "Three.js Swarm Theater: Real-Time SSE & Replayable Cluster Graph",
+    "summary": "Newsprint-styled 3D Three.js observatory tracking per-cluster 2-5 agent topologies, baseline.gram/.dict lookups, consensus votes, Shadow DabaX deltas, and prompt_native.csv directives.",
+    "url": "editions/vol-01-no-02/theater.html",
+    "kind": "3D Theater",
+    "tagCls": "slm"
+  },
+  {
     "vol_issue": "VOL. I · NO. 1",
     "date": "2026-11-24",
     "title": "Edition No. 1: From Phantom Parses to Live 13-Language Model Efficiency",
