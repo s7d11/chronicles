@@ -64,14 +64,20 @@
     let data = null;
     const mount = document.getElementById("swarmTheaterMount");
     const liveOrigin = mount && mount.dataset.liveOrigin ? mount.dataset.liveOrigin.replace(/\/$/, "") : "";
+    const wantLive = new URLSearchParams(window.location.search).get("live") === "1";
+    const isSameLiveOrigin = Boolean(liveOrigin && window.location.origin.startsWith(liveOrigin));
+    const isLocalHost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
     const candidates = [];
-    if (window.location.protocol.startsWith("http")) {
+    if (isSameLiveOrigin || isLocalHost) {
       candidates.push("/api/edition2.json");
     }
-    if (liveOrigin && !window.location.origin.startsWith(liveOrigin)) {
+    if (wantLive && liveOrigin && !isSameLiveOrigin) {
       candidates.push(`${liveOrigin}/api/edition2.json`);
     }
     candidates.push("../../data/edition2.json");
+    if (!wantLive && liveOrigin && !isSameLiveOrigin) {
+      candidates.push(`${liveOrigin}/api/edition2.json`);
+    }
 
     for (const url of candidates) {
       try {

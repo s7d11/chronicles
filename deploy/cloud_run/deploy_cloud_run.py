@@ -56,6 +56,7 @@ def deploy_cloud_run(
     service: str = "sebeni-swarm-live",
     runtime_repo: str = "s7d11/sebeni-runtime-private",
     state_repo: str = "s7d11/chronicles-edition2-state",
+    keep_warm: bool = False,
 ) -> str:
     load_env()
     hf_tok = os.environ.get("HF_KEY") or os.environ.get("HF_TOKEN") or ""
@@ -131,7 +132,7 @@ def deploy_cloud_run(
             "ADOPTION_KEY": adoption_key,
             "NVIDIA_KEY": nvidia_key,
             "SWARM_ADMIN_TOKEN": admin_tok,
-            "AUTO_RUN_ALL_13": "1",
+            "AUTO_RUN_ALL_13": "1" if keep_warm else "0",
             "SEBENI_RUNTIME_REPO": runtime_repo,
             "SWARM_STATE_REPO": state_repo,
         }
@@ -163,10 +164,10 @@ def deploy_cloud_run(
                 "--memory",
                 "1Gi",
                 "--min-instances",
-                "1",
+                "1" if keep_warm else "0",
                 "--max-instances",
                 "1",
-                "--no-cpu-throttling",
+                "--no-cpu-throttling" if keep_warm else "--cpu-throttling",
                 "--timeout",
                 "3600",
                 "--env-vars-file",
@@ -203,8 +204,18 @@ def main() -> None:
     parser.add_argument("--project", default="mlgramv1")
     parser.add_argument("--region", default="us-east4")
     parser.add_argument("--service", default="sebeni-swarm-live")
+    parser.add_argument(
+        "--keep-warm",
+        action="store_true",
+        help="Pin min-instances=1 with AUTO_RUN_ALL_13=1 for active batch runs (incurs billing).",
+    )
     args = parser.parse_args()
-    deploy_cloud_run(project=args.project, region=args.region, service=args.service)
+    deploy_cloud_run(
+        project=args.project,
+        region=args.region,
+        service=args.service,
+        keep_warm=args.keep_warm,
+    )
 
 
 if __name__ == "__main__":

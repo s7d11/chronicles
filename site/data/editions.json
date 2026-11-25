@@ -2,8 +2,8 @@
   {
     "vol_issue": "VOL. I · NO. 2",
     "date": "2026-11-25",
-    "title": "Edition No. 2: Self-Organizing Polyglot Swarms & Light 3D Swarm Theater",
-    "summary": "Coordinated by nvidia/nemotron-3-ultra-550b-a55b across 9 self-organized Adaption Labs clusters (2-5 agents, chosen topologies) reinforcing test.json texts with baseline gram/dict, Shadow DabaX patch verification, prompt_native.csv generation, and real-time Newsprint Three.js visualization.",
+    "title": "Edition No. 2: Self-Organizing Polyglot Swarms Across All 13 Malian Languages",
+    "summary": "Coordinated by nvidia/nemotron-3-ultra-550b-a55b across 9 self-organized Adaption Labs clusters (117 sessions, 1,831 events, +96 verified Shadow DabaX entries across all 13 MULTI13 languages) plus randomized prompt_native.csv directives and Newsprint Three.js replay.",
     "url": "editions/vol-01-no-02/index.html",
     "kind": "Lead Edition",
     "tagCls": "api"
@@ -11,8 +11,8 @@
   {
     "vol_issue": "3D OBSERVATORY",
     "date": "2026-11-25",
-    "title": "Three.js Swarm Theater: Real-Time SSE & Replayable Cluster Graph",
-    "summary": "Newsprint-styled 3D Three.js observatory tracking per-cluster 2-5 agent topologies, baseline.gram/.dict lookups, consensus votes, Shadow DabaX deltas, and prompt_native.csv directives.",
+    "title": "Three.js Swarm Theater: 13-Language Replay & On-Demand Live SSE",
+    "summary": "Newsprint-styled 3D Three.js observatory replaying all 13 Malian languages (1,831 events) statically at $0 cost, with on-demand Connect Live support for the scale-to-zero Cloud Run SSE backend.",
     "url": "editions/vol-01-no-02/theater.html",
     "kind": "3D Theater",
     "tagCls": "slm"

@@ -125,6 +125,7 @@ class SwarmTheater {
           <button type="button" id="stPlay">Pause</button>
           <button type="button" id="stReplay">Restart</button>
           <button type="button" id="stLive" style="display:none">Follow Live</button>
+          <button type="button" id="stConnectLive" style="display:none">Connect Live</button>
           <label>Speed
             <select id="stSpeed">
               <option value="1">1x</option>
@@ -181,6 +182,11 @@ class SwarmTheater {
     this.$play = this.root.querySelector("#stPlay");
     this.$replay = this.root.querySelector("#stReplay");
     this.$live = this.root.querySelector("#stLive");
+    this.$connectLive = this.root.querySelector("#stConnectLive");
+    this._statusTimer = null;
+    if (this.$connectLive) {
+      this.$connectLive.addEventListener("click", () => this._onConnectLiveClick());
+    }
     this.$speed = this.root.querySelector("#stSpeed");
     this.$scrub = this.root.querySelector("#stScrub");
     this.$stepLbl = this.root.querySelector("#stStepLbl");
@@ -483,39 +489,65 @@ class SwarmTheater {
     });
   }
 
+  async _tryLiveBase(base, timeoutMs = 3000) {
+    const h = await this._fetchJsonTimeout(`${base}/api/health`, timeoutMs);
+    if (!h || h.status !== "ok") return false;
+    const rr = await this._fetchJsonTimeout(`${base}/api/runs`, timeoutMs);
+    if (!rr || !Array.isArray(rr.runs) || rr.runs.length === 0) return false;
+    this.apiBase = base;
+    this.liveAvailable = true;
+    this.healthSnap = h;
+    this.runsMeta = rr.runs;
+    this.$live.style.display = "inline-block";
+    this.$adminBtn.style.display = "inline-block";
+    if (this.$connectLive) this.$connectLive.style.display = "none";
+    for (const run of rr.runs) {
+      this.eventsByLang[run.lang] = [];
+    }
+    const active = rr.runs.find((r) => r.active);
+    const firstWithEvents = rr.runs.find((r) => Number(r.events) > 0);
+    this.selectedLang = String((active || firstWithEvents || rr.runs[0]).lang);
+    this.followLive = true;
+    this.$live.classList.add("active");
+    this._populateLangSelect(rr.runs.map((x) => x.lang));
+    this._renderLangRibbon();
+    this._connectSse(this.selectedLang);
+    if (this._statusTimer) clearInterval(this._statusTimer);
+    this._statusTimer = setInterval(() => this._refreshLiveStatus(), 15000);
+    return true;
+  }
+
+  async _onConnectLiveClick() {
+    if (!this.liveOrigin || !this.$connectLive) return;
+    this.$connectLive.disabled = true;
+    this.$connectLive.textContent = "Waking Cloud Run...";
+    const ok = await this._tryLiveBase(this.liveOrigin, 15000);
+    if (!ok) {
+      this.$connectLive.disabled = false;
+      this.$connectLive.textContent = "Retry Connect Live";
+    }
+  }
+
   async _loadDataSource() {
+    const wantLive = new URLSearchParams(window.location.search).get("live") === "1";
+    const isSameLiveOrigin = Boolean(this.liveOrigin && window.location.origin.startsWith(this.liveOrigin));
+    const isLocalHost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
     const candidates = [];
-    if (window.location.protocol.startsWith("http")) candidates.push("");
-    if (this.liveOrigin && !window.location.origin.startsWith(this.liveOrigin)) {
-      candidates.push(this.liveOrigin);
+    if (isSameLiveOrigin || isLocalHost) {
+      candidates.push({ base: "", timeout: 3000 });
+    }
+    if (wantLive && this.liveOrigin && !isSameLiveOrigin) {
+      candidates.push({ base: this.liveOrigin, timeout: 15000 });
     }
 
-    for (const base of candidates) {
-      const h = await this._fetchJsonTimeout(`${base}/api/health`, 3000);
-      if (h && h.status === "ok") {
-        const rr = await this._fetchJsonTimeout(`${base}/api/runs`, 3000);
-        if (rr && Array.isArray(rr.runs) && rr.runs.length > 0) {
-          this.apiBase = base;
-          this.liveAvailable = true;
-          this.healthSnap = h;
-          this.runsMeta = rr.runs;
-          this.$live.style.display = "inline-block";
-          this.$adminBtn.style.display = "inline-block";
-          for (const run of rr.runs) {
-            this.eventsByLang[run.lang] = [];
-          }
-          const active = rr.runs.find((r) => r.active);
-          const firstWithEvents = rr.runs.find((r) => Number(r.events) > 0);
-          this.selectedLang = String((active || firstWithEvents || rr.runs[0]).lang);
-          this.followLive = true;
-          this.$live.classList.add("active");
-          this._populateLangSelect(rr.runs.map((x) => x.lang));
-          this._renderLangRibbon();
-          this._connectSse(this.selectedLang);
-          setInterval(() => this._refreshLiveStatus(), 15000);
-          return;
-        }
+    for (const c of candidates) {
+      if (await this._tryLiveBase(c.base, c.timeout)) {
+        return;
       }
+    }
+
+    if (this.liveOrigin && this.$connectLive && !isSameLiveOrigin) {
+      this.$connectLive.style.display = "inline-block";
     }
 
     try {

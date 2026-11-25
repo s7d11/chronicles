@@ -50,7 +50,7 @@
       </div>
 
       <h3>1. Live &amp; Replayable Three.js Swarm Theater</h3>
-      <p>Use the light Newsprint 3D observatory below, open the <a href="theater.html">fullscreen 3D Swarm Theater</a>, or watch the continuous <a href="https://sebeni-swarm-live-6orlk3ix5a-uk.a.run.app" target="_blank" rel="noopener">Live 13-Language Observatory</a> streaming all 13 Malian languages (<code>MULTI13</code>) via real-time Server-Sent Events (checkpoints persisted to <a href="https://huggingface.co/datasets/s7d11/chronicles-edition2-state" target="_blank" rel="noopener">Hugging Face Datasets</a>).</p>
+      <p>Use the light Newsprint 3D observatory below or open the <a href="theater.html">fullscreen 3D Swarm Theater</a>. All <strong>13 Malian languages (<code>MULTI13</code>, 117 sessions, 1,831 events)</strong> replay directly from static GitHub Pages JSON at zero backend cost; click <strong>Connect Live</strong> (or open the <a href="https://sebeni-swarm-live-6orlk3ix5a-uk.a.run.app" target="_blank" rel="noopener">scale-to-zero Cloud Run Observatory</a>) to wake real-time SSE &amp; admin triggers on demand (checkpoints persisted to <a href="https://huggingface.co/datasets/s7d11/chronicles-edition2-state" target="_blank" rel="noopener">Hugging Face Datasets</a>).</p>
 
       <div id="swarmTheaterMount" data-fullscreen="0" data-prefix="../../data" data-live-origin="https://sebeni-swarm-live-6orlk3ix5a-uk.a.run.app" style="margin:12px 0 20px"></div>
 
@@ -78,19 +78,19 @@
       </div>
 
       <section class="factbox" id="ed2TakeawaysBox" style="margin:18px 0">
-        <h3>Key Empirical Takeaways from Edition No. 2</h3>
+        <h3>Key Empirical Takeaways from Edition No. 2 (All 13 Languages &bull; 117 Sessions)</h3>
         <div class="cols-3" style="margin-top:10px">
           <div class="flow-card good">
             <strong>Self-Selected Topologies Favor 3&ndash;4 Agent Meshes &amp; Pipelines</strong><br/>
-            Across all 36 sessions (9 clusters &times; 4 languages), models spawned exclusively <strong>3 agents (21/36)</strong> or <strong>4 agents (15/36)</strong>, selecting <code>mesh</code> (16), <code>pipeline</code> (11), <code>star</code> (6), and <code>hierarchical</code> (3). Tightly coupled topologies converged faster: <code>glm-5.3-flash</code> (<strong>3.0</strong> mean agents, <code>pipeline</code>, <strong>96.8</strong> score), <code>glm-5.2</code> (<strong>4.0</strong>, <code>mesh</code>, <strong>94.3</strong>), <code>deepseek-v4-flash</code> (<strong>3.5</strong>, <code>mesh</code>, <strong>93.3</strong>), and <code>qwen3.8-27b</code> (<strong>4.0</strong>, <code>mesh</code>, <strong>91.6</strong>) achieved <strong>100% unanimity</strong> across all 4 languages, whereas <code>star</code>-heavy <code>qwen3.5-397b</code> hit <strong>0%</strong> unanimity (<strong>63.4</strong>).
+            Across all <strong>117 sessions</strong> (9 clusters &times; 13 <code>MULTI13</code> languages), models spawned <strong>3 agents (64/117)</strong>, <strong>4 agents (52/117)</strong>, or <strong>5 agents (1/117)</strong>, selecting <code>mesh</code> (43), <code>pipeline</code> (34), <code>star</code> (27), and <code>hierarchical</code> (13). Tightly coupled topologies led the board: <code>glm-5.3-flash</code> (<strong>3.3</strong> mean agents, <code>pipeline</code>, <strong>95.9</strong> score) and <code>qwen3.8-27b</code> (<strong>4.0</strong>, <code>mesh</code>, <strong>92.1</strong>) hit <strong>100% unanimity</strong> across all 13 languages, followed by <code>gemma-4-31b-it</code> (<strong>85.0</strong>), <code>nemotron-SEA-LION-v4.8-120b</code> (<strong>84.5</strong>), <code>gemma-4-26b-a4b-it</code> (<strong>84.0</strong>), <code>glm-5.2</code> (<strong>81.3</strong>, 92.3% unanimity), and <code>deepseek-v4-flash</code> (<strong>80.9</strong>, 92.3% unanimity), whereas <code>star</code>-heavy <code>qwen3.5-397b</code> hit <strong>0%</strong> unanimity (<strong>61.8</strong>).
           </div>
           <div class="flow-card">
-            <strong>Isolated Shadow <code>DabaX</code> Verification (36/36 Clean Compiles)</strong><br/>
-            Every single cluster&rsquo;s proposed MDF dictionary patches compiled cleanly inside isolated Shadow <code>DabaX(strict_parse=True)</code> workspaces with <strong>0.0% phantom inflation</strong>. <code>glm-5.3-flash</code> led with <strong>+9 verified dictionary entries</strong> and <strong>+0.60%</strong> mean <code>test.json</code> parse lift (up to <strong>+2.4%</strong> on Tamasheq), followed by <code>gemma-4-31b-it</code> (<strong>+7</strong> entries), <code>deepseek-v4-flash</code> (<strong>+6</strong>, +1.8% on Fula), and <code>glm-5.2</code> (<strong>+5</strong>, +1.8% on Fula).
+            <strong>Isolated Shadow <code>DabaX</code> Verification (117/117 Clean Compiles)</strong><br/>
+            Every cluster&rsquo;s proposed MDF dictionary patches compiled cleanly inside isolated Shadow <code>DabaX(strict_parse=True)</code> workspaces with <strong>0.0% phantom inflation</strong> and <strong>+96 verified dictionary headwords</strong> total. <code>glm-5.3-flash</code> led with <strong>+33 verified entries</strong> and <strong>+0.77%</strong> mean <code>test.json</code> parse lift (up to <strong>+2.4%</strong> on Tamasheq), followed by <code>nemotron-SEA-LION-v4.8-120b</code> (<strong>+21</strong>, <strong>+0.49%</strong>), <code>glm-5.2</code> (<strong>+13</strong>, <strong>+0.28%</strong>), <code>qwen3.8-27b</code> (<strong>+10</strong>, <strong>+0.25%</strong>), <code>gemma-4-31b-it</code> (<strong>+8</strong>, <strong>+0.15%</strong>), and <code>deepseek-v4-flash</code> (<strong>+6</strong>, <strong>+0.14%</strong>).
           </div>
           <div class="flow-card">
             <strong>Native-Command Generation Under <code>prompt_native.csv</code></strong><br/>
-            Guided by their Reinforced Linguistic Notebooks and native headers, <code>glm-5.3-flash</code> achieved the highest mean <code>DabaX(strict_parse=True)</code> native parse rate at <strong>82.2%</strong> (100% header compliance), followed by <code>glm-5.2</code> (<strong>76.8%</strong>), <code>deepseek-v4-flash</code> (<strong>75.5%</strong>), and <code>gemma-4-26b-a4b-it</code> (<strong>73.1%</strong>). Dogon (<code>dtm</code>) saw five clusters hit <strong>96.4%&ndash;100.0%</strong> strict parse coverage, while Bambara/Fula showed bimodal reasoning cutoffs on <code>gemma-4-31b-it</code> (<strong>37.5%</strong> mean native parse).
+            Guided by Reinforced Linguistic Notebooks and native headers across all 13 languages, <code>glm-5.3-flash</code> achieved the highest mean <code>DabaX(strict_parse=True)</code> native parse rate at <strong>85.7%</strong> (<strong>98.1%</strong> headers, reaching <strong>100.0%</strong> on Dogon <code>dtm</code>), followed by <code>qwen3.8-27b</code> (<strong>77.1%</strong>, <strong>96.2%</strong> headers), <code>gemma-4-26b-a4b-it</code> (<strong>67.9%</strong>, <strong>100%</strong> headers), <code>gemma-4-31b-it</code> (<strong>66.1%</strong>), and <code>nemotron-SEA-LION-v4.8-120b</code> (<strong>62.8%</strong>, <strong>100%</strong> headers).
           </div>
         </div>
       </section>
@@ -121,7 +121,7 @@
           </div>
           <div class="flow-card">
             <strong>NVIDIA Build &amp; Hugging Face Datasets</strong><br/>
-            Inference API resources hosted on <a href="https://build.nvidia.com/" target="_blank" rel="noopener">NVIDIA Build</a> (NIM) powered Master Coordinator <code>nvidia/nemotron-3-ultra-550b-a55b</code>, while <a href="https://huggingface.co/datasets/s7d11/chronicles-edition2-state" target="_blank" rel="noopener">Hugging Face Datasets</a> persists live 13-language checkpoints paired with our self-funded <a href="https://sebeni-swarm-live-6orlk3ix5a-uk.a.run.app" target="_blank" rel="noopener">Cloud Run SSE observatory</a>.
+            Inference API resources hosted on <a href="https://build.nvidia.com/" target="_blank" rel="noopener">NVIDIA Build</a> (NIM) powered Master Coordinator <code>nvidia/nemotron-3-ultra-550b-a55b</code>, while <a href="https://huggingface.co/datasets/s7d11/chronicles-edition2-state" target="_blank" rel="noopener">Hugging Face Datasets</a> persists all 13-language checkpoints paired with an on-demand, scale-to-zero self-funded <a href="https://sebeni-swarm-live-6orlk3ix5a-uk.a.run.app" target="_blank" rel="noopener">Cloud Run SSE observatory</a>.
           </div>
         </div>
       </section>

@@ -43,8 +43,81 @@
 
   async function hydrateFrontPage() {
     const kpiBox = document.getElementById("liveFactbox");
+    const ed2Box = document.getElementById("liveEd2Factbox");
+    const ed2Body = document.getElementById("frontEd2Body");
     const teaserBody = document.getElementById("frontTeaserBody");
     const archiveBody = document.getElementById("editionsArchiveBody");
+    const metaEl = document.getElementById("liveRunMeta");
+    const ribbonParts = [];
+
+    if (ed2Box || ed2Body) {
+      try {
+        const ed2 = await fetchJson("data/edition2.json");
+        const langs = ed2.langs || [];
+        const lb = ed2.leaderboard || [];
+        const topSwarm = lb[0];
+        const totalSessions = langs.reduce(
+          (sum, l) => sum + ((ed2.languages?.[l]?.clusters || []).length || 0),
+          0
+        );
+        const totalDictAdded = lb.reduce((sum, r) => sum + (r.total_dict_added || 0), 0);
+        const cleanCompiles = langs.reduce(
+          (sum, l) =>
+            sum +
+            (ed2.languages?.[l]?.clusters || []).filter((c) => c.shadow?.dict_compile_ok).length,
+          0
+        );
+        const topNative = [...lb].sort((a, b) => b.avg_native_parse_pct - a.avg_native_parse_pct)[0];
+        ribbonParts.push(
+          `EDITION NO. 2: ${langs.length}/13 LANGUAGES (${totalSessions} SESSIONS, +${totalDictAdded} VERIFIED DICT ENTRIES)`
+        );
+
+        if (ed2Box && topSwarm) {
+          ed2Box.innerHTML = `
+            <div class="spec-item">
+              <div class="lbl">Edition No. 2 Coverage</div>
+              <div class="val">${langs.length}/13 MULTI13 &bull; ${totalSessions} Sessions</div>
+              <div class="sub">9 Adaption clusters &bull; Coordinated by <code>nemotron-3-ultra-550b</code></div>
+            </div>
+            <div class="spec-item">
+              <div class="lbl">Top Swarm Cluster</div>
+              <div class="val">${esc(topSwarm.model_name)} (${topSwarm.avg_coordinator_score.toFixed(1)})</div>
+              <div class="sub">${topSwarm.unanimous_rate_pct.toFixed(0)}% unanimity &bull; ${esc(topSwarm.dominant_topology)} (${topSwarm.avg_agents.toFixed(1)} agents)</div>
+            </div>
+            <div class="spec-item">
+              <div class="lbl">Shadow DabaX Integrity</div>
+              <div class="val">${cleanCompiles}/${totalSessions} Clean &bull; +${totalDictAdded} Entries</div>
+              <div class="sub">0.0% phantom inflation &bull; Strictly validated parses</div>
+            </div>
+            <div class="spec-item">
+              <div class="lbl">Native-Command Parse Leader</div>
+              <div class="val">${esc(topNative.model_name)} (${topNative.avg_native_parse_pct.toFixed(1)}%)</div>
+              <div class="sub">${topNative.avg_header_compliance_pct.toFixed(1)}% header compliance on <code>prompt_native.csv</code></div>
+            </div>
+          `;
+        }
+
+        if (ed2Body) {
+          ed2Body.innerHTML = lb.map((r, idx) => `
+            <tr>
+              <td class="num">${idx + 1}</td>
+              <td><strong>${esc(r.model_name)}</strong></td>
+              <td class="num">${r.avg_agents.toFixed(1)}</td>
+              <td><span class="tag slm">${esc(r.dominant_topology)}</span></td>
+              <td class="num">${r.unanimous_rate_pct.toFixed(0)}% (${r.avg_rounds.toFixed(1)}R)</td>
+              <td class="num">+${r.total_dict_added} (${r.compile_ok_rate_pct.toFixed(0)}% OK)</td>
+              <td class="num">${r.avg_test_delta_pct >= 0 ? "+" : ""}${r.avg_test_delta_pct.toFixed(2)}%</td>
+              <td class="num">${r.avg_native_parse_pct.toFixed(1)}%</td>
+              <td class="num"><strong>${r.avg_coordinator_score.toFixed(1)}</strong></td>
+            </tr>
+          `).join("");
+        }
+      } catch (err) {
+        if (ed2Box) {
+          ed2Box.innerHTML = `<div class="spec-item"><div class="lbl">Edition No. 2 Status</div><div class="sub">Awaiting edition2.json (${esc(err.message)})</div></div>`;
+        }
+      }
+    }
 
     if (kpiBox || teaserBody) {
       try {
@@ -54,11 +127,7 @@
         const topQ = sortedQ[0];
         const topMin3 = [...models].sort((a, b) => b.q_min3 - a.q_min3)[0];
         const bestFert = [...models].sort((a, b) => a.fert - b.fert)[0];
-
-        const metaEl = document.getElementById("liveRunMeta");
-        if (metaEl) {
-          metaEl.textContent = `Updated ${data.generated_at} • ${models.length} models scored on ${data.total_samples} dev-mini samples (SHA ${data.manifest_sha256})`;
-        }
+        ribbonParts.push(`MALI13 LIVE: ${models.length} MODELS SCORED (${data.total_samples} SAMPLES)`);
 
         if (kpiBox && topQ) {
           kpiBox.innerHTML = `
@@ -107,6 +176,10 @@
           kpiBox.innerHTML = `<div class="spec-item"><div class="lbl">Live Status</div><div class="sub">Awaiting leaderboard.json (${esc(err.message)})</div></div>`;
         }
       }
+    }
+
+    if (metaEl && ribbonParts.length) {
+      metaEl.textContent = `THE SEBENI CHRONICLE • ${ribbonParts.join(" • ")}`;
     }
 
     if (archiveBody) {
