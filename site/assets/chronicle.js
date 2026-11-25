@@ -17,7 +17,8 @@
       applyTheme("newsprint");
     }
     const btn = document.getElementById("themeToggle");
-    if (!btn) return;
+    if (!btn || btn.dataset.themeBound) return;
+    btn.dataset.themeBound = "1";
     btn.addEventListener("click", () => {
       const next = document.documentElement.dataset.theme === "evening" ? "newsprint" : "evening";
       applyTheme(next);
@@ -33,6 +34,18 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  function getSiteRoot() {
+    const raw = (document.body && document.body.dataset && document.body.dataset.root) || ".";
+    return raw.replace(/\/+$/, "");
+  }
+
+  function resolveSiteUrl(relPath) {
+    const clean = String(relPath || "").replace(/^\/+/, "");
+    const root = getSiteRoot();
+    if (!root || root === ".") return clean;
+    return `${root}/${clean}`;
   }
 
   async function fetchJson(url) {
@@ -197,9 +210,248 @@
     }
   }
 
-  window.Chronicle = { esc, fetchJson };
+  async function hydrateCrossEditionNav() {
+    const pageId = (document.body && document.body.dataset && document.body.dataset.pageId) || "";
+    const navEl = document.querySelector("nav.ed-nav[data-chronicle-nav]");
+    if (!navEl && !pageId) return;
+
+    let editions = [];
+    try {
+      editions = await fetchJson(resolveSiteUrl("data/editions.json"));
+    } catch (_e) {
+      return;
+    }
+    if (!Array.isArray(editions) || !editions.length) return;
+
+    const byId = {};
+    const referencedBy = {};
+    editions.forEach((item) => {
+      if (!item || !item.id) return;
+      byId[item.id] = item;
+      referencedBy[item.id] = [];
+    });
+
+    editions.forEach((item) => {
+      if (!item || !item.id) return;
+      (item.builds_on || []).forEach((ref) => {
+        if (ref && ref.id && byId[ref.id] && !referencedBy[ref.id].some((x) => x.item.id === item.id)) {
+          referencedBy[ref.id].push({ item, note: ref.note || "" });
+        }
+      });
+      if (item.parent_edition && byId[item.parent_edition] && !referencedBy[item.parent_edition].some((x) => x.item.id === item.id)) {
+        referencedBy[item.parent_edition].push({
+          item,
+          note: `Companion publication for ${byId[item.parent_edition].short_title || item.parent_edition}.`,
+        });
+      }
+    });
+
+    const numbered = editions
+      .filter((x) => x.is_edition && typeof x.issue_num === "number")
+      .sort((a, b) => a.issue_num - b.issue_num);
+    const latestEdition = numbered.length ? numbered[numbered.length - 1] : editions[0];
+
+    if (navEl) {
+      const preserved = [...navEl.querySelectorAll('a[data-keep-nav="1"]')].map((a) => a.outerHTML);
+      const navLinks = [
+        `<a href="${esc(resolveSiteUrl("index.html"))}"${pageId === "front" ? ' class="active"' : ""}>Front Page</a>`,
+        ...editions.map((ed) => {
+          const isLatest = latestEdition && ed.id === latestEdition.id;
+          const badge = isLatest ? `<span class="nav-badge">Latest</span>` : "";
+          const label = esc(ed.short_title || ed.title);
+          return `<a href="${esc(resolveSiteUrl(ed.url))}"${ed.id === pageId ? ' class="active"' : ""}>${label}${badge}</a>`;
+        }),
+        ...preserved,
+      ];
+      navEl.innerHTML = navLinks.join("");
+    }
+
+    document.querySelectorAll("a[data-ref-id]").forEach((a) => {
+      const target = byId[a.dataset.refId];
+      if (target) a.href = resolveSiteUrl(target.url);
+    });
+
+    const current = byId[pageId];
+    if (!current || pageId === "front") return;
+
+    const effectiveIssueNum =
+      typeof current.issue_num === "number"
+        ? current.issue_num
+        : current.parent_edition && byId[current.parent_edition]
+          ? byId[current.parent_edition].issue_num
+          : null;
+
+    if (!document.getElementById("chronicleLineageStrip")) {
+      const anchorNav = document.querySelector("nav.ed-subnav") || navEl;
+      if (anchorNav && anchorNav.parentNode) {
+        const hasNewer =
+          latestEdition &&
+          typeof effectiveIssueNum === "number" &&
+          typeof latestEdition.issue_num === "number" &&
+          effectiveIssueNum < latestEdition.issue_num;
+        const strip = document.createElement("div");
+        strip.id = "chronicleLineageStrip";
+
+        if (hasNewer) {
+          strip.className = "lineage-strip";
+          const followUps = [latestEdition, ...(referencedBy[current.id] || []).map((x) => x.item)].filter(
+            (x, i, arr) => x && x.id !== current.id && arr.findIndex((y) => y.id === x.id) === i
+          );
+          strip.innerHTML = `
+            <div>
+              <span class="lineage-label">Newer Edition Published &rarr;</span>
+              <span>This ${esc(current.vol_issue)} dispatch is followed by <strong>${esc(latestEdition.short_title)}</strong> (${esc(latestEdition.date)}).</span>
+            </div>
+            <div class="lineage-links">
+              ${followUps
+                .map(
+                  (ed) =>
+                    `<a class="lineage-pill" href="${esc(resolveSiteUrl(ed.url))}">${esc(ed.short_title || ed.title)} &rarr;</a>`
+                )
+                .join("")}
+            </div>
+          `;
+          anchorNav.insertAdjacentElement("afterend", strip);
+        } else {
+          const backList = [...(current.builds_on || [])];
+          if (current.parent_edition && byId[current.parent_edition] && !backList.some((x) => x.id === current.parent_edition)) {
+            backList.unshift({ id: current.parent_edition, note: "" });
+          }
+          if (backList.length) {
+            strip.className = "lineage-strip older-ref";
+            strip.innerHTML = `
+              <div>
+                <span class="lineage-label">&larr; Builds On Earlier Dispatches</span>
+                <span>Prior editions &amp; companions referenced by ${esc(current.short_title)}:</span>
+              </div>
+              <div class="lineage-links">
+                ${backList
+                  .map((b) => byId[b.id])
+                  .filter(Boolean)
+                  .map(
+                    (ed) =>
+                      `<a class="lineage-pill" href="${esc(resolveSiteUrl(ed.url))}">&larr; ${esc(ed.short_title || ed.title)}</a>`
+                  )
+                  .join("")}
+              </div>
+            `;
+            anchorNav.insertAdjacentElement("afterend", strip);
+          }
+        }
+      }
+    }
+
+    if (!document.getElementById("chronicleCrossNav")) {
+      const sheet = document.querySelector(".sheet");
+      if (!sheet) return;
+      const colophon = sheet.querySelector("footer.colophon");
+
+      const prevEd =
+        typeof effectiveIssueNum === "number"
+          ? [...numbered].reverse().find((x) => x.issue_num < effectiveIssueNum)
+          : null;
+      const nextEd =
+        typeof effectiveIssueNum === "number"
+          ? numbered.find((x) => x.issue_num > effectiveIssueNum)
+          : null;
+
+      const buildsList = [...(current.builds_on || [])];
+      if (current.parent_edition && byId[current.parent_edition] && !buildsList.some((x) => x.id === current.parent_edition)) {
+        buildsList.unshift({
+          id: current.parent_edition,
+          note: `Parent edition for ${current.short_title}.`,
+        });
+      }
+
+      const forwardList = [...(referencedBy[current.id] || [])];
+      numbered.forEach((ed) => {
+        if (
+          typeof effectiveIssueNum === "number" &&
+          ed.issue_num > effectiveIssueNum &&
+          ed.id !== current.id &&
+          !forwardList.some((x) => x.item.id === ed.id)
+        ) {
+          forwardList.push({
+            item: ed,
+            note: `Successive issue published ${ed.date}.`,
+          });
+        }
+      });
+
+      const leftSlot = prevEd
+        ? `<a class="pager-slot pk-link" href="${esc(resolveSiteUrl(prevEd.url))}"><span class="pk">&larr; Previous Edition</span><span>${esc(prevEd.vol_issue)} &bull; ${esc(prevEd.short_title)}</span></a>`
+        : `<div class="pager-slot muted"><span class="pk">&larr; Series Start</span><span>Inaugural Vol. I, No. 1</span></div>`;
+
+      const rightSlot = nextEd
+        ? `<a class="pager-slot right pk-link" href="${esc(resolveSiteUrl(nextEd.url))}"><span class="pk">Newer Edition &rarr;</span><span>${esc(nextEd.vol_issue)} &bull; ${esc(nextEd.short_title)}</span></a>`
+        : `<div class="pager-slot right muted"><span class="pk">Current Issue</span><span>Latest Published Edition</span></div>`;
+
+      const centerSlot = `<a class="pager-slot center pk-link" href="${esc(resolveSiteUrl("index.html#archive"))}"><span class="pk">Chronicle Index</span><span>Front Page &amp; Archive</span></a>`;
+
+      const colsHtml = [];
+      if (buildsList.length) {
+        colsHtml.push(`
+          <div class="cont-col">
+            <h4>Builds On &amp; Earlier Foundations</h4>
+            <ul>
+              ${buildsList
+                .map((b) => {
+                  const target = byId[b.id];
+                  if (!target) return "";
+                  return `<li><a href="${esc(resolveSiteUrl(target.url))}"><strong>${esc(target.short_title || target.title)}</strong></a> <code>${esc(target.vol_issue)}</code>${b.note ? ` &mdash; ${esc(b.note)}` : ""}</li>`;
+                })
+                .join("")}
+            </ul>
+          </div>
+        `);
+      }
+      if (forwardList.length) {
+        colsHtml.push(`
+          <div class="cont-col">
+            <h4>Continued In &amp; Referenced By</h4>
+            <ul>
+              ${forwardList
+                .map(
+                  ({ item, note }) =>
+                    `<li><a href="${esc(resolveSiteUrl(item.url))}"><strong>${esc(item.short_title || item.title)}</strong></a> <code>${esc(item.vol_issue)}</code>${note ? ` &mdash; ${esc(note)}` : ""}</li>`
+                )
+                .join("")}
+            </ul>
+          </div>
+        `);
+      }
+
+      const sec = document.createElement("section");
+      sec.id = "chronicleCrossNav";
+      sec.className = "chronicle-continuity";
+      sec.setAttribute("aria-label", "Chronicle Edition Continuity");
+      sec.innerHTML = `
+        <div class="cont-head">
+          <h3>Chronicle Continuity &amp; Cross-Edition Dispatch Map</h3>
+          <span class="tag ${esc(current.tagCls || "sebeni")}">${esc(current.vol_issue)}</span>
+        </div>
+        <div class="continuity-pager">${leftSlot}${centerSlot}${rightSlot}</div>
+        ${colsHtml.length ? `<div class="continuity-grid${colsHtml.length === 1 ? " single" : ""}">${colsHtml.join("")}</div>` : ""}
+        <div class="continuity-pills">
+          <span style="font-weight:800;text-transform:uppercase;color:var(--ink-soft);margin-right:4px">All Dispatches:</span>
+          <a href="${esc(resolveSiteUrl("index.html"))}">Front Page</a>
+          ${editions
+            .map(
+              (ed) =>
+                `<a href="${esc(resolveSiteUrl(ed.url))}"${ed.id === current.id ? ' class="active"' : ""}>${esc(ed.short_title || ed.title)}</a>`
+            )
+            .join("")}
+        </div>
+      `;
+      if (colophon) colophon.parentNode.insertBefore(sec, colophon);
+      else sheet.appendChild(sec);
+    }
+  }
+
+  window.Chronicle = { esc, fetchJson, resolveSiteUrl };
   document.addEventListener("DOMContentLoaded", () => {
     initThemeToggle();
+    hydrateCrossEditionNav();
     hydrateFrontPage();
   });
 })();

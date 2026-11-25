@@ -6,7 +6,7 @@
   <title>THE SEBENI CHRONICLE — Live MALI13 Benchmark Leaderboard</title>
   <link rel="stylesheet" href="assets/chronicle.css" />
 </head>
-<body>
+<body data-root="." data-page-id="mali13-leaderboard">
   <div class="live-ribbon">
     <span class="dot"></span>
     <span id="lbLiveBanner">LIVE MALI13 BENCHMARK &bull; LOADING TELEMETRY FROM DATA/LEADERBOARD.JSON...</span>
@@ -28,16 +28,20 @@
       <p class="subtitle">MALI13 Live Leaderboard: Measuring Linguistic Fidelity, Cross-Language Equity, Tokenizer Fragmentation &amp; Compute Pareto Efficiency Across All 13 National Languages of Mali</p>
     </header>
 
-    <nav class="ed-nav">
+    <nav class="ed-nav" data-chronicle-nav="1">
       <a href="index.html">Front Page</a>
+      <a href="editions/vol-01-no-02/index.html">Edition No. 2 <span class="nav-badge">Latest</span></a>
+      <a href="editions/vol-01-no-02/theater.html">3D Swarm Theater</a>
       <a href="editions/vol-01-no-01/index.html">Edition No. 1</a>
       <a class="active" href="leaderboard.html">Live Leaderboard</a>
+      <a href="supplements/morphotactics-comparison.html">Morphotactics Supplement</a>
+    </nav>
+    <nav class="ed-subnav" aria-label="Leaderboard Sections">
       <a href="#sec-pareto">Pareto Frontier</a>
       <a href="#sec-equity">13-Language Equity</a>
       <a href="#sec-tokenizer">Tokenizer &amp; Diacritics</a>
       <a href="#sec-lid">LID Confusions</a>
       <a href="#sec-inspector">Sample Inspector</a>
-      <a href="supplements/morphotactics-comparison.html">Morphotactics Supplement</a>
     </nav>
 
     <!-- SECTION I: LEADERBOARD -->
