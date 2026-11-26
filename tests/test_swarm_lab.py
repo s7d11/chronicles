@@ -172,8 +172,9 @@ def test_pack_sebeni_runtime_minimal(tmp_path: Path) -> None:
     assert "beni/__init__.py" in names
     assert "beni/data/test.json" in names
     assert "beni/data/baselines/taq/baseline.dict" in names
+    assert "beni/data/raw/dataset_300_samples.jsonl" in names
     assert any(n.startswith("daba/") and n.endswith(".py") for n in names)
-    assert not any(".env" in n or "dataset_300_samples" in n for n in names)
+    assert not any(".env" in n for n in names)
 
 
 def test_viz_server_health_cors_and_admin_auth(tmp_path: Path, monkeypatch) -> None:

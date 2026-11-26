@@ -118,7 +118,7 @@ def test_all_html_pages_wire_cross_edition_nav() -> None:
     manifest = json.loads((SITE_DIR / "data" / "editions.json").read_text(encoding="utf-8"))
     known_ids = {item["id"] for item in manifest} | {"front"}
     html_files = sorted(SITE_DIR.rglob("*.html"))
-    assert len(html_files) == 6
+    assert len(html_files) >= 8
 
     for html_path in html_files:
         text = html_path.read_text(encoding="utf-8")

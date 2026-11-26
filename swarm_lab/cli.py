@@ -35,11 +35,13 @@ def main() -> None:
     p_pub.add_argument("--runs-dir", type=Path, default=DEFAULT_ED2_RUNS_DIR)
     p_pub.add_argument("--out-dir", type=Path, default=DEFAULT_SITE_DATA_DIR)
 
-    p_viz = sub.add_parser("viz", help="Serve Three.js Swarm Theater with real-time CORS SSE stream")
+    p_viz = sub.add_parser("viz", help="Serve Three.js Swarm Theater & Proof Observatory with CORS SSE")
     p_viz.add_argument("--host", default="127.0.0.1")
     p_viz.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8765")))
     p_viz.add_argument("--runs-dir", type=Path, default=DEFAULT_ED2_RUNS_DIR)
+    p_viz.add_argument("--ed3-runs-dir", type=Path, default=None)
     p_viz.add_argument("--auto-run-all-13", action="store_true")
+    p_viz.add_argument("--auto-run-ed3", action="store_true")
 
     p_pack = sub.add_parser("pack-runtime", help="Pack minimal beni + daba + baselines into tar.gz")
     p_pack.add_argument("--out", type=Path, required=True)
@@ -70,11 +72,14 @@ def main() -> None:
         print(f"Published Edition No. 2 ({len(payload.langs)} langs, {len(payload.leaderboard)} clusters) to {args.out_dir}")
     elif args.cmd == "viz":
         auto_run = bool(args.auto_run_all_13 or os.environ.get("AUTO_RUN_ALL_13") == "1")
+        auto_ed3 = bool(args.auto_run_ed3 or os.environ.get("AUTO_RUN_ED3") == "1")
         serve_viz(
             host=args.host,
             port=args.port,
             runs_dir=args.runs_dir,
             auto_run_all_13=auto_run,
+            ed3_runs_dir=args.ed3_runs_dir,
+            auto_run_ed3=auto_ed3,
         )
     elif args.cmd == "pack-runtime":
         out = pack_sebeni_runtime(args.out)

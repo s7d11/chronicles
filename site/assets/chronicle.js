@@ -56,12 +56,75 @@
 
   async function hydrateFrontPage() {
     const kpiBox = document.getElementById("liveFactbox");
+    const ed3Box = document.getElementById("liveEd3Factbox");
+    const ed3Body = document.getElementById("frontEd3Body");
     const ed2Box = document.getElementById("liveEd2Factbox");
     const ed2Body = document.getElementById("frontEd2Body");
     const teaserBody = document.getElementById("frontTeaserBody");
     const archiveBody = document.getElementById("editionsArchiveBody");
     const metaEl = document.getElementById("liveRunMeta");
     const ribbonParts = [];
+
+    if (ed3Box || ed3Body) {
+      try {
+        let ed3;
+        try {
+          ed3 = await fetchJson("data/edition3.json");
+        } catch (_staticErr) {
+          ed3 = await fetchJson("https://sebeni-swarm-live-6orlk3ix5a-uk.a.run.app/api/ed3/edition3.json");
+        }
+        const g = ed3.global_metrics || {};
+        const lb3 = ed3.model_leaderboard || [];
+        const top3 = lb3[0];
+        ribbonParts.push(
+          `EDITION NO. 3: ${g.n_langs || (ed3.langs || []).length}/14 CODES (${ed3.total_sentences || 0} SENTENCES, d(MER)=${g.mean_cohens_d_mer_corrupt ?? "-"})`
+        );
+
+        if (ed3Box) {
+          ed3Box.innerHTML = `
+            <div class="spec-item">
+              <div class="lbl">Edition No. 3 Stress Scope</div>
+              <div class="val">${g.n_langs || 0}/14 Codes &bull; ${ed3.total_sentences || 0} Rows</div>
+              <div class="sub">13 <code>MALI13</code> languages + <code>bbo</code> OOD control (<code>dataset_300_samples.jsonl</code>)</div>
+            </div>
+            <div class="spec-item">
+              <div class="lbl">MER &amp; MCS Effectiveness</div>
+              <div class="val">d=${g.mean_cohens_d_mer_corrupt ?? "-"} &bull; +${g.mean_shift_mcs_recovery_pct ?? "-"} pp LCS</div>
+              <div class="sub">${g.mean_mer_saturation_prevented_pct ?? "-"}% overgen saturation caught by <code>bounded_mer</code></div>
+            </div>
+            <div class="spec-item">
+              <div class="lbl">UWEC OOD Discriminability</div>
+              <div class="val">d=${g.mean_cohens_d_uwec_ood ?? "-"} &bull; ${g.mean_ood_strict_gap_pct ?? "-"} pp Gap</div>
+              <div class="sub"><code>bbo</code> OOD strict parse ${g.ood_bbo_strict_parse_pct ?? "-"}% vs. MALI13 ${g.mean_clean_strict_parse_pct ?? "-"}%</div>
+            </div>
+            ${top3 ? `<div class="spec-item">
+              <div class="lbl">Top NVIDIA Deduction Panelist</div>
+              <div class="val">${esc(top3.model_name)} (${top3.mean_effectiveness_score.toFixed(1)}/100)</div>
+              <div class="sub">${top3.oracle_verified}/${top3.oracle_total} live DabaX probes verified</div>
+            </div>` : ""}
+          `;
+        }
+
+        if (ed3Body) {
+          ed3Body.innerHTML = lb3.map((r, idx) => `
+            <tr>
+              <td class="num">${idx + 1}</td>
+              <td><strong>${esc(r.model_name)}</strong></td>
+              <td>${esc(r.params_label)}</td>
+              <td class="num">${r.langs_completed}/14</td>
+              <td class="num">${r.oracle_verified}/${r.oracle_total} (${r.oracle_pass_pct.toFixed(0)}%)</td>
+              <td class="num">${r.mean_r1_latency_s.toFixed(1)}s / ${r.mean_r2_latency_s.toFixed(1)}s</td>
+              <td><span class="tag ${r.dominant_verdict === "PROVEN_EFFECTIVE" ? "sebeni" : "slm"}">${esc(r.dominant_verdict)}</span></td>
+              <td class="num"><strong>${r.mean_effectiveness_score.toFixed(1)}</strong></td>
+            </tr>
+          `).join("");
+        }
+      } catch (err) {
+        if (ed3Box) {
+          ed3Box.innerHTML = `<div class="spec-item"><div class="lbl">Edition No. 3 Status</div><div class="sub">Awaiting edition3.json (${esc(err.message)})</div></div>`;
+        }
+      }
+    }
 
     if (ed2Box || ed2Body) {
       try {

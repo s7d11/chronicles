@@ -22,10 +22,11 @@ RUN pip install --no-cache-dir \
 COPY pyproject.toml prompt_native.csv entrypoint.sh /home/user/app/
 COPY bench/ /home/user/app/bench/
 COPY swarm_lab/ /home/user/app/swarm_lab/
+COPY proof_lab/ /home/user/app/proof_lab/
 COPY site/ /home/user/app/site/
 
 RUN chmod +x /home/user/app/entrypoint.sh \
-    && mkdir -p /home/user/app/runtime_vendor /home/user/app/runs/edition2 \
+    && mkdir -p /home/user/app/runtime_vendor /home/user/app/runs/edition2 /home/user/app/runs/edition3 \
     && chown -R user:user /home/user/app
 
 USER user

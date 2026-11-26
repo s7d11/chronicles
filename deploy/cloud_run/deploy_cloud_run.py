@@ -56,7 +56,10 @@ def deploy_cloud_run(
     service: str = "sebeni-swarm-live",
     runtime_repo: str = "s7d11/sebeni-runtime-private",
     state_repo: str = "s7d11/chronicles-edition2-state",
+    ed3_state_repo: str = "s7d11/chronicles-edition3-state",
     keep_warm: bool = False,
+    auto_run_ed2: bool = False,
+    auto_run_ed3: bool = False,
 ) -> str:
     load_env()
     hf_tok = os.environ.get("HF_KEY") or os.environ.get("HF_TOKEN") or ""
@@ -125,6 +128,7 @@ def deploy_cloud_run(
             shutil.copy2(REPO_ROOT / root_file, stage / root_file)
         _copy_clean_tree(REPO_ROOT / "bench", stage / "bench")
         _copy_clean_tree(REPO_ROOT / "swarm_lab", stage / "swarm_lab")
+        _copy_clean_tree(REPO_ROOT / "proof_lab", stage / "proof_lab")
         _copy_clean_tree(REPO_ROOT / "site", stage / "site")
 
         env_vars = {
@@ -132,9 +136,11 @@ def deploy_cloud_run(
             "ADOPTION_KEY": adoption_key,
             "NVIDIA_KEY": nvidia_key,
             "SWARM_ADMIN_TOKEN": admin_tok,
-            "AUTO_RUN_ALL_13": "1" if keep_warm else "0",
+            "AUTO_RUN_ALL_13": "1" if auto_run_ed2 else "0",
+            "AUTO_RUN_ED3": "1" if auto_run_ed3 else "0",
             "SEBENI_RUNTIME_REPO": runtime_repo,
             "SWARM_STATE_REPO": state_repo,
+            "ED3_STATE_REPO": ed3_state_repo,
         }
         env_yaml = Path(tmp) / "env.yaml"
         env_yaml.write_text(
@@ -207,14 +213,18 @@ def main() -> None:
     parser.add_argument(
         "--keep-warm",
         action="store_true",
-        help="Pin min-instances=1 with AUTO_RUN_ALL_13=1 for active batch runs (incurs billing).",
+        help="Pin min-instances=1 with no CPU throttling for active batch runs (incurs billing).",
     )
+    parser.add_argument("--auto-run-ed2", action="store_true", help="Auto-start pending Edition 2 runs on boot.")
+    parser.add_argument("--auto-run-ed3", action="store_true", help="Auto-start pending Edition 3 runs on boot.")
     args = parser.parse_args()
     deploy_cloud_run(
         project=args.project,
         region=args.region,
         service=args.service,
         keep_warm=args.keep_warm,
+        auto_run_ed2=args.auto_run_ed2,
+        auto_run_ed3=args.auto_run_ed3,
     )
 
 

@@ -17,10 +17,13 @@ from urllib.parse import parse_qs, urlparse
 
 from swarm_lab import ALL_LANGS, DEFAULT_LANGS
 from swarm_lab.hf_sync import push_language_state_to_hf
+from proof_lab import DATASET_LANGS
+from proof_lab.hf_sync import push_ed3_language_to_hf
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SITE_DIR = REPO_ROOT / "site"
 DEFAULT_RUNS_DIR = REPO_ROOT / "runs" / "edition2"
+DEFAULT_ED3_RUNS_DIR = REPO_ROOT / "runs" / "edition3"
 
 
 def ordered_all_langs() -> List[str]:
@@ -162,12 +165,122 @@ class LiveSwarmController:
             self.running = False
 
 
+class LiveProofController:
+    """Single-flight background runner executing Edition No. 3 sequentially across 14 dataset_300 langs."""
+
+    def __init__(
+        self,
+        *,
+        runs_dir: Path = DEFAULT_ED3_RUNS_DIR,
+        site_dir: Path = SITE_DIR,
+        state_repo: Optional[str] = None,
+        run_fn: Optional[Callable[[str, Path, bool], object]] = None,
+    ):
+        self.runs_dir = runs_dir
+        self.site_dir = site_dir
+        self.state_repo = state_repo or os.environ.get("ED3_STATE_REPO", "")
+        self._run_fn = run_fn
+        self._lock = threading.Lock()
+        self.running = False
+        self.active_lang: Optional[str] = None
+        self.stop_requested = False
+        self.last_error: Optional[str] = None
+        self._thread: Optional[threading.Thread] = None
+
+    def completed_langs(self) -> List[str]:
+        return [l for l in DATASET_LANGS if (self.runs_dir / l / "result.json").is_file()]
+
+    def list_runs(self) -> List[Dict[str, object]]:
+        live_dir = self.runs_dir / "live"
+        items: List[Dict[str, object]] = []
+        for lang in DATASET_LANGS:
+            live_p = live_dir / f"{lang}.jsonl"
+            res_p = self.runs_dir / lang / "result.json"
+            done = res_p.is_file()
+            n_ev = 0
+            mtime = 0.0
+            if live_p.is_file():
+                try:
+                    lines = [ln for ln in live_p.read_text(encoding="utf-8").splitlines() if ln.strip()]
+                    n_ev = len(lines)
+                    mtime = live_p.stat().st_mtime
+                except Exception:
+                    pass
+            elif done:
+                mtime = res_p.stat().st_mtime
+            items.append({"lang": lang, "events": n_ev, "mtime": mtime, "done": done, "active": (lang == self.active_lang)})
+        return items
+
+    def health_snapshot(self) -> Dict[str, object]:
+        done = self.completed_langs()
+        pending = [l for l in DATASET_LANGS if l not in done]
+        return {
+            "status": "ok",
+            "edition": 3,
+            "running": self.running,
+            "active_lang": self.active_lang,
+            "completed_langs": done,
+            "pending_langs": pending,
+            "total_langs": len(DATASET_LANGS),
+            "last_error": self.last_error,
+            "state_repo": self.state_repo or None,
+        }
+
+    def start(self, langs: Sequence[str], *, resume: bool = True) -> bool:
+        clean_langs = [l for l in langs if l in DATASET_LANGS]
+        if not clean_langs:
+            return False
+        with self._lock:
+            if self.running:
+                return False
+            self.running = True
+            self.stop_requested = False
+            self.last_error = None
+            t = threading.Thread(target=self._worker, args=(clean_langs, resume), daemon=True, name="edition3-live-runner")
+            self._thread = t
+            t.start()
+            return True
+
+    def stop(self) -> None:
+        with self._lock:
+            self.stop_requested = True
+
+    def _worker(self, langs: List[str], resume: bool) -> None:
+        from proof_lab.runner import publish_edition3, run_language_proof
+
+        site_data_dir = self.site_dir / "data"
+        try:
+            for lang in langs:
+                if self.stop_requested:
+                    break
+                if resume and (self.runs_dir / lang / "result.json").is_file():
+                    continue
+                self.active_lang = lang
+                try:
+                    if self._run_fn is not None:
+                        self._run_fn(lang, self.runs_dir, resume)
+                    else:
+                        asyncio.run(run_language_proof(lang, runs_dir=self.runs_dir, resume=resume))
+                        publish_edition3(runs_dir=self.runs_dir, out_dir=site_data_dir)
+                        hf_tok = os.environ.get("HF_KEY") or os.environ.get("HF_TOKEN") or ""
+                        if self.state_repo and hf_tok:
+                            push_ed3_language_to_hf(self.state_repo, self.runs_dir, lang, site_data_dir, hf_tok)
+                except Exception as exc:
+                    self.last_error = f"{lang}: {type(exc).__name__}: {str(exc)[:220]}"
+                    print(f"[proof-runner] error on {lang}: {self.last_error}", flush=True)
+        finally:
+            self.active_lang = None
+            self.running = False
+
+
 class SwarmVizHandler(SimpleHTTPRequestHandler):
     """Serves static site/ assets alongside CORS SSE streams and admin triggers."""
 
     runs_dir: Path = DEFAULT_RUNS_DIR
+    ed3_runs_dir: Path = DEFAULT_ED3_RUNS_DIR
     site_dir: Path = SITE_DIR
     controller: Optional[LiveSwarmController] = None
+    ed3_controller: Optional[LiveProofController] = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(self.site_dir), **kwargs)
@@ -251,12 +364,39 @@ class SwarmVizHandler(SimpleHTTPRequestHandler):
             if lang not in ALL_LANGS:
                 self._send_json({"error": f"Unknown language '{lang}'"}, status=404)
                 return
-            self._stream_sse(lang)
+            self._stream_jsonl_sse(self.runs_dir / "live" / f"{lang}.jsonl")
+            return
+
+        # Edition No. 3 live routes (SebeniProofs 14-language stress tests & direct deductions)
+        ed3 = self.ed3_controller
+        ed3_active = ed3.active_lang if ed3 else None
+        if parsed.path == "/api/ed3/health":
+            snap = ed3.health_snapshot() if ed3 else {"status": "ok", "edition": 3, "running": False}
+            self._send_json(snap)
+            return
+        if parsed.path == "/api/ed3/runs":
+            runs = ed3.list_runs() if ed3 else [{"lang": l, "events": 0, "mtime": 0.0, "done": False, "active": False} for l in DATASET_LANGS]
+            self._send_json({"runs": runs})
+            return
+        if parsed.path == "/api/ed3/edition3.json":
+            self._send_file_json(self.site_dir / "data" / "edition3.json")
+            return
+        if parsed.path == "/api/ed3/edition3_events.json":
+            self._send_file_json(self.site_dir / "data" / "edition3_events.json")
+            return
+        if parsed.path == "/api/ed3/stream":
+            qs = parse_qs(parsed.query)
+            lang = (qs.get("lang") or [""])[0].strip().lower() or str(ed3_active or DATASET_LANGS[0])
+            if lang not in DATASET_LANGS:
+                self._send_json({"error": f"Unknown Edition 3 language '{lang}'"}, status=404)
+                return
+            ed3_root = ed3.runs_dir if ed3 else self.ed3_runs_dir
+            self._stream_jsonl_sse(ed3_root / "live" / f"{lang}.jsonl")
             return
 
         if parsed.path == "/" and (os.environ.get("SPACE_ID") or os.environ.get("K_SERVICE")):
             self.send_response(302)
-            self.send_header("Location", "/editions/vol-01-no-02/theater.html")
+            self.send_header("Location", "/editions/vol-01-no-03/observatory.html")
             self.end_headers()
             return
 
@@ -264,19 +404,22 @@ class SwarmVizHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
-        if parsed.path not in {"/api/admin/trigger", "/api/admin/stop"}:
+        allowed = {"/api/admin/trigger", "/api/admin/stop", "/api/ed3/admin/trigger", "/api/ed3/admin/stop"}
+        if parsed.path not in allowed:
             self._send_json({"error": "Not found"}, status=404)
             return
         auth_err = self._check_admin_auth()
         if auth_err is not None:
             self._send_json(auth_err[1], status=auth_err[0])
             return
-        ctrl = self.controller
+
+        is_ed3 = parsed.path.startswith("/api/ed3/")
+        ctrl = self.ed3_controller if is_ed3 else self.controller
         if ctrl is None:
             self._send_json({"error": "Controller unavailable"}, status=503)
             return
 
-        if parsed.path == "/api/admin/stop":
+        if parsed.path.endswith("/stop"):
             ctrl.stop()
             self._send_json({"stopping": True})
             return
@@ -289,25 +432,25 @@ class SwarmVizHandler(SimpleHTTPRequestHandler):
             self._send_json({"error": "Invalid JSON body"}, status=400)
             return
 
+        valid_set = list(DATASET_LANGS) if is_ed3 else ordered_all_langs()
         req_langs = body.get("langs", "all")
         resume = bool(body.get("resume", True))
         if req_langs == "all":
-            langs = ordered_all_langs()
+            langs = valid_set
         elif isinstance(req_langs, list):
-            langs = [str(x).strip().lower() for x in req_langs if str(x).strip().lower() in ALL_LANGS]
+            langs = [str(x).strip().lower() for x in req_langs if str(x).strip().lower() in valid_set]
         else:
-            langs = [x.strip().lower() for x in str(req_langs).split(",") if x.strip().lower() in ALL_LANGS]
+            langs = [x.strip().lower() for x in str(req_langs).split(",") if x.strip().lower() in valid_set]
 
         if not langs:
-            self._send_json({"error": "No valid MULTI13 language codes provided"}, status=400)
+            self._send_json({"error": "No valid language codes provided"}, status=400)
             return
         if not ctrl.start(langs, resume=resume):
-            self._send_json({"error": "A swarm run is already active", "active_lang": ctrl.active_lang}, status=409)
+            self._send_json({"error": "A run is already active", "active_lang": ctrl.active_lang}, status=409)
             return
         self._send_json({"accepted": True, "langs": langs, "resume": resume}, status=202)
 
-    def _stream_sse(self, lang: str) -> None:
-        jsonl_path = self.runs_dir / "live" / f"{lang}.jsonl"
+    def _stream_jsonl_sse(self, jsonl_path: Path) -> None:
         self.send_response(HTTPStatus.OK)
         self._cors_headers()
         self.send_header("Content-Type", "text/event-stream; charset=utf-8")
@@ -357,6 +500,8 @@ def make_handler_class(
     runs_dir: Path = DEFAULT_RUNS_DIR,
     site_dir: Path = SITE_DIR,
     controller: Optional[LiveSwarmController] = None,
+    ed3_runs_dir: Path = DEFAULT_ED3_RUNS_DIR,
+    ed3_controller: Optional[LiveProofController] = None,
 ) -> type:
     """Create a bound SwarmVizHandler class (useful for tests & multi-instance servers)."""
 
@@ -364,8 +509,10 @@ def make_handler_class(
         pass
 
     BoundHandler.runs_dir = runs_dir
+    BoundHandler.ed3_runs_dir = ed3_runs_dir
     BoundHandler.site_dir = site_dir
     BoundHandler.controller = controller
+    BoundHandler.ed3_controller = ed3_controller
     return BoundHandler
 
 
@@ -377,24 +524,35 @@ def serve_viz(
     site_dir: Path = SITE_DIR,
     auto_run_all_13: bool = False,
     state_repo: Optional[str] = None,
+    ed3_runs_dir: Optional[Path] = None,
+    auto_run_ed3: bool = False,
+    ed3_state_repo: Optional[str] = None,
 ) -> None:
     mimetypes.add_type("application/javascript", ".js")
     mimetypes.add_type("text/css", ".css")
 
-    controller = LiveSwarmController(
-        runs_dir=runs_dir,
-        site_dir=site_dir,
-        state_repo=state_repo,
-    )
+    ed3_dir = ed3_runs_dir or DEFAULT_ED3_RUNS_DIR
+    controller = LiveSwarmController(runs_dir=runs_dir, site_dir=site_dir, state_repo=state_repo)
+    ed3_ctrl = LiveProofController(runs_dir=ed3_dir, site_dir=site_dir, state_repo=ed3_state_repo)
+
     if auto_run_all_13:
         pending = [l for l in ordered_all_langs() if not (runs_dir / l / "language_summary.json").is_file()]
         if pending:
-            print(f"[swarm-viz] Auto-starting remaining {len(pending)}/13 languages: {', '.join(pending)}", flush=True)
+            print(f"[swarm-viz] Auto-starting remaining {len(pending)}/13 Ed.2 languages: {', '.join(pending)}", flush=True)
             controller.start(pending, resume=True)
-        else:
-            print("[swarm-viz] All 13 languages already completed.", flush=True)
+    if auto_run_ed3:
+        pending3 = [l for l in DATASET_LANGS if not (ed3_dir / l / "result.json").is_file()]
+        if pending3:
+            print(f"[proof-viz] Auto-starting remaining {len(pending3)}/14 Ed.3 languages: {', '.join(pending3)}", flush=True)
+            ed3_ctrl.start(pending3, resume=True)
 
-    handler_cls = make_handler_class(runs_dir=runs_dir, site_dir=site_dir, controller=controller)
+    handler_cls = make_handler_class(
+        runs_dir=runs_dir,
+        site_dir=site_dir,
+        controller=controller,
+        ed3_runs_dir=ed3_dir,
+        ed3_controller=ed3_ctrl,
+    )
     server = ThreadingHTTPServer((host, port), handler_cls)
-    print(f"[swarm-viz] Listening on http://{host}:{port}/editions/vol-01-no-02/theater.html", flush=True)
+    print(f"[chronicle-viz] Listening on http://{host}:{port}/editions/vol-01-no-03/observatory.html", flush=True)
     server.serve_forever()
