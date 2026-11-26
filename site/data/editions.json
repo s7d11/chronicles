@@ -8,7 +8,7 @@
     "vol_issue": "VOL. I · NO. 4",
     "date": "2026-11-26",
     "title": "Edition No. 4: The Living Lexicon Village — Scaling MALI13 Dictionaries Toward 50,000 Standardized Entries",
-    "summary": "Cloud-executed Three.js Sudano-Sahelian village orchestrated by Mande (nemotron-3-ultra-550b-a55b) with all 9 Adaption Labs models (5+ villagers & 4-Chair Field Linguist Council) and Primary Critic Gemini 4 Argon enforcing 5-gate DNAFLA & DabaX standardization.",
+    "summary": "Cloud-executed Three.js Sudano-Sahelian village orchestrated by Mande (nemotron-3-ultra-550b-a55b) with all 9 Adaption Labs models (5+ villagers & 4-Chair Field Linguist Council) and Primary Critic Gemini 3.5 Flash enforcing 5-gate DNAFLA & DabaX standardization.",
     "url": "editions/vol-01-no-04/index.html",
     "kind": "Lead Edition",
     "tagCls": "api",
@@ -39,15 +39,15 @@
     "parent_edition": "vol-01-no-04",
     "vol_issue": "3D VILLAGE WORLD",
     "date": "2026-11-26",
-    "title": "Edition No. 4 Three.js Living Lexicon Village & Cloud Run SSE Observatory",
-    "summary": "Sunlit & lantern-lit traditional Sudano-Sahelian 3D village featuring walking agents, specialist spawns, exchange logs, and 5-gate Council + Gemini 4 Argon deliberations.",
+    "title": "Edition No. 4 Three.js Living Lexicon Village & Realtime Firestore Observatory",
+    "summary": "Sunlit & lantern-lit traditional Sudano-Sahelian 3D village featuring walking agents, specialist spawns, exchange logs, and 5-gate Council + batched Gemini 3.5 Flash deliberations synced live via Cloud Firestore.",
     "url": "editions/vol-01-no-04/world.html",
     "kind": "3D World",
     "tagCls": "slm",
     "builds_on": [
       {
         "id": "vol-01-no-04",
-        "note": "Interactive Three.js village stage and Cloud Run SSE live viewer for Edition No. 4."
+        "note": "Interactive Three.js village stage and realtime Cloud Firestore viewer for Edition No. 4."
       }
     ]
   },

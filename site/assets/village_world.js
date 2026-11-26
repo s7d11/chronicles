@@ -13,6 +13,28 @@ const FIREBASE_WEB_CONFIG = {
   appId: "1:172515745748:web:188db7dbb811d4bbcfc041",
   databaseId: "chronicles-live",
 };
+const FS_REST_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_WEB_CONFIG.projectId}/databases/${FIREBASE_WEB_CONFIG.databaseId}/documents`;
+
+function decodeFsVal(v) {
+  if (!v || typeof v !== "object") return v;
+  if ("stringValue" in v) return v.stringValue;
+  if ("integerValue" in v) return Number(v.integerValue);
+  if ("doubleValue" in v) return Number(v.doubleValue);
+  if ("booleanValue" in v) return Boolean(v.booleanValue);
+  if ("nullValue" in v) return null;
+  if ("arrayValue" in v) return ((v.arrayValue && v.arrayValue.values) || []).map(decodeFsVal);
+  if ("mapValue" in v) return decodeFsFields((v.mapValue && v.mapValue.fields) || {});
+  return null;
+}
+
+function decodeFsFields(fields) {
+  const out = {};
+  if (!fields || typeof fields !== "object") return out;
+  for (const [k, v] of Object.entries(fields)) {
+    out[k] = decodeFsVal(v);
+  }
+  return out;
+}
 
 const VILLAGE_ZONES = {
   toguna_council: { label: "Council Toguna", x: 0.0, z: -3.5 },
@@ -188,6 +210,9 @@ class LivingVillageWorld {
     this.fsSdk = null;
     this.fsGlobalUnsub = null;
     this.fsLangUnsubs = [];
+    this.fsRestTimer = null;
+    this.fsWatchdogTimer = null;
+    this.fsReceivedSnapshot = false;
     this.activeTab = "exchanges";
     this.selectedAgentId = "mande";
     this.camPreset = "overview";
@@ -492,7 +517,7 @@ class LivingVillageWorld {
     toguna.position.set(VILLAGE_ZONES.toguna_council.x, 0, VILLAGE_ZONES.toguna_council.z);
     scene.add(toguna);
 
-    // 3. Gemini 4 Argon High Critic Bench (-4.5, -4.5)
+    // 3. Gemini 3.5 Flash Critic Bench (-4.5, -4.5)
     const criticGroup = new THREE.Group();
     const criticStone = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.28, 1.5), this.bancoMat);
     criticStone.position.y = 0.14;
@@ -755,17 +780,19 @@ class LivingVillageWorld {
     this._renderLangRibbon();
     this.liveEvents = this.eventsByLang[lang] || [];
     const rawSt = (this.ed4Summary && this.ed4Summary.languages && this.ed4Summary.languages[lang]) || {};
-    this.liveState = { ...rawSt, active_agents: (rawSt.active_agents || []).slice() };
+    this.liveState = { ...rawSt, active_agents: this._normalizeLiveAgents(rawSt.active_agents || [], rawSt, this.liveEvents) };
     this._syncAgentsFromState(this.liveState);
     this.liveExchanges = (this.liveState.recent_exchanges || []).slice();
-    this.liveDecisions = (this.liveState.recent_decisions || []).slice();
+    const evDecisions = this._rebuildDecisionsFromEvents(this.liveEvents);
+    this.liveDecisions = evDecisions.length ? evDecisions : (this.liveState.recent_decisions || []).slice();
     this._updateTelemetryBar(this.liveState);
     this.$scrub.max = String(Math.max(0, this.liveEvents.length));
     this.seekTo(this.liveEvents.length > 0 ? Math.min(2, this.liveEvents.length) : 0);
     if (this.sse) {
       this._connectLiveSse();
-    } else if (this.followLive && this.fsDb) {
-      this._subscribeFirestoreLang(lang);
+    } else if (this.followLive) {
+      if (this.fsRestTimer) this._startFirestoreRestSync(lang);
+      else if (this.fsDb) this._subscribeFirestoreLang(lang);
     }
   }
 
@@ -910,6 +937,255 @@ class LivingVillageWorld {
         this.fsLangUnsubs.pop()();
       } catch (_) {}
     }
+    if (this.fsRestTimer) {
+      clearInterval(this.fsRestTimer);
+      this.fsRestTimer = null;
+    }
+    if (this.fsWatchdogTimer) {
+      clearTimeout(this.fsWatchdogTimer);
+      this.fsWatchdogTimer = null;
+    }
+  }
+
+  _rebuildDecisionsFromEvents(events) {
+    const out = [];
+    const seen = new Set();
+    const ordered = (events || []).slice().sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
+    for (const ev of ordered) {
+      if (ev.kind !== "lexicon_commit" && ev.kind !== "gram_commit" && ev.kind !== "council_reject") {
+        continue;
+      }
+      const m = ev.meta || {};
+      if (!m.candidate_raw) continue;
+      const key = `${ev.seq || ""}:${m.turn_id || ev.turn_id}:${m.candidate_raw}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({ ...m, turn_id: Number(m.turn_id ?? ev.turn_id ?? 0) });
+    }
+    return out.slice(-40);
+  }
+
+  _normalizeLiveAgents(agents, st = {}, events = []) {
+    const usesFlash = Number(st.total_turns || 0) > 10 ||
+      String(st.critic_model || "").includes("3.5") ||
+      (events || []).some((e) => Number(e.turn_id || 0) > 10 || String(e.label || "").includes("3.5 Flash"));
+    return (agents || []).map((ag) => {
+      if (usesFlash && ag && (ag.agent_id === "argon-critic" || ag.role === "critic")) {
+        return {
+          ...ag,
+          name: "Flash Critic",
+          title: "Primary Standardization Critic (Gemini 3.5 Flash)",
+          model_id: "gemini-3.5-flash",
+        };
+      }
+      return ag;
+    });
+  }
+
+  _applyFirestoreLangState(lang, parsed, modeLabel = "Realtime Synced") {
+    this.fsReceivedSnapshot = true;
+    if (this.fsWatchdogTimer) {
+      clearTimeout(this.fsWatchdogTimer);
+      this.fsWatchdogTimer = null;
+    }
+    parsed.active_agents = this._normalizeLiveAgents(parsed.active_agents || [], parsed, this.liveEvents);
+    if (parsed.active_agents.some((a) => a.model_id === "gemini-3.5-flash")) {
+      parsed.critic_model = "gemini-3.5-flash";
+    }
+    if (this.ed4Summary && this.ed4Summary.languages) {
+      this.ed4Summary.languages[lang] = { ...(this.ed4Summary.languages[lang] || {}), ...parsed };
+      this._renderLangRibbon();
+      this._renderProgressTable();
+    }
+    const prevCount = this.agentNodes.size;
+    this.liveState = parsed;
+    if (prevCount === 0 || (parsed.active_agents && parsed.active_agents.length > prevCount)) {
+      this._syncAgentsFromState(this.liveState);
+    }
+    if (parsed.recent_exchanges && parsed.recent_exchanges.length) {
+      this.liveExchanges = parsed.recent_exchanges;
+    }
+    const evDecisions = this._rebuildDecisionsFromEvents(this.liveEvents);
+    if (evDecisions.length) {
+      this.liveDecisions = evDecisions;
+    } else if (parsed.recent_decisions && parsed.recent_decisions.length) {
+      this.liveDecisions = parsed.recent_decisions;
+    }
+    this._updateTelemetryBar(this.liveState);
+    this.$modeStatus.textContent = parsed.running
+      ? `Live Job Active · Turn ${parsed.total_turns || 0} (${lang.toUpperCase()})`
+      : `${modeLabel} · Turn ${parsed.total_turns || 0} (${lang.toUpperCase()})`;
+    this._renderSideTab();
+  }
+
+  _ingestEventList(lang, incoming, jumpToLatest = false) {
+    if (!incoming || !incoming.length) return;
+    this.fsReceivedSnapshot = true;
+    if (this.fsWatchdogTimer) {
+      clearTimeout(this.fsWatchdogTimer);
+      this.fsWatchdogTimer = null;
+    }
+    const bySeq = new Map();
+    for (const e of this.liveEvents) {
+      if (e && e.lang === lang) bySeq.set(Number(e.seq || 0), e);
+    }
+    const newlyAdded = [];
+    for (const e of incoming) {
+      const seqNum = Number(e.seq || 0);
+      if (!bySeq.has(seqNum)) {
+        newlyAdded.push(e);
+      }
+      bySeq.set(seqNum, e);
+    }
+    this.liveEvents = Array.from(bySeq.values()).sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
+    this.eventsByLang[lang] = this.liveEvents;
+    const rebuilt = this._rebuildDecisionsFromEvents(this.liveEvents);
+    if (rebuilt.length) {
+      this.liveDecisions = rebuilt;
+    }
+    if (this.liveState) {
+      this.liveState.active_agents = this._normalizeLiveAgents(this.liveState.active_agents || [], this.liveState, this.liveEvents);
+    }
+    this.$scrub.max = String(this.liveEvents.length);
+    if (jumpToLatest) {
+      this.seekTo(this.liveEvents.length);
+    } else if (newlyAdded.length) {
+      newlyAdded.sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
+      for (const ev of newlyAdded.slice(-6)) {
+        this._ingestLiveTelemetry(ev);
+        if (this.followLive) this._applyEventVisual(ev, true);
+      }
+      if (this.followLive) {
+        this.cursor = this.liveEvents.length;
+        this.$scrub.value = String(this.cursor);
+        this.$cursorTxt.textContent = `${this.cursor} / ${this.liveEvents.length}`;
+        const lastEv = this.liveEvents[this.liveEvents.length - 1];
+        if (lastEv) {
+          this.$modeStatus.textContent = `Live Realtime · Turn ${lastEv.turn_id} (${lang.toUpperCase()})`;
+        }
+      }
+      this._renderSideTab();
+    }
+  }
+
+  _decodeRawEventFields(lang, raw) {
+    let pathArr = [];
+    let metaObj = {};
+    try { pathArr = JSON.parse(raw.path_json || "[]"); } catch (_) {}
+    try { metaObj = JSON.parse(raw.meta_json || "{}"); } catch (_) {}
+    return {
+      seq: Number(raw.seq || 0),
+      turn_id: Number(raw.turn_id || 0),
+      ts: raw.ts || "",
+      lang: raw.lang || lang,
+      kind: raw.kind || "",
+      agent_id: raw.agent_id || "",
+      target_agent_id: raw.target_agent_id || "",
+      zone: raw.zone || "",
+      target_zone: raw.target_zone || "",
+      label: raw.label || "",
+      summary: raw.summary || "",
+      path: pathArr,
+      meta: metaObj,
+    };
+  }
+
+  async _pollFirestoreRestOnce(lang, initialLoad = false) {
+    try {
+      const lastSeq = (initialLoad || !this.liveEvents.length)
+        ? 0
+        : Number(this.liveEvents[this.liveEvents.length - 1].seq || 0);
+      const evQueryBody = lastSeq > 0
+        ? {
+            structuredQuery: {
+              from: [{ collectionId: "events" }],
+              where: {
+                fieldFilter: {
+                  field: { fieldPath: "seq" },
+                  op: "GREATER_THAN",
+                  value: { integerValue: String(lastSeq) },
+                },
+              },
+              orderBy: [{ field: { fieldPath: "seq" }, direction: "ASCENDING" }],
+              limit: 120,
+            },
+          }
+        : {
+            structuredQuery: {
+              from: [{ collectionId: "events" }],
+              orderBy: [{ field: { fieldPath: "seq" }, direction: "DESCENDING" }],
+              limit: 300,
+            },
+          };
+
+      const [docRes, evRes, allRes] = await Promise.all([
+        fetch(`${FS_REST_BASE}/ed4_languages/${encodeURIComponent(lang)}`),
+        fetch(`${FS_REST_BASE}/ed4_languages/${encodeURIComponent(lang)}:runQuery`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(evQueryBody),
+        }),
+        fetch(`${FS_REST_BASE}:runQuery`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ structuredQuery: { from: [{ collectionId: "ed4_languages" }], limit: 20 } }),
+        }),
+      ]);
+
+      if (this.selectedLang !== lang || !this.followLive) return;
+
+      if (allRes.ok) {
+        const rows = await allRes.json();
+        if (!this.ed4Summary) this.ed4Summary = { languages: {} };
+        if (!this.ed4Summary.languages) this.ed4Summary.languages = {};
+        for (const r of rows || []) {
+          if (!r || !r.document) continue;
+          const d = decodeFsFields(r.document.fields || {});
+          const code = d.lang || String(r.document.name || "").split("/").pop();
+          if (code) {
+            const parsed = this._parseFirestoreLangDoc(code, d);
+            this.ed4Summary.languages[code] = { ...(this.ed4Summary.languages[code] || {}), ...parsed };
+          }
+        }
+        this._renderLangRibbon();
+        this._renderProgressTable();
+      }
+
+      if (evRes.ok) {
+        const rows = await evRes.json();
+        const incoming = [];
+        for (const r of rows || []) {
+          if (!r || !r.document) continue;
+          incoming.push(this._decodeRawEventFields(lang, decodeFsFields(r.document.fields || {})));
+        }
+        if (incoming.length) {
+          this._ingestEventList(lang, incoming, lastSeq === 0);
+        }
+      }
+
+      if (docRes.ok) {
+        const docJson = await docRes.json();
+        if (docJson && docJson.fields) {
+          const parsed = this._parseFirestoreLangDoc(lang, decodeFsFields(docJson.fields));
+          this._applyFirestoreLangState(lang, parsed, "Firestore REST Sync");
+        }
+      }
+    } catch (err) {
+      console.warn("Firestore REST sync warning:", err);
+    }
+  }
+
+  _startFirestoreRestSync(lang) {
+    if (this.fsRestTimer) {
+      clearInterval(this.fsRestTimer);
+      this.fsRestTimer = null;
+    }
+    this._pollFirestoreRestOnce(lang, this.liveEvents.length === 0);
+    this.fsRestTimer = setInterval(() => {
+      if (this.followLive && this.selectedLang === lang) {
+        this._pollFirestoreRestOnce(lang, false);
+      }
+    }, 4000);
   }
 
   async _ensureFirestoreSdk() {
@@ -943,7 +1219,17 @@ class LivingVillageWorld {
 
   _subscribeFirestoreLang(lang) {
     this._unsubLangFirestore();
-    if (!this.fsDb || !this.fsSdk) return;
+    this.fsReceivedSnapshot = false;
+    this._pollFirestoreRestOnce(lang, true);
+    this.fsWatchdogTimer = setTimeout(() => {
+      if (this.followLive && this.selectedLang === lang && !this.fsRestTimer) {
+        this._startFirestoreRestSync(lang);
+      }
+    }, 4500);
+    if (!this.fsDb || !this.fsSdk) {
+      this._startFirestoreRestSync(lang);
+      return;
+    }
     const { doc, collection, query, orderBy, onSnapshot } = this.fsSdk;
 
     const docUnsub = onSnapshot(
@@ -951,30 +1237,11 @@ class LivingVillageWorld {
       (snap) => {
         if (!snap.exists()) return;
         const parsed = this._parseFirestoreLangDoc(lang, snap.data() || {});
-        if (this.ed4Summary && this.ed4Summary.languages) {
-          this.ed4Summary.languages[lang] = { ...(this.ed4Summary.languages[lang] || {}), ...parsed };
-          this._renderLangRibbon();
-          this._renderProgressTable();
-        }
-        const prevCount = this.agentNodes.size;
-        this.liveState = parsed;
-        if (prevCount === 0 || (parsed.active_agents && parsed.active_agents.length > prevCount)) {
-          this._syncAgentsFromState(this.liveState);
-        }
-        if (parsed.recent_exchanges && parsed.recent_exchanges.length) {
-          this.liveExchanges = parsed.recent_exchanges;
-        }
-        if (parsed.recent_decisions && parsed.recent_decisions.length) {
-          this.liveDecisions = parsed.recent_decisions;
-        }
-        this._updateTelemetryBar(this.liveState);
-        this.$modeStatus.textContent = parsed.running
-          ? `Live Job Active · Turn ${parsed.total_turns || 0} (${lang.toUpperCase()})`
-          : `Realtime Synced · Turn ${parsed.total_turns || 0} (${lang.toUpperCase()})`;
-        this._renderSideTab();
+        this._applyFirestoreLangState(lang, parsed, "Realtime Synced");
       },
       (err) => {
-        console.warn("Firestore lang listener error:", err);
+        console.warn("Firestore lang listener error, falling back to REST:", err);
+        this._startFirestoreRestSync(lang);
       }
     );
 
@@ -990,69 +1257,18 @@ class LivingVillageWorld {
         const added = [];
         snap.docChanges().forEach((ch) => {
           if (ch.type !== "added") return;
-          const raw = ch.doc.data() || {};
-          let pathArr = [];
-          let metaObj = {};
-          try { pathArr = JSON.parse(raw.path_json || "[]"); } catch (_) {}
-          try { metaObj = JSON.parse(raw.meta_json || "{}"); } catch (_) {}
-          added.push({
-            seq: Number(raw.seq || 0),
-            turn_id: Number(raw.turn_id || 0),
-            ts: raw.ts || "",
-            lang: raw.lang || lang,
-            kind: raw.kind || "",
-            agent_id: raw.agent_id || "",
-            target_agent_id: raw.target_agent_id || "",
-            zone: raw.zone || "",
-            target_zone: raw.target_zone || "",
-            label: raw.label || "",
-            summary: raw.summary || "",
-            path: pathArr,
-            meta: metaObj,
-          });
+          added.push(this._decodeRawEventFields(lang, ch.doc.data() || {}));
         });
         if (!added.length) {
           firstBatch = false;
           return;
         }
-        if (firstBatch) {
-          const bySeq = new Map();
-          for (const e of added) bySeq.set(e.seq, e);
-          this.liveEvents = Array.from(bySeq.values()).sort((a, b) => a.seq - b.seq);
-          this.eventsByLang[lang] = this.liveEvents;
-          this.$scrub.max = String(this.liveEvents.length);
-          this.seekTo(this.liveEvents.length);
-          firstBatch = false;
-        } else {
-          added.sort((a, b) => a.seq - b.seq);
-          let pushedAny = false;
-          for (const ev of added) {
-            if (!this.liveEvents.some((x) => x.seq === ev.seq)) {
-              this.liveEvents.push(ev);
-              this._ingestLiveTelemetry(ev);
-              if (this.followLive) {
-                this._applyEventVisual(ev, true);
-              }
-              pushedAny = true;
-            }
-          }
-          if (pushedAny) {
-            this.liveEvents.sort((a, b) => a.seq - b.seq);
-            this.eventsByLang[lang] = this.liveEvents;
-            this.$scrub.max = String(this.liveEvents.length);
-            if (this.followLive) {
-              this.cursor = this.liveEvents.length;
-              this.$scrub.value = String(this.cursor);
-              this.$cursorTxt.textContent = `${this.cursor} / ${this.liveEvents.length}`;
-              const lastEv = this.liveEvents[this.liveEvents.length - 1];
-              this.$modeStatus.textContent = `Live Realtime · Turn ${lastEv.turn_id} (${lang.toUpperCase()})`;
-            }
-            this._renderSideTab();
-          }
-        }
+        this._ingestEventList(lang, added, firstBatch);
+        firstBatch = false;
       },
       (err) => {
-        console.warn("Firestore events listener error:", err);
+        console.warn("Firestore events listener error, falling back to REST:", err);
+        this._startFirestoreRestSync(lang);
       }
     );
 
@@ -1087,16 +1303,13 @@ class LivingVillageWorld {
           }
         },
         (err) => {
-          console.warn("Firestore collection listener error:", err);
+          console.warn("Firestore collection listener warning:", err);
         }
       );
       this._subscribeFirestoreLang(this.selectedLang);
     } catch (err) {
-      console.warn("Realtime Firestore unavailable; staying on static replay:", err);
-      this.followLive = false;
-      this.$liveBtn.classList.remove("active-btn");
-      this.$liveBtn.textContent = "Live Realtime (Firestore)";
-      this.$modeStatus.textContent = "Static Replay ($0 idle)";
+      console.warn("Firebase Web SDK unavailable; using Firestore REST sync:", err);
+      if (this.followLive) this._startFirestoreRestSync(this.selectedLang);
     }
   }
 
@@ -1125,7 +1338,7 @@ class LivingVillageWorld {
     this.$scrub.max = "0";
     this.$scrub.value = "0";
     this.$cursorTxt.textContent = "0 / 0";
-    this.$bubble.innerHTML = `<strong>Connected to Live Cloud Run Session (${esc(this.selectedLang.toUpperCase())})</strong><br/><span>Awaiting Turn 1 events from Mande, 9 Adaption Labs agents &amp; Gemini 4 Argon...</span>`;
+    this.$bubble.innerHTML = `<strong>Connected to Live Stream (${esc(this.selectedLang.toUpperCase())})</strong><br/><span>Awaiting events from Mande, 9 Adaption Labs agents &amp; Gemini 3.5 Flash...</span>`;
     this._renderSideTab();
 
     fetch(`${this.liveOrigin}/api/ed4/state?lang=${encodeURIComponent(this.selectedLang)}`)
@@ -1238,11 +1451,12 @@ class LivingVillageWorld {
             <span class="vw-tag-pill ${ok ? "vw-tag-ok" : "vw-tag-reject"}">${esc(d.final_action)}</span>
             <strong>${esc(d.standardized_lx || d.candidate_raw)}</strong>
             ${d.variant_va ? `<span>(<code>\\va ${esc(d.variant_va)}</code>)</span>` : ""}
+            <span style="color:var(--ink-muted);font-size:0.68rem;margin-left:4px">T${Number(d.turn_id || 0)}</span>
           </div>
           <div class="vw-gate-pills">
             <span class="vw-tag-pill">DNAFLA: ${ortho.is_standard ? "OK" : "FAIL"}</span>
             <span class="vw-tag-pill">DabaX: ${dx.dict_compile_ok ? "OK" : "FAIL"} (${Number(dx.regression_pct || 0).toFixed(1)}% reg)</span>
-            <span class="vw-tag-pill">Critic: ${esc(critic.verdict || "N/A")}</span>
+            <span class="vw-tag-pill">Critic (${esc(critic.critic_name || "Flash")}): ${esc(critic.verdict || "N/A")}</span>
           </div>
           <div style="color:var(--ink-muted);margin-top:3px">${esc(d.summary_reason)}</div>
           ${d.mdf_block ? `<pre class="vw-mdf-pre">${esc(d.mdf_block)}</pre>` : ""}
