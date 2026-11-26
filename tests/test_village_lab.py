@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from village_lab import ALL_ADAPTION_MODELS, BASE_VILLAGERS, COUNCIL_SEATS, CRITIC_SPEC, ORCHESTRATOR_SPEC
+from village_lab.corpus_miner import CorpusOOVMiner
 from village_lab.hf_sync import build_ed4_hf_viewer_bundle, publish_ed4_site_data
 from village_lab.orthography import check_standardization, classify_lemma_vs_rule, normalize_bambara_dnafla
 from village_lab.schema import CriticVerdict, serialize_mdf_entry
@@ -120,3 +121,24 @@ def test_mock_epoch_spawn_council_and_hf_viewer_bundle(tmp_path: Path) -> None:
             assert list(r.keys()) == keys
             for k in keys:
                 assert type(r[k]) is types[k]
+
+
+def test_corpus_oov_miner_on_bam_txt(tmp_path: Path) -> None:
+    eng = LanguageVillageEngine("bam", runs_dir=tmp_path / "runs", mock_mode=True)
+    miner = CorpusOOVMiner(
+        "bam",
+        working_dict_index=eng.working_index,
+        working_dict_path=eng.dict_path,
+        working_gram_path=eng.gram_path,
+        max_scan_lines=8000,
+    )
+    if miner.raw_path is None:
+        return
+    batch = miner.next_batch(5)
+    assert len(batch) == 5
+    for cand in batch:
+        assert len(cand.term) >= 4
+        assert cand.freq >= 2
+        assert cand.source_file == "bam.txt"
+        assert cand.example_sentence
+

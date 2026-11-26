@@ -39,13 +39,18 @@ def pack_sebeni_runtime(out_tar: Path) -> Path:
                 rel_p = fp.relative_to(beni_root)
                 tf.add(fp, arcname=f"beni/{rel_p.as_posix()}")
 
-        # 2. Only test.json, raw/dataset_300_samples.jsonl, and 13 baseline.{gram,dict} files from beni/data
+        # 2. test.json, raw/dataset_300_samples.jsonl, raw/<lang>.txt for MALI13 + bbo, and 13 baseline.{gram,dict} files
         test_json = beni_root / "data" / "test.json"
         if test_json.is_file():
             tf.add(test_json, arcname="beni/data/test.json")
-        ds300 = beni_root / "data" / "raw" / "dataset_300_samples.jsonl"
+        raw_dir = beni_root / "data" / "raw"
+        ds300 = raw_dir / "dataset_300_samples.jsonl"
         if ds300.is_file():
             tf.add(ds300, arcname="beni/data/raw/dataset_300_samples.jsonl")
+        for lang_txt in list(ALL_LANGS) + ["mlq", "seq", "bbo"]:
+            rfp = raw_dir / f"{lang_txt}.txt"
+            if rfp.is_file():
+                tf.add(rfp, arcname=f"beni/data/raw/{lang_txt}.txt")
         baselines_dir = beni_root / "data" / "baselines"
         for lang in ALL_LANGS:
             ldir = baselines_dir / lang

@@ -26,6 +26,7 @@ from village_lab import (
     TARGET_DICT_ENTRIES,
     VILLAGE_ZONES,
 )
+from village_lab.corpus_miner import CorpusCandidate, CorpusOOVMiner
 from village_lab.orthography import (
     check_standardization,
     classify_lemma_vs_rule,
@@ -136,6 +137,8 @@ class LanguageVillageEngine:
         self.argon_batch_max = max(self.argon_batch_min, int(argon_batch_max))
         self._pending_argon: List[Dict[str, Any]] = []
         self.argon_batch_calls: int = 0
+        self._corpus_miner: Optional[CorpusOOVMiner] = None
+        self._mined_seen: set = set()
 
         self.dict_path = self.lang_dir / "augmented.dict"
         self.gram_path = self.lang_dir / "augmented.gram"
@@ -178,6 +181,16 @@ class LanguageVillageEngine:
             self._save_state()
 
         self._next_seq = self._count_existing_events() + 1
+        if self.ledger_path.is_file():
+            for ln in self.ledger_path.read_text(encoding="utf-8").splitlines():
+                if not ln.strip():
+                    continue
+                try:
+                    rec = json.loads(ln)
+                    if rec.get("candidate_raw"):
+                        self._mined_seen.add(str(rec["candidate_raw"]).strip().lower())
+                except Exception:
+                    pass
         if self._next_seq == 1:
             self._emit(
                 turn_id=0,
@@ -319,7 +332,12 @@ class LanguageVillageEngine:
         )
         return ag
 
-    async def _mande_plan_turn(self, client: httpx.AsyncClient, turn_id: int) -> Dict[str, Any]:
+    async def _mande_plan_turn(
+        self,
+        client: httpx.AsyncClient,
+        turn_id: int,
+        corpus_batch: Sequence[CorpusCandidate] = (),
+    ) -> Dict[str, Any]:
         domain_idx = (turn_id - 1) % len(SEMANTIC_DOMAINS)
         fallback_domain = SEMANTIC_DOMAINS[domain_idx]
         villager_pool = [a for a in self.state.active_agents if a.role in {"villager", "specialist"}]
@@ -340,18 +358,22 @@ class LanguageVillageEngine:
             }
 
         available_sp = [t.agent_id for t in SPECIALIST_TEMPLATES if t.agent_id not in {a.agent_id for a in self.state.active_agents}]
+        corpus_hint = ""
+        if corpus_batch:
+            lines = [f"- '{c.term}' (freq={c.freq} in {c.source_file}): \"{c.example_sentence[:110]}\"" for c in corpus_batch]
+            corpus_hint = "Unparsed real corpus OOV words mined from raw corpus for this turn:\n" + "\n".join(lines) + "\n\n"
         prompt = (
             f"You are Mande, Chief Orchestrator guiding a traditional Sudano-Sahelian village building a 50,000-entry "
             f"standardized MDF lexicon for {self.state.lang_name} ({self.lang}).\n"
             f"Current baseline: {self.state.baseline_lx_count} \\lx entries; added so far: +{self.state.added_lx_count} \\lx, "
             f"+{self.state.added_va_count} \\va, +{self.state.added_gram_rules_count} .gram rules.\n"
+            f"{corpus_hint}"
             f"Domain coverage counts: {json.dumps(self.state.domain_counts)}\n"
             f"Available villagers: {[(a.agent_id, a.name, a.domain) for a in villager_pool]}\n"
             f"Available zones: {zones_play}\n"
             f"Unspawned specialist IDs you may summon on necessity: {available_sp}\n\n"
-            "Pick an underrepresented semantic domain, gathering zone, 2 villager agent_ids, a concrete everyday conversation "
-            "topic eliciting authentic rural/traditional roots (verbs, concrete nouns, ideophones), and optionally summon 1 "
-            "specialist ID if domain depth requires it.\n"
+            "Pick an underrepresented semantic domain matching the mined corpus words, gathering zone, 2 villager agent_ids, a concrete conversation "
+            "topic weaving those corpus words naturally, and optionally summon 1 specialist ID if domain depth requires it.\n"
             "Respond strictly as compact JSON:\n"
             '{"semantic_domain":"...","zone":"...","topic":"...","participants":["v1-...","v2-..."],"spawn_specialist":"","spawn_reason":"","directive":"..."}'
         )
@@ -394,6 +416,7 @@ class LanguageVillageEngine:
         turn_id: int,
         plan: Dict[str, Any],
         participants: List[VillageAgent],
+        corpus_batch: Sequence[CorpusCandidate] = (),
     ) -> VillageExchange:
         domain = plan["semantic_domain"]
         zone = plan["zone"]
@@ -434,18 +457,26 @@ class LanguageVillageEngine:
             "Output ONLY valid single-line JSON with NO markdown fences. "
             "All `candidate_terms` must be single words or hyphenated compounds (no spaces)."
         )
+        corpus_str = ", ".join(c.term for c in corpus_batch) if corpus_batch else ""
         prior_lines = []
         for idx, ag in enumerate(participants):
             history_txt = "\n".join(prior_lines) if prior_lines else "(opening turn)"
+            focus_clause = (
+                f"Real corpus OOV targets from {corpus_batch[0].source_file}: [{corpus_str}]. "
+                "Include at least 1 of these exact words naturally in your utterance if fitting.\n"
+                if corpus_batch
+                else ""
+            )
             prompt = (
                 f"You are {ag.name} ({ag.title}, domain: {ag.domain}) speaking naturally in authentic {self.state.lang_name} ({self.lang}) "
                 f"at {VILLAGE_ZONES[zone]['label']}.\n"
                 f"Mande's directive: {plan['directive']}\n"
                 f"Topic: {topic} ({domain}).\n"
+                f"{focus_clause}"
                 f"Prior dialogue:\n{history_txt}\n\n"
                 f"Write ONE natural 1-2 sentence utterance in standardized DNAFLA {self.lang} orthography "
                 f"(no French/English words in `text_native`), concise EN/FR translations, "
-                f"and 2 authentic unattested or specialized single-word/hyphenated cultural stems (`candidate_terms`) with 1-4 word glosses.\n"
+                f"and 2 authentic single-word/hyphenated lexical stems (`candidate_terms`) with 1-4 word glosses.\n"
                 '{"text_native":"...","gloss_en":"...","gloss_fr":"...","candidate_terms":[{"term":"word1","pos":"n","ge":"short gloss","gf":"glose courte"}]}'
             )
             raw, _, err = await call_adaption(
@@ -1002,9 +1033,26 @@ class LanguageVillageEngine:
         self._save_state()
 
     async def run_turn(self, client: httpx.AsyncClient) -> Tuple[VillageExchange, List[CouncilDecision]]:
-        """Execute one full village turn: Mande plan -> walking -> dialogue -> Council -> DabaX -> Argon."""
+        """Execute one full village turn: Corpus mine -> Mande plan -> walking -> dialogue -> Council -> DabaX -> Argon."""
         turn_id = self.state.total_turns + 1
-        plan = await self._mande_plan_turn(client, turn_id)
+        corpus_batch: List[CorpusCandidate] = []
+        if not self.mock_mode:
+            if self._corpus_miner is None:
+                self._corpus_miner = CorpusOOVMiner(
+                    self.lang,
+                    working_dict_index=self.working_index,
+                    working_dict_path=self.dict_path,
+                    working_gram_path=self.gram_path,
+                )
+            corpus_batch = self._corpus_miner.next_batch(
+                5,
+                exclude=self._mined_seen,
+                working_dict_index=self.working_index,
+            )
+            for cb in corpus_batch:
+                self._mined_seen.add(cb.term.lower())
+
+        plan = await self._mande_plan_turn(client, turn_id, corpus_batch=corpus_batch)
 
         mande = self._get_agent(ORCHESTRATOR_SPEC.agent_id)
         if mande is not None and plan["zone"] != mande.zone:
@@ -1018,14 +1066,15 @@ class LanguageVillageEngine:
                 turn_id,
             )
 
+        corpus_label = f" | From {corpus_batch[0].source_file}: {', '.join(c.term for c in corpus_batch)}" if corpus_batch else ""
         self._emit(
             turn_id=turn_id,
             kind="orchestrator_directive",
             agent_id=ORCHESTRATOR_SPEC.agent_id,
             zone=plan["zone"],
             label=f"Mande Turn #{turn_id}: {plan['semantic_domain']}",
-            summary=plan["directive"],
-            meta=plan,
+            summary=plan["directive"] + corpus_label,
+            meta={**plan, "corpus_terms": [c.term for c in corpus_batch]},
         )
 
         participants: List[VillageAgent] = []
@@ -1042,7 +1091,7 @@ class LanguageVillageEngine:
             if ag.zone != plan["zone"]:
                 self._move_agent(ag, plan["zone"], turn_id, f"Joining discussion on {plan['topic']}")
 
-        exchange = await self._run_villager_dialogue(client, turn_id, plan, participants)
+        exchange = await self._run_villager_dialogue(client, turn_id, plan, participants, corpus_batch=corpus_batch)
         if spawned is not None:
             exchange.spawned_agent_id = spawned.agent_id
 
@@ -1057,9 +1106,23 @@ class LanguageVillageEngine:
                 meta=utt.model_dump(),
             )
 
-        # Courier scroll sends unique candidates from dialogue zone to Toguna Council
+        # Prioritize real raw-corpus OOV candidates with attested corpus sentences, plus villager terms up to 5
         seen_cands = set()
         cand_pairs: List[Tuple[str, DialogueUtterance]] = []
+        for cb in corpus_batch:
+            ck = cb.term.strip().lower()
+            if ck and ck not in seen_cands:
+                seen_cands.add(ck)
+                corpus_utt = DialogueUtterance(
+                    agent_id=participants[0].agent_id,
+                    speaker_name=f"Corpus ({cb.source_file}, freq={cb.freq})",
+                    model_id="sebeni-raw-corpus",
+                    text_native=cb.example_sentence,
+                    gloss_en="",
+                    gloss_fr="",
+                    candidate_terms=[cb.term],
+                )
+                cand_pairs.append((cb.term, corpus_utt))
         for utt in exchange.utterances:
             for c in utt.candidate_terms:
                 ck = c.strip().lower()
