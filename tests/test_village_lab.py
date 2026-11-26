@@ -82,6 +82,10 @@ def test_mock_epoch_spawn_council_and_hf_viewer_bundle(tmp_path: Path) -> None:
     assert st.total_turns == 2
     # Specialist dynamically spawned
     assert any(a.spawned_dynamically for a in st.active_agents)
+    # Argon batched cleanly in 1 single call at epoch end
+    assert eng.argon_batch_calls == 1
+    assert st.total_candidates_reviewed >= 2
+    assert st.added_lx_count >= 1
     # Events & council ledger persisted
     evs = [json.loads(ln) for ln in eng.events_path.read_text(encoding="utf-8").splitlines() if ln.strip()]
     assert any(e["kind"] == "agent_spawn" for e in evs)
