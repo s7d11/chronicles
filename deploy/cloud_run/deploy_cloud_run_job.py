@@ -20,8 +20,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from bench.env import load_env
-from deploy.cloud_run.deploy_cloud_run import _clean_gcloud_env, _copy_clean_tree, _ensure_admin_token
-from deploy.cloud_run.deploy_cloud_run import DOCKER_SRC_DIR
+from deploy.cloud_run.deploy_cloud_run import DOCKER_SRC_DIR, _copy_clean_tree, _ensure_admin_token
 
 
 def deploy_job(
@@ -45,7 +44,9 @@ def deploy_job(
         raise RuntimeError("Missing HF_KEY, ADOPTION_KEY, or NVIDIA_KEY in environment/.env")
 
     admin_tok = _ensure_admin_token(REPO_ROOT / ".env")
-    gcloud_env = _clean_gcloud_env()
+    gcloud_env = {k: v for k, v in os.environ.items() if k != "GOOGLE_APPLICATION_CREDENTIALS"}
+    gcloud_env["CLOUDSDK_CORE_PROJECT"] = project
+    gcloud_env["CLOUDSDK_BILLING_QUOTA_PROJECT"] = project
 
     with tempfile.TemporaryDirectory() as tmp:
         stage = Path(tmp) / "ctx"
