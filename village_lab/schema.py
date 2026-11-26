@@ -83,8 +83,8 @@ class CouncilSeatVote(BaseModel):
 
 
 class CriticVerdict(BaseModel):
-    critic_name: str = "Gemini 4 Argon"
-    model_id: str = "gemini-4-argon"
+    critic_name: str = "Gemini 3.5 Flash"
+    model_id: str = "gemini-3.5-flash"
     verdict: Literal["CRITIC_APPROVE", "CRITIC_REVISE", "CRITIC_VETO"]
     revised_action: Optional[Literal["COMMIT_LX", "COMMIT_VA", "COMMIT_GRAM", "REJECT"]] = None
     standardized_lx: str = ""

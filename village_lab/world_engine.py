@@ -110,7 +110,7 @@ def _default_agents() -> List[VillageAgent]:
     return agents
 
 
-ARGON_BATCH_MIN = 10
+ARGON_BATCH_MIN = 15
 ARGON_BATCH_MAX = 25
 
 
@@ -200,7 +200,7 @@ class LanguageVillageEngine:
                 label=f"{self.state.lang_name} Village Awakened",
                 summary=(
                     f"Baseline loaded: {base_lx:,} MDF \\lx entries & {base_gram_lines} .gram lines. "
-                    f"Cast: Mande (nemotron-3-ultra-550b-a55b), 9 Adaption Labs agents, Gemini 4 Argon Critic."
+                    f"Cast: Mande (nemotron-3-ultra-550b-a55b), 9 Adaption Labs agents, {CRITIC_SPEC.title}."
                 ),
                 meta={
                     "baseline_lx_count": base_lx,
@@ -792,10 +792,12 @@ class LanguageVillageEngine:
             if self.mock_mode:
                 for i, item in enumerate(batch):
                     reviews_by_idx[i] = CriticVerdict(
+                        critic_name="Gemini 3.5 Flash",
+                        model_id=CRITIC_SPEC.model_id,
                         verdict="CRITIC_APPROVE",
                         revised_action=item["council_action"],
                         standardized_lx=item["proposed_lx"],
-                        rationale=f"Batched Argon confirmed '{item['proposed_lx']}' complies with DNAFLA standard (batch size={len(batch)}).",
+                        rationale=f"Batched Flash critic confirmed '{item['proposed_lx']}' complies with DNAFLA standard (batch size={len(batch)}).",
                         latency_s=0.1,
                     )
             else:
@@ -808,7 +810,7 @@ class LanguageVillageEngine:
                         + (f", Gram='{item['proposed_gram']}'" if item["proposed_gram"] else "")
                     )
                 argon_prompt = (
-                    f"You are Gemini 4 Argon, Primary Standardization Critic overseeing the Council of Field Linguists for {self.state.lang_name} ({self.lang}).\n"
+                    f"You are Gemini 3.5 Flash ({CRITIC_SPEC.model_id}), Primary Standardization Critic overseeing the Council of Field Linguists for {self.state.lang_name} ({self.lang}).\n"
                     f"Review this BATCH of {len(batch)} Council-approved & DabaX-compiled candidates together in ONE pass. "
                     "Reject calques, French/English intrusions, hallucinated stems, sentence-length glosses in \\ge/\\gf, or unsafe .gram rules.\n\n"
                     + "\n".join(items_txt)
@@ -818,6 +820,7 @@ class LanguageVillageEngine:
                 raw_a, lat_a, err_a = await call_gemini_argon(
                     client,
                     [{"role": "user", "content": argon_prompt}],
+                    model_id=CRITIC_SPEC.model_id,
                     max_tokens=3200,
                 )
                 parsed_a = extract_json_object(raw_a) if not err_a else None
@@ -842,20 +845,24 @@ class LanguageVillageEngine:
                         if v_str == "CRITIC_VETO":
                             rev_act = "REJECT"
                         reviews_by_idx[idx_val] = CriticVerdict(
+                            critic_name="Gemini 3.5 Flash",
+                            model_id=CRITIC_SPEC.model_id,
                             verdict=v_str,  # type: ignore[arg-type]
                             revised_action=rev_act,  # type: ignore[arg-type]
                             standardized_lx=str(r.get("standardized_lx") or item["proposed_lx"]).strip() or item["proposed_lx"],
-                            rationale=str(r.get("rationale") or "Batched Argon review."),
+                            rationale=str(r.get("rationale") or "Batched Flash critic review."),
                             latency_s=round(lat_a / max(1, len(batch)), 3),
                         )
 
                 for i, item in enumerate(batch):
                     if i not in reviews_by_idx:
                         reviews_by_idx[i] = CriticVerdict(
+                            critic_name="Gemini 3.5 Flash",
+                            model_id=CRITIC_SPEC.model_id,
                             verdict="CRITIC_VETO",
                             revised_action="REJECT",
                             standardized_lx=item["proposed_lx"],
-                            rationale=f"Argon batch item {i} omitted or failed ({err_a or 'parse error'}); strict fail-closed veto.",
+                            rationale=f"Flash critic batch item {i} omitted or failed ({err_a or 'parse error'}); strict fail-closed veto.",
                             latency_s=0.0,
                             error=err_a or "omitted_from_batch",
                         )
@@ -873,7 +880,7 @@ class LanguageVillageEngine:
                     agent_id=CRITIC_SPEC.agent_id,
                     zone="critic_bench",
                     target_zone="toguna_council",
-                    label=f"Gemini 4 Argon (Batch {i+1}/{len(batch)}): {critic_verdict.verdict} ({proposed_va or proposed_lx})",
+                    label=f"Gemini 3.5 Flash (Batch {i+1}/{len(batch)}): {critic_verdict.verdict} ({proposed_va or proposed_lx})",
                     summary=critic_verdict.rationale[:280],
                     meta=critic_verdict.model_dump(),
                 )
@@ -1164,8 +1171,8 @@ class LanguageVillageEngine:
                     kind="council_deliberation",
                     agent_id=CRITIC_SPEC.agent_id,
                     zone="toguna_council",
-                    label=f"Queued for Gemini 4 Argon Batch ({len(self._pending_argon)}/{self.argon_batch_min})",
-                    summary=f"'{queued['proposed_lx']}' passed Gates 1-4; awaiting batched Argon review.",
+                    label=f"Queued for Gemini 3.5 Flash Batch ({len(self._pending_argon)}/{self.argon_batch_min})",
+                    summary=f"'{queued['proposed_lx']}' passed Gates 1-4; awaiting batched Flash critic review.",
                     meta={"queue_len": len(self._pending_argon), "batch_min": self.argon_batch_min},
                 )
 

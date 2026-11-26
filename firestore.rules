@@ -1,0 +1,242 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// This security rules file assumes the following Cloud Firestore
+// structures for Edition No. 4 ("The Living Lexicon Village"):
+//
+// Collection: ed4_languages
+// Document ID: {lang} matching ^(bam|bmq|boz|dtm|ful|kao|mey|mku|myk|ses|snk|spp|taq)$
+// Fields (public MALI13 telemetry; zero PII):
+//   - lang: string (required, 3 chars, matches {lang})
+//   - lang_name: string (required, 1..120 chars)
+//   - target_entries: int (required, > 0)
+//   - baseline_lx_count: int (required, >= 0)
+//   - added_lx_count: int (required, >= 0)
+//   - added_va_count: int (required, >= 0)
+//   - baseline_gram_lines: int (required, >= 0)
+//   - added_gram_rules_count: int (required, >= 0)
+//   - total_turns: int (required, >= 0)
+//   - total_candidates_reviewed: int (required, >= 0)
+//   - total_rejected: int (required, >= 0)
+//   - baseline_devmini_pct: number (required, 0..100)
+//   - latest_devmini_pct: number (required, 0..100)
+//   - updated_at: timestamp or string (required, <= 64 chars if string)
+//   - orchestrator_model: string (required, 1..120 chars)
+//   - critic_model: string (required, 1..120 chars)
+//   - running: bool (optional)
+//   - job_execution: string (optional, <= 256 chars)
+//   - active_agents_json: string (optional, <= 65536 chars)
+//   - recent_exchanges_json: string (optional, <= 131072 chars)
+//   - recent_decisions_json: string (optional, <= 131072 chars)
+//
+// Subcollection: ed4_languages/{lang}/events
+// Document ID: {eventId} matching ^[0-9]{6}$ (zero-padded 6-digit sequence ID)
+// Fields (public village livestream event; zero PII):
+//   - seq: int (required, >= 1)
+//   - ts: timestamp or string (required, <= 64 chars if string)
+//   - lang: string (required, matches parent {lang})
+//   - turn_id: int (required, >= 0)
+//   - kind: string (required, 1..64 chars)
+//   - agent_id: string (required, 1..64 chars)
+//   - target_agent_id: string (optional, <= 64 chars)
+//   - zone: string (required, 1..64 chars)
+//   - target_zone: string (optional, <= 64 chars)
+//   - path_json: string (optional, <= 16384 chars)
+//   - label: string (required, 1..256 chars)
+//   - summary: string (required, <= 2048 chars)
+//   - meta_json: string (optional, <= 65536 chars)
+//
+// Write Authority:
+//   - Cloud Run Jobs write via GCP ADC (roles/datastore.user) over the
+//     server REST API, which bypasses client Security Rules.
+//   - ALL client writes (create, update, delete) are unconditionally denied.
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if user owns the resource (for user-owned documents)
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Check if user is owner based on document's uid field
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    // Verify UID hasn't been tampered with on create
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) ||
+        request.resource.data.uid == request.auth.uid;
+    }
+
+    // Ensure uid field is not modified on update
+    function uidNotModified() {
+      return !('uid' in request.resource.data) ||
+        request.resource.data.uid == resource.data.uid;
+    }
+
+    // Validate required fields exist
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // Validate that the document contains only the allowed fields
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // Validate string length
+    function validStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+        request.resource.data[field].size() >= minLen &&
+        request.resource.data[field].size() <= maxLen;
+    }
+
+    // Validate optional string (if present, must be string and within length)
+    function isValidOptionalString(field, minLen, maxLen) {
+      return !(field in request.resource.data) ||
+        (request.resource.data[field] is string &&
+         request.resource.data[field].size() >= minLen &&
+         request.resource.data[field].size() <= maxLen);
+    }
+
+    // Validate that a value is positive
+    function isPositive(field) {
+      return request.resource.data[field] is number && request.resource.data[field] > 0;
+    }
+
+    // Validate that a list is a list and enforces size limits
+    function isValidList(listVal, maxSize) {
+      return listVal is list && listVal.size() <= maxSize;
+    }
+
+    // Validate immutable fields have not changed on update
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // Validate that {lang} is one of the 13 MALI13 language codes
+    function isValidMali13Lang(lang) {
+      return lang is string &&
+        lang.matches('^(bam|bmq|boz|dtm|ful|kao|mey|mku|myk|ses|snk|spp|taq)$');
+    }
+
+    // Validate that {eventId} is a 6-digit zero-padded sequence identifier
+    function isValidEventId(eventId) {
+      return eventId is string &&
+        eventId.matches('^[0-9]{6}$');
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidEd4Language(data) {
+      return data.keys().hasAll([
+          'lang', 'lang_name', 'target_entries', 'baseline_lx_count',
+          'added_lx_count', 'added_va_count', 'baseline_gram_lines',
+          'added_gram_rules_count', 'total_turns', 'total_candidates_reviewed',
+          'total_rejected', 'baseline_devmini_pct', 'latest_devmini_pct',
+          'updated_at', 'orchestrator_model', 'critic_model'
+        ]) &&
+        data.keys().hasOnly([
+          'lang', 'lang_name', 'target_entries', 'baseline_lx_count',
+          'added_lx_count', 'added_va_count', 'baseline_gram_lines',
+          'added_gram_rules_count', 'total_turns', 'total_candidates_reviewed',
+          'total_rejected', 'baseline_devmini_pct', 'latest_devmini_pct',
+          'updated_at', 'orchestrator_model', 'critic_model',
+          'running', 'job_execution',
+          'active_agents_json', 'recent_exchanges_json', 'recent_decisions_json'
+        ]) &&
+        isValidMali13Lang(data.lang) &&
+        data.lang_name is string && data.lang_name.size() > 0 && data.lang_name.size() <= 120 &&
+        data.target_entries is int && data.target_entries > 0 &&
+        data.baseline_lx_count is int && data.baseline_lx_count >= 0 &&
+        data.added_lx_count is int && data.added_lx_count >= 0 &&
+        data.added_va_count is int && data.added_va_count >= 0 &&
+        data.baseline_gram_lines is int && data.baseline_gram_lines >= 0 &&
+        data.added_gram_rules_count is int && data.added_gram_rules_count >= 0 &&
+        data.total_turns is int && data.total_turns >= 0 &&
+        data.total_candidates_reviewed is int && data.total_candidates_reviewed >= 0 &&
+        data.total_rejected is int && data.total_rejected >= 0 &&
+        data.baseline_devmini_pct is number && data.baseline_devmini_pct >= 0 && data.baseline_devmini_pct <= 100 &&
+        data.latest_devmini_pct is number && data.latest_devmini_pct >= 0 && data.latest_devmini_pct <= 100 &&
+        (data.updated_at is timestamp || (data.updated_at is string && data.updated_at.size() > 0 && data.updated_at.size() <= 64)) &&
+        data.orchestrator_model is string && data.orchestrator_model.size() > 0 && data.orchestrator_model.size() <= 120 &&
+        data.critic_model is string && data.critic_model.size() > 0 && data.critic_model.size() <= 120 &&
+        (!('running' in data) || data.running is bool) &&
+        (!('job_execution' in data) || (data.job_execution is string && data.job_execution.size() <= 256)) &&
+        (!('active_agents_json' in data) || (data.active_agents_json is string && data.active_agents_json.size() <= 65536)) &&
+        (!('recent_exchanges_json' in data) || (data.recent_exchanges_json is string && data.recent_exchanges_json.size() <= 131072)) &&
+        (!('recent_decisions_json' in data) || (data.recent_decisions_json is string && data.recent_decisions_json.size() <= 131072));
+    }
+
+    function isValidEd4Event(data, lang) {
+      return data.keys().hasAll([
+          'seq', 'ts', 'lang', 'turn_id', 'kind', 'agent_id',
+          'zone', 'label', 'summary'
+        ]) &&
+        data.keys().hasOnly([
+          'seq', 'ts', 'lang', 'turn_id', 'kind', 'agent_id',
+          'target_agent_id', 'zone', 'target_zone', 'path_json',
+          'label', 'summary', 'meta_json'
+        ]) &&
+        data.seq is int && data.seq >= 1 &&
+        (data.ts is timestamp || (data.ts is string && data.ts.size() > 0 && data.ts.size() <= 64)) &&
+        data.lang == lang &&
+        data.turn_id is int && data.turn_id >= 0 &&
+        data.kind is string && data.kind.size() > 0 && data.kind.size() <= 64 &&
+        data.agent_id is string && data.agent_id.size() > 0 && data.agent_id.size() <= 64 &&
+        (!('target_agent_id' in data) || (data.target_agent_id is string && data.target_agent_id.size() <= 64)) &&
+        data.zone is string && data.zone.size() > 0 && data.zone.size() <= 64 &&
+        (!('target_zone' in data) || (data.target_zone is string && data.target_zone.size() <= 64)) &&
+        (!('path_json' in data) || (data.path_json is string && data.path_json.size() <= 16384)) &&
+        data.label is string && data.label.size() > 0 && data.label.size() <= 256 &&
+        data.summary is string && data.summary.size() <= 2048 &&
+        (!('meta_json' in data) || (data.meta_json is string && data.meta_json.size() <= 65536));
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Public read-only livestream access for the 13 MALI13 language states.
+    // `list` uses `true` because Firestore static query evaluation rejects
+    // `.matches()` on the collection's own `{lang}` wildcard; only backend
+    // Cloud Run Jobs (roles/datastore.user) can write docs into /ed4_languages.
+    // All client writes are unconditionally denied.
+    match /ed4_languages/{lang} {
+      allow get: if isValidMali13Lang(lang);
+      allow list: if true;
+      allow create, update, delete: if false;
+
+      // Public read-only livestream access for 6-digit event documents under valid MALI13 languages.
+      // `list` validates the parent `{lang}` wildcard (allowed by Firestore static evaluation).
+      match /events/{eventId} {
+        allow get: if isValidMali13Lang(lang) && isValidEventId(eventId);
+        allow list: if isValidMali13Lang(lang);
+        allow create, update, delete: if false;
+      }
+    }
+
+    // Explicit default-deny rule for every other path.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

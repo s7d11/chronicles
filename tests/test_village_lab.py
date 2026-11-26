@@ -8,6 +8,7 @@ from pathlib import Path
 
 from village_lab import ALL_ADAPTION_MODELS, BASE_VILLAGERS, COUNCIL_SEATS, CRITIC_SPEC, ORCHESTRATOR_SPEC
 from village_lab.corpus_miner import CorpusOOVMiner, _is_plausible_bam_line
+from village_lab.firestore_sync import FirestoreLivePublisher, _to_fs_fields, _to_fs_value
 from village_lab.hf_sync import build_ed4_hf_viewer_bundle, publish_ed4_site_data
 from village_lab.orthography import check_standardization, classify_lemma_vs_rule, normalize_bambara_dnafla
 from village_lab.schema import CriticVerdict, serialize_mdf_entry
@@ -18,10 +19,22 @@ from village_lab.world_engine import LanguageVillageEngine, compute_zone_path
 def test_cast_matches_approved_models() -> None:
     assert ORCHESTRATOR_SPEC.name == "Mande"
     assert ORCHESTRATOR_SPEC.model_id == "nvidia/nemotron-3-ultra-550b-a55b"
-    assert CRITIC_SPEC.model_id == "gemini-4-argon"
+    assert CRITIC_SPEC.model_id == "gemini-3.5-flash"
     assert len(BASE_VILLAGERS) == 5
     assert len(COUNCIL_SEATS) == 4
     assert len(set(ALL_ADAPTION_MODELS)) == 9
+
+
+def test_firestore_rest_encoding_and_env_guard(monkeypatch) -> None:
+    monkeypatch.delenv("ED4_FIRESTORE_DB", raising=False)
+    assert FirestoreLivePublisher.from_env() is None
+    assert _to_fs_value(True) == {"booleanValue": True}
+    assert _to_fs_value(42) == {"integerValue": "42"}
+    assert _to_fs_value(98.75) == {"doubleValue": 98.75}
+    fields = _to_fs_fields({"lang": "bam", "running": True, "seq": 7})
+    assert fields["running"] == {"booleanValue": True}
+    assert fields["seq"] == {"integerValue": "7"}
+    assert fields["lang"] == {"stringValue": "bam"}
 
 
 def test_dnafla_orthography_and_lemma_rule_gates() -> None:

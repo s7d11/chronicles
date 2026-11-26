@@ -45,6 +45,14 @@ python3 -m swarm_lab.cli publish --runs-dir "${RUNS_DIR}" --out-dir "${SITE_DATA
 python3 -m proof_lab.cli publish --runs-dir "${ED3_RUNS_DIR}" --out-dir "${SITE_DATA_DIR}"
 python3 -m village_lab.cli publish --runs-dir "${ED4_RUNS_DIR}" --out-dir "${SITE_DATA_DIR}"
 
+if [[ "${JOB_MODE:-}" == "ed4" ]]; then
+  echo "[entrypoint] Launching Edition 4 Unattended Cloud Run Job..."
+  exec python3 -m village_lab.cli run-job \
+    --runs-dir "${ED4_RUNS_DIR}" \
+    --out-dir "${SITE_DATA_DIR}" \
+    --push-hf
+fi
+
 ARGS=(--host 0.0.0.0 --port "${PORT:-7860}" --runs-dir "${RUNS_DIR}" --ed3-runs-dir "${ED3_RUNS_DIR}" --ed4-runs-dir "${ED4_RUNS_DIR}")
 if [[ "${AUTO_RUN_ALL_13:-0}" == "1" ]]; then
   ARGS+=(--auto-run-all-13)

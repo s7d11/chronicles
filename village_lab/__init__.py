@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
@@ -56,10 +57,10 @@ ORCHESTRATOR_SPEC = ModelCastSpec(
 
 CRITIC_SPEC = ModelCastSpec(
     agent_id="argon-critic",
-    name="Argon Critic",
+    name="Flash Critic",
     role="critic",
-    title="Primary Standardization Critic (Gemini 4 Argon)",
-    model_id="gemini-4-argon",
+    title="Primary Standardization Critic (Gemini 3.5 Flash)",
+    model_id=os.environ.get("ED4_CRITIC_MODEL", "gemini-3.5-flash"),
     provider="vertex",
     home_zone="critic_bench",
     domain="Final DNAFLA Standardization & Anti-Calque Gate",

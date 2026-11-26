@@ -1,11 +1,22 @@
 /**
  * Edition No. 4 — Living Lexicon Village (Three.js Traditional Sudano-Sahelian World).
- * Static-first GitHub Pages replay from ../../data/edition4*.json with opt-in live Cloud Run SSE.
+ * Static-first GitHub Pages replay from ../../data/edition4*.json with real-time
+ * dynamic refresh via Cloud Firestore (`chronicles-live`) `onSnapshot` listeners.
  */
+
+const FIREBASE_WEB_CONFIG = {
+  apiKey: "AIzaSyCJrgRepyDcdj3hOGSirU8NWIC1EMPh9WU",
+  authDomain: "mlgramv1.firebaseapp.com",
+  projectId: "mlgramv1",
+  storageBucket: "mlgramv1.firebasestorage.app",
+  messagingSenderId: "172515745748",
+  appId: "1:172515745748:web:188db7dbb811d4bbcfc041",
+  databaseId: "chronicles-live",
+};
 
 const VILLAGE_ZONES = {
   toguna_council: { label: "Council Toguna", x: 0.0, z: -3.5 },
-  critic_bench: { label: "Argon Critic Bench", x: -4.5, z: -4.5 },
+  critic_bench: { label: "Gemini 3.5 Flash Bench", x: -4.5, z: -4.5 },
   baobab_plaza: { label: "Baobab Plaza", x: 0.0, z: 2.2 },
   market_square: { label: "Market Square (Sugu)", x: 9.5, z: 3.5 },
   banco_compounds: { label: "Banco Compounds", x: -10.5, z: 2.5 },
@@ -172,6 +183,11 @@ class LivingVillageWorld {
     this.speed = 1.8;
     this.followLive = false;
     this.sse = null;
+    this.fsApp = null;
+    this.fsDb = null;
+    this.fsSdk = null;
+    this.fsGlobalUnsub = null;
+    this.fsLangUnsubs = [];
     this.activeTab = "exchanges";
     this.selectedAgentId = "mande";
     this.camPreset = "overview";
@@ -227,7 +243,7 @@ class LivingVillageWorld {
               <select id="vwCamSel" aria-label="Camera preset">
                 <option value="overview">View: Full Village</option>
                 <option value="toguna">View: Council Toguna</option>
-                <option value="critic">View: Gemini 4 Argon Bench</option>
+                <option value="critic">View: Gemini 3.5 Flash Bench</option>
                 <option value="market">View: Market Square</option>
                 <option value="compounds">View: Banco Compounds</option>
                 <option value="follow">Follow Selected Agent</option>
@@ -235,7 +251,7 @@ class LivingVillageWorld {
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
               <span id="vwModeStatus" style="color:var(--ink-muted)">Static Replay ($0 idle)</span>
-              <button type="button" id="vwLiveBtn">Connect Live (Cloud Run SSE)</button>
+              <button type="button" id="vwLiveBtn">Live Realtime (Firestore)</button>
             </div>
           </div>
 
@@ -255,7 +271,7 @@ class LivingVillageWorld {
         <aside class="vw-side-panel">
           <div class="vw-tabs">
             <button type="button" class="vw-tab-btn active" data-tab="exchanges">Exchange Log</button>
-            <button type="button" class="vw-tab-btn" data-tab="council">Council &amp; Argon</button>
+            <button type="button" class="vw-tab-btn" data-tab="council">Council &amp; Flash Critic</button>
             <button type="button" class="vw-tab-btn" data-tab="cast">Cast &amp; Rules</button>
           </div>
           <div class="vw-tab-body" id="vwTabBody">Loading logs...</div>
@@ -283,7 +299,7 @@ class LivingVillageWorld {
       this.$playBtn.textContent = this.playing ? "Pause" : "Play";
     });
     this.$replayBtn.addEventListener("click", () => {
-      this._disconnectSse();
+      this._disconnectLive();
       this.seekTo(0);
       this.playing = true;
       this.$playBtn.textContent = "Pause";
@@ -301,8 +317,8 @@ class LivingVillageWorld {
       this.seekTo(Number(this.$scrub.value));
     });
     this.$liveBtn.addEventListener("click", () => {
-      if (this.followLive) this._disconnectSse();
-      else this._connectLiveSse();
+      if (this.followLive) this._disconnectLive();
+      else this._connectLiveFirestore();
     });
     this.root.querySelectorAll(".vw-tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -319,8 +335,10 @@ class LivingVillageWorld {
     await this._loadStaticReplay();
     this._bindThemeObserver();
     this._bindCanvasClick();
-    if (new URLSearchParams(window.location.search).get("live") === "1") {
+    if (new URLSearchParams(window.location.search).get("live") === "sse" && this.liveOrigin) {
       this._connectLiveSse();
+    } else if (new URLSearchParams(window.location.search).get("replay") !== "1") {
+      this._connectLiveFirestore();
     }
     this._lastFrame = performance.now();
     this._animate();
@@ -744,7 +762,11 @@ class LivingVillageWorld {
     this._updateTelemetryBar(this.liveState);
     this.$scrub.max = String(Math.max(0, this.liveEvents.length));
     this.seekTo(this.liveEvents.length > 0 ? Math.min(2, this.liveEvents.length) : 0);
-    if (this.followLive) this._connectLiveSse();
+    if (this.sse) {
+      this._connectLiveSse();
+    } else if (this.followLive && this.fsDb) {
+      this._subscribeFirestoreLang(lang);
+    }
   }
 
   _syncAgentsFromState(st) {
@@ -758,7 +780,7 @@ class LivingVillageWorld {
       ? st.active_agents
       : [
           { agent_id: "mande", name: "Mande", role: "orchestrator", zone: "baobab_plaza", x: 0, z: 2.2, color: "#1b4d6e", model_id: "nvidia/nemotron-3-ultra-550b-a55b" },
-          { agent_id: "argon-critic", name: "Argon Critic", role: "critic", zone: "critic_bench", x: -4.5, z: -4.5, color: "#8c1d24", model_id: "gemini-4-argon" },
+          { agent_id: "argon-critic", name: "Flash Critic", role: "critic", zone: "critic_bench", x: -4.5, z: -4.5, color: "#8c1d24", model_id: "gemini-3.5-flash" },
         ];
 
     // Spread agents stationed in same zone nicely in a mini-circle so they don't overlap
@@ -882,6 +904,213 @@ class LivingVillageWorld {
     this.pulseRings.push({ mesh, age: 0 });
   }
 
+  _unsubLangFirestore() {
+    while (this.fsLangUnsubs.length > 0) {
+      try {
+        this.fsLangUnsubs.pop()();
+      } catch (_) {}
+    }
+  }
+
+  async _ensureFirestoreSdk() {
+    if (this.fsDb && this.fsSdk) return true;
+    const [appMod, fsMod] = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js"),
+    ]);
+    const existing = appMod.getApps ? appMod.getApps() : [];
+    this.fsApp = existing.length ? existing[0] : appMod.initializeApp(FIREBASE_WEB_CONFIG);
+    this.fsDb = fsMod.getFirestore(this.fsApp, FIREBASE_WEB_CONFIG.databaseId);
+    this.fsSdk = fsMod;
+    return true;
+  }
+
+  _parseFirestoreLangDoc(langCode, d) {
+    let activeAgents = [];
+    let recentExchanges = [];
+    let recentDecisions = [];
+    try { activeAgents = JSON.parse(d.active_agents_json || "[]"); } catch (_) {}
+    try { recentExchanges = JSON.parse(d.recent_exchanges_json || "[]"); } catch (_) {}
+    try { recentDecisions = JSON.parse(d.recent_decisions_json || "[]"); } catch (_) {}
+    return {
+      ...d,
+      lang: d.lang || langCode,
+      active_agents: activeAgents,
+      recent_exchanges: recentExchanges,
+      recent_decisions: recentDecisions,
+    };
+  }
+
+  _subscribeFirestoreLang(lang) {
+    this._unsubLangFirestore();
+    if (!this.fsDb || !this.fsSdk) return;
+    const { doc, collection, query, orderBy, onSnapshot } = this.fsSdk;
+
+    const docUnsub = onSnapshot(
+      doc(this.fsDb, "ed4_languages", lang),
+      (snap) => {
+        if (!snap.exists()) return;
+        const parsed = this._parseFirestoreLangDoc(lang, snap.data() || {});
+        if (this.ed4Summary && this.ed4Summary.languages) {
+          this.ed4Summary.languages[lang] = { ...(this.ed4Summary.languages[lang] || {}), ...parsed };
+          this._renderLangRibbon();
+          this._renderProgressTable();
+        }
+        const prevCount = this.agentNodes.size;
+        this.liveState = parsed;
+        if (prevCount === 0 || (parsed.active_agents && parsed.active_agents.length > prevCount)) {
+          this._syncAgentsFromState(this.liveState);
+        }
+        if (parsed.recent_exchanges && parsed.recent_exchanges.length) {
+          this.liveExchanges = parsed.recent_exchanges;
+        }
+        if (parsed.recent_decisions && parsed.recent_decisions.length) {
+          this.liveDecisions = parsed.recent_decisions;
+        }
+        this._updateTelemetryBar(this.liveState);
+        this.$modeStatus.textContent = parsed.running
+          ? `Live Job Active · Turn ${parsed.total_turns || 0} (${lang.toUpperCase()})`
+          : `Realtime Synced · Turn ${parsed.total_turns || 0} (${lang.toUpperCase()})`;
+        this._renderSideTab();
+      },
+      (err) => {
+        console.warn("Firestore lang listener error:", err);
+      }
+    );
+
+    let firstBatch = true;
+    const evQ = query(collection(this.fsDb, "ed4_languages", lang, "events"), orderBy("seq", "asc"));
+    const evUnsub = onSnapshot(
+      evQ,
+      (snap) => {
+        if (snap.empty) {
+          firstBatch = false;
+          return;
+        }
+        const added = [];
+        snap.docChanges().forEach((ch) => {
+          if (ch.type !== "added") return;
+          const raw = ch.doc.data() || {};
+          let pathArr = [];
+          let metaObj = {};
+          try { pathArr = JSON.parse(raw.path_json || "[]"); } catch (_) {}
+          try { metaObj = JSON.parse(raw.meta_json || "{}"); } catch (_) {}
+          added.push({
+            seq: Number(raw.seq || 0),
+            turn_id: Number(raw.turn_id || 0),
+            ts: raw.ts || "",
+            lang: raw.lang || lang,
+            kind: raw.kind || "",
+            agent_id: raw.agent_id || "",
+            target_agent_id: raw.target_agent_id || "",
+            zone: raw.zone || "",
+            target_zone: raw.target_zone || "",
+            label: raw.label || "",
+            summary: raw.summary || "",
+            path: pathArr,
+            meta: metaObj,
+          });
+        });
+        if (!added.length) {
+          firstBatch = false;
+          return;
+        }
+        if (firstBatch) {
+          const bySeq = new Map();
+          for (const e of added) bySeq.set(e.seq, e);
+          this.liveEvents = Array.from(bySeq.values()).sort((a, b) => a.seq - b.seq);
+          this.eventsByLang[lang] = this.liveEvents;
+          this.$scrub.max = String(this.liveEvents.length);
+          this.seekTo(this.liveEvents.length);
+          firstBatch = false;
+        } else {
+          added.sort((a, b) => a.seq - b.seq);
+          let pushedAny = false;
+          for (const ev of added) {
+            if (!this.liveEvents.some((x) => x.seq === ev.seq)) {
+              this.liveEvents.push(ev);
+              this._ingestLiveTelemetry(ev);
+              if (this.followLive) {
+                this._applyEventVisual(ev, true);
+              }
+              pushedAny = true;
+            }
+          }
+          if (pushedAny) {
+            this.liveEvents.sort((a, b) => a.seq - b.seq);
+            this.eventsByLang[lang] = this.liveEvents;
+            this.$scrub.max = String(this.liveEvents.length);
+            if (this.followLive) {
+              this.cursor = this.liveEvents.length;
+              this.$scrub.value = String(this.cursor);
+              this.$cursorTxt.textContent = `${this.cursor} / ${this.liveEvents.length}`;
+              const lastEv = this.liveEvents[this.liveEvents.length - 1];
+              this.$modeStatus.textContent = `Live Realtime · Turn ${lastEv.turn_id} (${lang.toUpperCase()})`;
+            }
+            this._renderSideTab();
+          }
+        }
+      },
+      (err) => {
+        console.warn("Firestore events listener error:", err);
+      }
+    );
+
+    this.fsLangUnsubs.push(docUnsub, evUnsub);
+  }
+
+  async _connectLiveFirestore() {
+    this._disconnectLive();
+    this.followLive = true;
+    this.$liveBtn.classList.add("active-btn");
+    this.$liveBtn.textContent = "Firestore Live Connected";
+    this.$modeStatus.textContent = `Connecting Realtime Firestore (${this.selectedLang.toUpperCase()})...`;
+    try {
+      await this._ensureFirestoreSdk();
+      if (!this.followLive) return;
+      const { collection, onSnapshot } = this.fsSdk;
+      this.fsGlobalUnsub = onSnapshot(
+        collection(this.fsDb, "ed4_languages"),
+        (snap) => {
+          if (!this.ed4Summary) this.ed4Summary = { languages: {} };
+          if (!this.ed4Summary.languages) this.ed4Summary.languages = {};
+          let changed = false;
+          snap.forEach((dSnap) => {
+            const code = dSnap.id;
+            const parsed = this._parseFirestoreLangDoc(code, dSnap.data() || {});
+            this.ed4Summary.languages[code] = { ...(this.ed4Summary.languages[code] || {}), ...parsed };
+            changed = true;
+          });
+          if (changed) {
+            this._renderLangRibbon();
+            this._renderProgressTable();
+          }
+        },
+        (err) => {
+          console.warn("Firestore collection listener error:", err);
+        }
+      );
+      this._subscribeFirestoreLang(this.selectedLang);
+    } catch (err) {
+      console.warn("Realtime Firestore unavailable; staying on static replay:", err);
+      this.followLive = false;
+      this.$liveBtn.classList.remove("active-btn");
+      this.$liveBtn.textContent = "Live Realtime (Firestore)";
+      this.$modeStatus.textContent = "Static Replay ($0 idle)";
+    }
+  }
+
+  _disconnectLive() {
+    this._unsubLangFirestore();
+    if (this.fsGlobalUnsub) {
+      try {
+        this.fsGlobalUnsub();
+      } catch (_) {}
+      this.fsGlobalUnsub = null;
+    }
+    this._disconnectSse();
+  }
+
   _connectLiveSse() {
     this._disconnectSse();
     if (!this.liveOrigin) return;
@@ -971,7 +1200,7 @@ class LivingVillageWorld {
     }
     this.followLive = false;
     this.$liveBtn.classList.remove("active-btn");
-    this.$liveBtn.textContent = "Connect Live (Cloud Run SSE)";
+    this.$liveBtn.textContent = "Live Realtime (Firestore)";
     this.$modeStatus.textContent = "Static Replay ($0 idle)";
   }
 
@@ -979,7 +1208,7 @@ class LivingVillageWorld {
     if (this.activeTab === "exchanges") {
       const visibleEvs = this.liveEvents.slice(0, this.cursor || this.liveEvents.length).slice(-28).reverse();
       if (!visibleEvs.length) {
-        this.$tabBody.innerHTML = `<div class="vw-log-card">No turns recorded yet for <code>${this.selectedLang}</code>. Connect Live on Cloud Run to start an epoch.</div>`;
+        this.$tabBody.innerHTML = `<div class="vw-log-card">No turns recorded yet for <code>${this.selectedLang}</code>. Waiting for Cloud Run Job events in Firestore...</div>`;
         return;
       }
       this.$tabBody.innerHTML = visibleEvs.map((ev) => `
@@ -1013,7 +1242,7 @@ class LivingVillageWorld {
           <div class="vw-gate-pills">
             <span class="vw-tag-pill">DNAFLA: ${ortho.is_standard ? "OK" : "FAIL"}</span>
             <span class="vw-tag-pill">DabaX: ${dx.dict_compile_ok ? "OK" : "FAIL"} (${Number(dx.regression_pct || 0).toFixed(1)}% reg)</span>
-            <span class="vw-tag-pill">Argon: ${esc(critic.verdict || "N/A")}</span>
+            <span class="vw-tag-pill">Critic: ${esc(critic.verdict || "N/A")}</span>
           </div>
           <div style="color:var(--ink-muted);margin-top:3px">${esc(d.summary_reason)}</div>
           ${d.mdf_block ? `<pre class="vw-mdf-pre">${esc(d.mdf_block)}</pre>` : ""}

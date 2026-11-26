@@ -255,13 +255,14 @@ async def call_gemini_argon(
     client: httpx.AsyncClient,
     messages: List[Dict[str, str]],
     *,
-    model_id: str = "gemini-4-argon",
+    model_id: Optional[str] = None,
     project_id: Optional[str] = None,
     max_tokens: int = 1600,
     temperature: float = 0.1,
 ) -> Tuple[str, float, Optional[str]]:
-    """Call Gemini 4 Argon Critic via GEMINI_API_KEY or Vertex AI (mlgramv1 ADC)."""
+    """Call Gemini critic (default Gemini 3.5 Flash) via GEMINI_API_KEY or Vertex AI."""
     global _VERTEX_TOKEN, _VERTEX_TOKEN_TS
+    resolved_model = (model_id or os.environ.get("ED4_CRITIC_MODEL") or "gemini-3.5-flash").strip()
     system_texts = [m["content"] for m in messages if m.get("role") == "system"]
     contents = [
         {
@@ -290,13 +291,13 @@ async def call_gemini_argon(
         t0 = time.perf_counter()
         try:
             if gemini_key:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_id}:generateContent?key={gemini_key}"
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{resolved_model}:generateContent?key={gemini_key}"
                 headers = {"Content-Type": "application/json"}
             else:
                 tok = await _get_vertex_access_token(client)
                 url = (
                     f"https://aiplatform.googleapis.com/v1/projects/{proj}/locations/global"
-                    f"/publishers/google/models/{model_id}:generateContent"
+                    f"/publishers/google/models/{resolved_model}:generateContent"
                 )
                 headers = {
                     "Authorization": f"Bearer {tok}",
