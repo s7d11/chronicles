@@ -86,5 +86,5 @@ Every HTML page under `site/` MUST preserve the Chronicle broadsheet visual lang
 3. **Secrets**: Never stage, commit, or print contents of `.env` (`ADOPTION_KEY`, `HF_KEY`, `NVIDIA_KEY`, `SWARM_ADMIN_TOKEN`).
 4. **Scope boundary**: Never modify `/home/seb/sebenx/sebeni/`.
 5. **Accuracy & Attribution**:
-   - Credit **Antigravity Team (`Antigravity for Science`)**, **Adaption Labs**, **NVIDIA Build**, **Hugging Face Datasets**, and **`Gemini 4 Neon-High-Orchestrator`**.
-   - Never claim Google Cloud compute credits were provided (only Antigravity for Science access was provided; cloud runs are self-funded), and never reference unrelated GCP project IDs in committed files.
+   - Credit **Antigravity Team**, **Adaption Labs**, **NVIDIA Build**, and **`Gemini 4 Neon-High-Orchestrator`**.
+   - Never claim Google Cloud compute credits were provided, and never reference unrelated GCP project IDs in committed files.
