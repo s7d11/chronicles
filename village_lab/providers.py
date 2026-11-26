@@ -261,6 +261,7 @@ async def call_gemini_argon(
     temperature: float = 0.1,
 ) -> Tuple[str, float, Optional[str]]:
     """Call Gemini 4 Argon Critic via GEMINI_API_KEY or Vertex AI (mlgramv1 ADC)."""
+    global _VERTEX_TOKEN, _VERTEX_TOKEN_TS
     system_texts = [m["content"] for m in messages if m.get("role") == "system"]
     contents = [
         {
@@ -306,6 +307,11 @@ async def call_gemini_argon(
             elapsed = time.perf_counter() - t0
             if resp.status_code == 200:
                 return _extract_gemini_text(resp.json()), elapsed, None
+            if resp.status_code == 401 and not gemini_key:
+                _VERTEX_TOKEN = None
+                _VERTEX_TOKEN_TS = 0.0
+                last_err = f"Argon HTTP 401 (refreshing token): {resp.text[:160]}"
+                continue
             if resp.status_code in {429, 500, 502, 503, 504}:
                 last_err = f"Argon HTTP {resp.status_code}: {resp.text[:180]}"
                 await asyncio.sleep(min(10.0, 2.0 ** attempt))

@@ -17,8 +17,8 @@
     "spp",
     "taq"
   ],
-  "total_events": 0,
-  "total_added_lx": 0,
+  "total_events": 268,
+  "total_added_lx": 1,
   "total_added_va": 0,
   "total_added_gram": 0,
   "languages": {
@@ -27,16 +27,16 @@
       "lang_name": "Bambara (Bamanankan)",
       "target_entries": 50000,
       "baseline_lx_count": 13529,
-      "added_lx_count": 0,
+      "added_lx_count": 1,
       "added_va_count": 0,
       "baseline_gram_lines": 540,
       "added_gram_rules_count": 0,
-      "total_turns": 0,
-      "total_candidates_reviewed": 0,
-      "total_rejected": 0,
-      "baseline_devmini_pct": 0.0,
-      "latest_devmini_pct": 0.0,
-      "updated_at": "",
+      "total_turns": 10,
+      "total_candidates_reviewed": 50,
+      "total_rejected": 49,
+      "baseline_devmini_pct": 98.75,
+      "latest_devmini_pct": 98.75,
+      "updated_at": "2026-11-26 21:08:37 UTC",
       "orchestrator_model": "nvidia/nemotron-3-ultra-550b-a55b",
       "critic_model": "gemini-4-argon",
       "active_agents": [
@@ -48,9 +48,9 @@
           "model_id": "nvidia/nemotron-3-ultra-550b-a55b",
           "provider": "nim",
           "home_zone": "baobab_plaza",
-          "zone": "baobab_plaza",
-          "x": 0.0,
-          "z": 2.2,
+          "zone": "banco_compounds",
+          "x": -10.5,
+          "z": 2.5,
           "domain": "Cross-Domain Coordination & Dynamic Staffing",
           "seat": 0,
           "color": "#1b4d6e",
@@ -82,9 +82,9 @@
           "model_id": "qwen-SEA-LION-v5-397b-a17b-plus",
           "provider": "adaption",
           "home_zone": "baobab_plaza",
-          "zone": "baobab_plaza",
-          "x": 0.0,
-          "z": 2.2,
+          "zone": "banco_compounds",
+          "x": -10.5,
+          "z": 2.5,
           "domain": "Oral History, Proverbial Discourse & Kinship",
           "seat": 0,
           "color": "#7b3f1c",
@@ -99,9 +99,9 @@
           "model_id": "glm-5.3-flash",
           "provider": "adaption",
           "home_zone": "millet_fields",
-          "zone": "millet_fields",
-          "x": -11.5,
-          "z": -8.0,
+          "zone": "banco_compounds",
+          "x": -10.5,
+          "z": 2.5,
           "domain": "Agriculture, Soil, Botany & Monsoon Calendar",
           "seat": 0,
           "color": "#1e5c3a",
@@ -116,9 +116,9 @@
           "model_id": "deepseek-v4-flash",
           "provider": "adaption",
           "home_zone": "riverbank_well",
-          "zone": "riverbank_well",
-          "x": 3.5,
-          "z": 12.5,
+          "zone": "market_square",
+          "x": 9.5,
+          "z": 3.5,
           "domain": "Hydrology, Fishing, Ferrying & Cisterns",
           "seat": 0,
           "color": "#236478",
@@ -133,9 +133,9 @@
           "model_id": "nemotron-SEA-LION-v4.8-120b-a12b",
           "provider": "adaption",
           "home_zone": "banco_compounds",
-          "zone": "banco_compounds",
-          "x": -10.5,
-          "z": 2.5,
+          "zone": "artisan_forge",
+          "x": 11.5,
+          "z": -6.0,
           "domain": "Banco Architecture, Domestic Craft & Hospitality",
           "seat": 0,
           "color": "#a34828",
@@ -226,11 +226,3161 @@
           "color": "#8c1d24",
           "spawned_dynamically": false,
           "spawn_reason": ""
+        },
+        {
+          "agent_id": "sp-gesedala",
+          "name": "Gesedala",
+          "role": "specialist",
+          "title": "Bògòlan & Cotton Loom Weaver",
+          "model_id": "glm-5.2",
+          "provider": "adaption",
+          "home_zone": "banco_compounds",
+          "zone": "riverbank_well",
+          "x": 3.5,
+          "z": 12.5,
+          "domain": "Weaving, Mud-Cloth Dyeing & Textile Crafts",
+          "seat": 0,
+          "color": "#7b5221",
+          "spawned_dynamically": true,
+          "spawn_reason": "Need a master griot to authenticate genealogical references and caste-related proverbs in the Amadu/Ture narratives"
+        },
+        {
+          "agent_id": "sp-koroba",
+          "name": "Kɔrɔba",
+          "role": "specialist",
+          "title": "Customary Civic Elder",
+          "model_id": "gemma-4-31b-it",
+          "provider": "adaption",
+          "home_zone": "baobab_plaza",
+          "zone": "market_square",
+          "x": 9.5,
+          "z": 3.5,
+          "domain": "Customary Law, Mediation, Land Tenure & Markets",
+          "seat": 0,
+          "color": "#6a3b52",
+          "spawned_dynamically": true,
+          "spawn_reason": "To provide historical perspective on trans-Saharan travel routes and oral genealogies of migration across Farafina."
+        },
+        {
+          "agent_id": "sp-furabola",
+          "name": "Furabɔla",
+          "role": "specialist",
+          "title": "Traditional Herbalist & Healer",
+          "model_id": "gemma-4-26b-a4b-it",
+          "provider": "adaption",
+          "home_zone": "millet_fields",
+          "zone": "market_square",
+          "x": 9.5,
+          "z": 3.5,
+          "domain": "Medicinal Bark, Roots, Remedies & Ethnobotany",
+          "seat": 0,
+          "color": "#2c7a4b",
+          "spawned_dynamically": true,
+          "spawn_reason": "Need expert on nutritional ethnobotany to validate vitamin terminology and herbal lore."
         }
       ],
-      "domain_counts": {},
-      "recent_exchanges": [],
-      "recent_decisions": []
+      "domain_counts": {
+        "Agriculture & Savanna Botany": 1,
+        "Market Trade, Weights & Pottery": 0,
+        "Blacksmithing, Carpentry & Weaving": 0,
+        "Banco Masonry & Domestic Crafts": 0,
+        "Hydrology, Fishing & Monsoon Seasons": 1,
+        "Kinship, Hospitality & Proverbs": 2,
+        "Ethnomedicine & Herbal Lore": 1,
+        "Civic Discourse, Mediation & Law": 2,
+        "Culinary Grain, Shea & Spices": 1,
+        "Flora, Fauna & Pastoral Ecology": 1,
+        "Timekeeping, Astronomy & Travel": 1,
+        "Abstract Stative Verbs & Ideophones": 0
+      },
+      "recent_exchanges": [
+        {
+          "turn_id": 1,
+          "lang": "bam",
+          "zone": "market_square",
+          "topic": "Agriculture & Savanna Botany",
+          "semantic_domain": "Agriculture & Savanna Botany",
+          "participants": [
+            "v1-sugula",
+            "v2-jeli"
+          ],
+          "spawned_agent_id": null,
+          "orchestrator_directive": "Discuss Agriculture & Savanna Botany in natural bam.",
+          "utterances": [
+            {
+              "agent_id": "v1-sugula",
+              "speaker_name": "Sugula",
+              "model_id": "gemma-4-31b-it",
+              "text_native": "Sugu na kono, an bɛ nàni-fura ni sago-fura dɔw juman-na.",
+              "gloss_en": "Inside the market, we are selling some seed-grains and various grains.",
+              "gloss_fr": "À l'intérieur du marché, nous vendons des graines et diverses céréales.",
+              "candidate_terms": [
+                "nàni-fura",
+                "sago-fura"
+              ],
+              "candidate_glosses": {
+                "nàni-fura": {
+                  "pos": "n",
+                  "ge": "seed-grain",
+                  "gf": "graine-céréale"
+                },
+                "sago-fura": {
+                  "pos": "n",
+                  "ge": "various grains",
+                  "gf": "diverses céréales"
+                }
+              }
+            },
+            {
+              "agent_id": "v2-jeli",
+              "speaker_name": "Jeli",
+              "model_id": "qwen-SEA-LION-v5-397b-a17b-plus",
+              "text_native": "I ni ce! Jeli bɛ baara kɛ Agriculture & Savanna Botany la.",
+              "gloss_en": "Greetings! Jeli is working on Agriculture & Savanna Botany.",
+              "gloss_fr": "Salutations! Jeli travaille dans le domaine Agriculture & Savanna Botany.",
+              "candidate_terms": [],
+              "candidate_glosses": {}
+            }
+          ]
+        },
+        {
+          "turn_id": 2,
+          "lang": "bam",
+          "zone": "baobab_plaza",
+          "topic": "Exploring the nuance of 'menli' (thought/intention) in Bambara proverbs, citing the line 'menli le kɛ emiane' and the invocation of ancestor Adama in kinship dialogue.",
+          "semantic_domain": "Kinship, Hospitality & Proverbs",
+          "participants": [
+            "v2-jeli",
+            "v5-somogo"
+          ],
+          "spawned_agent_id": null,
+          "orchestrator_directive": "Elicit and record proverbial usages of 'menli' and kinship address forms for 'Adama' to enrich the lexicon's discourse domain.",
+          "utterances": [
+            {
+              "agent_id": "v2-jeli",
+              "speaker_name": "Jeli",
+              "model_id": "qwen-SEA-LION-v5-397b-a17b-plus",
+              "text_native": "...",
+              "gloss_en": "...",
+              "gloss_fr": "...",
+              "candidate_terms": [
+                "word1"
+              ],
+              "candidate_glosses": {
+                "word1": {
+                  "pos": "n",
+                  "ge": "short gloss",
+                  "gf": "glose courte"
+                }
+              }
+            },
+            {
+              "agent_id": "v5-somogo",
+              "speaker_name": "So-mɔgɔ",
+              "model_id": "nemotron-SEA-LION-v4.8-120b-a12b",
+              "text_native": "Menli le kɛ emiane, Adama ka kɛnɛ kɛnɛ.",
+              "gloss_en": "Thought is the foundation; Adama speaks truth.",
+              "gloss_fr": "La pensée est la racine de la chose; Adama dit la vérité.",
+              "candidate_terms": [
+                "menli",
+                "kɛnɛ"
+              ],
+              "candidate_glosses": {
+                "menli": {
+                  "pos": "n",
+                  "ge": "thought/intention",
+                  "gf": "pensée/intention"
+                },
+                "kɛnɛ": {
+                  "pos": "n",
+                  "ge": "truth",
+                  "gf": "vérité"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "turn_id": 3,
+          "lang": "bam",
+          "zone": "baobab_plaza",
+          "topic": "Discussing the caste system (caste) through the spoken words (dire) of elders Amadu Sankare and Umaru Ture, and how their narratives (elle) resonate when chanted at gatherings",
+          "semantic_domain": "Civic Discourse, Mediation & Law",
+          "participants": [
+            "v2-jeli",
+            "v5-somogo",
+            "sp-gesedala"
+          ],
+          "spawned_agent_id": "sp-gesedala",
+          "orchestrator_directive": "Record the caste terminology, reported speech markers, and proper name morphology from the elders' discourse; expand kinship and civic lexicon entries",
+          "utterances": [
+            {
+              "agent_id": "v2-jeli",
+              "speaker_name": "Jeli",
+              "model_id": "qwen-SEA-LION-v5-397b-a17b-plus",
+              "text_native": "I ni ce! Jeli bɛ baara kɛ Discussing the caste system (caste) thro la.",
+              "gloss_en": "Greetings! Jeli is working on Civic Discourse, Mediation & Law.",
+              "gloss_fr": "Salutations! Jeli travaille dans le domaine Civic Discourse, Mediation & Law.",
+              "candidate_terms": [],
+              "candidate_glosses": {}
+            },
+            {
+              "agent_id": "v5-somogo",
+              "speaker_name": "So-mɔgɔ",
+              "model_id": "nemotron-SEA-LION-v4.8-120b-a12b",
+              "text_native": "I ni ce! So-mɔgɔ bɛ baara kɛ Discussing the caste system (caste) thro la.",
+              "gloss_en": "Greetings! So-mɔgɔ is working on Civic Discourse, Mediation & Law.",
+              "gloss_fr": "Salutations! So-mɔgɔ travaille dans le domaine Civic Discourse, Mediation & Law.",
+              "candidate_terms": [],
+              "candidate_glosses": {}
+            },
+            {
+              "agent_id": "sp-gesedala",
+              "speaker_name": "Gesedala",
+              "model_id": "glm-5.2",
+              "text_native": "Amadu Sankare ni Umaru Ture ka dire bɛ caste kuma fɔ, u ka elle bɛ jɛ mɔgɔw la.",
+              "gloss_en": "Amadu Sankare and Umaru Ture's words discuss caste matters, their narratives resonate among people.",
+              "gloss_fr": "Les paroles d'Amadu Sankare et Umaru Ture traitent des castes, leurs récits résonnent parmi les gens.",
+              "candidate_terms": [
+                "dire",
+                "jɛ"
+              ],
+              "candidate_glosses": {
+                "dire": {
+                  "pos": "n",
+                  "ge": "reported speech",
+                  "gf": "discours rapporté"
+                },
+                "jɛ": {
+                  "pos": "v",
+                  "ge": "to resonate, appear",
+                  "gf": "résonner, apparaître"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "turn_id": 4,
+          "lang": "bam",
+          "zone": "market_square",
+          "topic": "Discussing Turkish Airlines' new routes across Farafina, comparing air travel to traditional caravan paths and river ferrying, noting how 'farafina' encompasses both the continent and its diverse peoples.",
+          "semantic_domain": "Timekeeping, Astronomy & Travel",
+          "participants": [
+            "v1-sugula",
+            "v4-baamogo",
+            "sp-koroba"
+          ],
+          "spawned_agent_id": "sp-koroba",
+          "orchestrator_directive": "Elicit Bambara terms for modern and traditional travel modes, route nomenclature, geographic orientation, and the semantic range of 'farafina' in civic and commercial discourse.",
+          "utterances": [
+            {
+              "agent_id": "v1-sugula",
+              "speaker_name": "Sugula",
+              "model_id": "gemma-4-31b-it",
+              "text_native": "Turkish Airlines bɛ farafina kɔnɔn-kɔnɔnna, nka k'a kɛ lɔlɔ-yiri-yiri, o tɛ kɛ k'a fɛn kɛ k'a kɛ kɔnɔ-kɔnɔ-la k'a kɛ kɔnɔ-kɔnɔ-la.",
+              "gloss_en": "Turkish Airlines is crossing all over Africa, but unlike the old caravan paths, it is much faster.",
+              "gloss_fr": "Turkish Airlines traverse toute l'Afrique, mais contrairement aux anciens chemins de caravane, c'est beaucoup plus rapide.",
+              "candidate_terms": [
+                "farafina",
+                "lɔlɔ-yiri-yiri"
+              ],
+              "candidate_glosses": {
+                "farafina": {
+                  "pos": "n",
+                  "ge": "Africa/African people",
+                  "gf": "Afrique/Africains"
+                },
+                "lɔlɔ-yiri-yiri": {
+                  "pos": "adj",
+                  "ge": "very fast",
+                  "gf": "très rapide"
+                }
+              }
+            },
+            {
+              "agent_id": "v4-baamogo",
+              "speaker_name": "Baa-mɔgɔ",
+              "model_id": "deepseek-v4-flash",
+              "text_native": "Keyita y'a fɔ ko Turkish Airlines bɛ taama farafina kɔnɔ ka tɛmɛ jamana caman kan, nka o tɛ kɛ kabila sila kɔrɔlenw ni bajiraw ɲɛsɛgɔta ye; farafina bɛ duguɲa ni mɔgɔw bɛɛ dafalen.",
+              "gloss_en": "Keita said that Turkish Airlines travels across Africa passing through many countries, but it is not like the old caravan paths and river ferries; farafina includes both the continent and all its peoples.",
+              "gloss_fr": "Keita a dit que Turkish Airlines voyage à travers l'Afrique en passant par de nombreux pays, mais ce n'est pas comme les anciennes pistes caravanières et les bacs fluviaux ; farafina englobe à la fois le continent et tous ses peuples.",
+              "candidate_terms": [
+                "kabilasila",
+                "bajirala"
+              ],
+              "candidate_glosses": {
+                "kabilasila": {
+                  "pos": "n",
+                  "ge": "caravan path",
+                  "gf": "piste caravanière"
+                },
+                "bajirala": {
+                  "pos": "n",
+                  "ge": "river ferry crossing",
+                  "gf": "traversée en bac fluvial"
+                }
+              }
+            },
+            {
+              "agent_id": "sp-koroba",
+              "speaker_name": "Kɔrɔba",
+              "model_id": "gemma-4-31b-it",
+              "text_native": "Awa, farafina kɔnɔn-kɔnɔnna bɛ kɛ saba-saba, nka k'a kɛ lɔlɔ-yiri-yiri, o tɛ kɛ k'a fɛn kɛ k'a kɛ kɔnɔ-kɔnɔ-la.",
+              "gloss_en": "Yes, crossing Africa is now common, but this speed is unlike the old paths.",
+              "gloss_fr": "Oui, traverser l'Afrique est devenu courant, mais cette rapidité diffère des anciens sentiers.",
+              "candidate_terms": [
+                "farafina",
+                "lɔlɔ-yiri-yiri"
+              ],
+              "candidate_glosses": {
+                "farafina": {
+                  "pos": "n",
+                  "ge": "Africa/African people",
+                  "gf": "Afrique/peuples africains"
+                },
+                "lɔlɔ-yiri-yiri": {
+                  "pos": "adj",
+                  "ge": "very fast",
+                  "gf": "très rapide"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "turn_id": 5,
+          "lang": "bam",
+          "zone": "artisan_forge",
+          "topic": "Hydrology, Fishing & Monsoon Seasons",
+          "semantic_domain": "Hydrology, Fishing & Monsoon Seasons",
+          "participants": [
+            "v5-somogo",
+            "sp-gesedala"
+          ],
+          "spawned_agent_id": null,
+          "orchestrator_directive": "Discuss Hydrology, Fishing & Monsoon Seasons in natural bam.",
+          "utterances": [
+            {
+              "agent_id": "v5-somogo",
+              "speaker_name": "So-mɔgɔ",
+              "model_id": "nemotron-SEA-LION-v4.8-120b-a12b",
+              "text_native": "I ni ce! So-mɔgɔ bɛ baara kɛ Hydrology, Fishing & Monsoon Seasons la.",
+              "gloss_en": "Greetings! So-mɔgɔ is working on Hydrology, Fishing & Monsoon Seasons.",
+              "gloss_fr": "Salutations! So-mɔgɔ travaille dans le domaine Hydrology, Fishing & Monsoon Seasons.",
+              "candidate_terms": [],
+              "candidate_glosses": {}
+            },
+            {
+              "agent_id": "sp-gesedala",
+              "speaker_name": "Gesedala",
+              "model_id": "glm-5.2",
+              "text_native": "I ni ce! Sanji kɛnɛ na, ji bɛ jɛn, nɛgɛsɔrɔ ka di waati min na. Sidiki fana bɛ nɛgɛsɔrɔ kɛ sanji kɛnɛ na, n'ka bògɔlan baara fana bɛ jate sanji la.",
+              "gloss_en": "Greetings! In the rainy season, water rises, it's a good time for fishing. Sidiki also fishes during the rainy season, and my mud-cloth work also depends on the rain.",
+              "gloss_fr": "Salut ! En saison des pluies, l'eau monte, c'est une bonne période pour la pêche. Sidiki pêche aussi en saison des pluies, et mon travail du bogolan dépend aussi de la pluie.",
+              "candidate_terms": [
+                "sanji",
+                "nɛgɛsɔrɔ"
+              ],
+              "candidate_glosses": {
+                "sanji": {
+                  "pos": "n",
+                  "ge": "rain",
+                  "gf": "pluie"
+                },
+                "nɛgɛsɔrɔ": {
+                  "pos": "n",
+                  "ge": "fishing",
+                  "gf": "pêche"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "turn_id": 6,
+          "lang": "bam",
+          "zone": "riverbank_well",
+          "topic": "Kinship, Hospitality & Proverbs",
+          "semantic_domain": "Kinship, Hospitality & Proverbs",
+          "participants": [
+            "sp-gesedala",
+            "sp-koroba"
+          ],
+          "spawned_agent_id": null,
+          "orchestrator_directive": "Discuss Kinship, Hospitality & Proverbs in natural bam.",
+          "utterances": [
+            {
+              "agent_id": "sp-gesedala",
+              "speaker_name": "Gesedala",
+              "model_id": "glm-5.2",
+              "text_native": "Denmise ka ɲi, nka adan bɛ kɛ i ka baru ye — bawo dɔgɔkɔrɔba ko: 'Dɛn bɛɛ ye so ye.'",
+              "gloss_en": "Raising children well is good, but custom becomes your concern — because elders say: 'Every child belongs to the family.'",
+              "gloss_fr": "Bien élever les enfants est bon, mais la coutume devient votre affaire — car les anciens disent : 'Tout enfant appartient à la famille.'",
+              "candidate_terms": [
+                "denmise",
+                "adan"
+              ],
+              "candidate_glosses": {
+                "denmise": {
+                  "pos": "n",
+                  "ge": "child-rearing",
+                  "gf": "éducation des enfants"
+                },
+                "adan": {
+                  "pos": "n",
+                  "ge": "custom, habit",
+                  "gf": "coutume, habitude"
+                }
+              }
+            },
+            {
+              "agent_id": "sp-koroba",
+              "speaker_name": "Kɔrɔba",
+              "model_id": "gemma-4-31b-it",
+              "text_native": "O bɛ kɛ k'a ye, nka adan bɛ kɛ an ka tigi ye; mogo bɛɛ ye dugu dɛn ye.",
+              "gloss_en": "That is true, but custom is our host; everyone is a child of the village.",
+              "gloss_fr": "C'est vrai, mais la coutume est notre hôte ; tout le monde est un enfant du village.",
+              "candidate_terms": [
+                "adan",
+                "tigi"
+              ],
+              "candidate_glosses": {
+                "adan": {
+                  "pos": "n",
+                  "ge": "custom/tradition",
+                  "gf": "coutume/tradition"
+                },
+                "tigi": {
+                  "pos": "n",
+                  "ge": "host/owner",
+                  "gf": "hôte/propriétaire"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "turn_id": 7,
+          "lang": "bam",
+          "zone": "market_square",
+          "topic": "Ethnomedicine & Herbal Lore",
+          "semantic_domain": "Ethnomedicine & Herbal Lore",
+          "participants": [
+            "sp-koroba",
+            "v1-sugula"
+          ],
+          "spawned_agent_id": null,
+          "orchestrator_directive": "Discuss Ethnomedicine & Herbal Lore in natural bam.",
+          "utterances": [
+            {
+              "agent_id": "sp-koroba",
+              "speaker_name": "Kɔrɔba",
+              "model_id": "gemma-4-31b-it",
+              "text_native": "N'bɛna i y'a fɛn luman, nka dɔn-kɛ-la luman ye dawuda kɛna.",
+              "gloss_en": "I will explain it to you, but the best knowledge is in the healing arts.",
+              "gloss_fr": "Je vais t'expliquer, mais le meilleur savoir réside dans l'art de guérir.",
+              "candidate_terms": [
+                "dawuda",
+                "dɔn-kɛ-la"
+              ],
+              "candidate_glosses": {
+                "dawuda": {
+                  "pos": "n",
+                  "ge": "healing/medicine",
+                  "gf": "guérison/remède"
+                },
+                "dɔn-kɛ-la": {
+                  "pos": "n",
+                  "ge": "knowledge-maker",
+                  "gf": "savant/connaisseur"
+                }
+              }
+            },
+            {
+              "agent_id": "v1-sugula",
+              "speaker_name": "Sugula",
+              "model_id": "gemma-4-31b-it",
+              "text_native": "Awa, dawuda dɔn-kɛyokɛyɔkɛ bɛ sugu inna, n'bɛ se ka i dɛmɛ.",
+              "gloss_en": "Yes, the knowledge of healing is here in this market, I can help you.",
+              "gloss_fr": "Oui, la connaissance de la guérison est ici au marché, je peux t'aider.",
+              "candidate_terms": [
+                "dawuda",
+                "dɛmɛ"
+              ],
+              "candidate_glosses": {
+                "dawuda": {
+                  "pos": "n",
+                  "ge": "medicine/healing",
+                  "gf": "médecine/guérison"
+                },
+                "dɛmɛ": {
+                  "pos": "v",
+                  "ge": "to help",
+                  "gf": "aider"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "turn_id": 8,
+          "lang": "bam",
+          "zone": "baobab_plaza",
+          "topic": "Civic Discourse, Mediation & Law",
+          "semantic_domain": "Civic Discourse, Mediation & Law",
+          "participants": [
+            "v1-sugula",
+            "v2-jeli"
+          ],
+          "spawned_agent_id": null,
+          "orchestrator_directive": "Discuss Civic Discourse, Mediation & Law in natural bam.",
+          "utterances": [
+            {
+              "agent_id": "v1-sugula",
+              "speaker_name": "Sugula",
+              "model_id": "gemma-4-31b-it",
+              "text_native": "An ka kɛnɛya nyuman kɛ sisan, wa mako bɛ mogo dɔw kɔrɔmɔn k’a sago kɛ.",
+              "gloss_en": "Let us have a good understanding now, for some need a mediator to settle their affairs.",
+              "gloss_fr": "Ayons une bonne entente maintenant, car certains ont besoin d'un médiateur pour régler leurs affaires.",
+              "candidate_terms": [
+                "nyuman",
+                "kɔrɔmɔn"
+              ],
+              "candidate_glosses": {
+                "nyuman": {
+                  "pos": "adj",
+                  "ge": "good/kind",
+                  "gf": "bon/gentil"
+                },
+                "kɔrɔmɔn": {
+                  "pos": "n",
+                  "ge": "mediator/elder",
+                  "gf": "médiateur/ancien"
+                }
+              }
+            },
+            {
+              "agent_id": "v2-jeli",
+              "speaker_name": "Jeli",
+              "model_id": "qwen-SEA-LION-v5-397b-a17b-plus",
+              "text_native": "Yaya ka fɔlɔ bɛ kɛnɛya sɛnrɛ, nka sɛbɛ bɛ kɛ mɔgɔw ka sago kɛ.",
+              "gloss_en": "The elder's word spreads understanding, but law settles people's affairs.",
+              "gloss_fr": "La parole de l'aîné répand l'entente, mais la loi règle les affaires des gens.",
+              "candidate_terms": [
+                "yaya",
+                "sɛnrɛ"
+              ],
+              "candidate_glosses": {
+                "yaya": {
+                  "pos": "n",
+                  "ge": "elder/grandmother",
+                  "gf": "aîné/grand-mère"
+                },
+                "sɛnrɛ": {
+                  "pos": "v",
+                  "ge": "to spread",
+                  "gf": "répandre"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "turn_id": 9,
+          "lang": "bam",
+          "zone": "market_square",
+          "topic": "Discussing the vitamin (witamini) content of millet and shea butter, while referencing the biblical figure Yuhana (John) in a proverb about health, and clarifying the terms yahutuw, lagi, kene heard in traveler tales.",
+          "semantic_domain": "Culinary Grain, Shea & Spices",
+          "participants": [
+            "v1-sugula",
+            "v3-senekela",
+            "sp-furabola"
+          ],
+          "spawned_agent_id": "sp-furabola",
+          "orchestrator_directive": "Elicit standardized \\lx entries for witamini, yahutuw, lagi, kene, yuhana with grammatical categories and example sentences.",
+          "utterances": [
+            {
+              "agent_id": "v1-sugula",
+              "speaker_name": "Sugula",
+              "model_id": "gemma-4-31b-it",
+              "text_native": "Awa, witamini bɛ sanu ni n-tigi na, nka Yuhana kuma bɛ kɛ kene sago na.",
+              "gloss_en": "Yes, vitamins are in millet and shea butter, but John's words are for health.",
+              "gloss_fr": "Oui, les vitamines sont dans le mil et le beurre de karité, mais les paroles de Jean sont pour la santé.",
+              "candidate_terms": [
+                "witamini",
+                "kene"
+              ],
+              "candidate_glosses": {
+                "witamini": {
+                  "pos": "n",
+                  "ge": "vitamin",
+                  "gf": "vitamine"
+                },
+                "kene": {
+                  "pos": "n",
+                  "ge": "health",
+                  "gf": "santé"
+                }
+              }
+            },
+            {
+              "agent_id": "v3-senekela",
+              "speaker_name": "Sɛnɛkɛla",
+              "model_id": "glm-5.3-flash",
+              "text_native": "Sanu ni n-tigi kɔnɔ, lagi ni witamini bɛ yen; kene ka ɲi, yahutuw fɔlɔ bɛ o cogo na.",
+              "gloss_en": "In millet and shea butter there is strength and vitamins; health is good, as the traveler tales say.",
+              "gloss_fr": "Dans le mil et le beurre de karité, il y a la force et les vitamines ; la santé est bonne, comme le disent les contes des voyageurs.",
+              "candidate_terms": [
+                "yahutuw",
+                "lagi"
+              ],
+              "candidate_glosses": {
+                "yahutuw": {
+                  "pos": "n",
+                  "ge": "traveler tales",
+                  "gf": "contes de voyageurs"
+                },
+                "lagi": {
+                  "pos": "n",
+                  "ge": "strength, power",
+                  "gf": "force, puissance"
+                }
+              }
+            },
+            {
+              "agent_id": "sp-furabola",
+              "speaker_name": "Furabɔla",
+              "model_id": "gemma-4-26b-a4b-it",
+              "text_native": "Sanu ni n-tigi kɔnɔ, witamini ni lagi bɛ kɛ kɛnɛya ye, nka yahutuw bɛ fɔlɔ kɛ kɛnɛya kɔrɔ ye.",
+              "gloss_en": "In millet and shea butter, vitamins and strength create health, but traveler tales tell of health's importance.",
+              "gloss_fr": "Dans le mil et le beurre de karité, les vitamines et la force créent la santé, mais les contes de voyageurs parlent de l'importance de la santé.",
+              "candidate_terms": [
+                "witamini",
+                "yahutuw"
+              ],
+              "candidate_glosses": {
+                "witamini": {
+                  "pos": "n",
+                  "ge": "vitamin",
+                  "gf": "vitamine"
+                },
+                "yahutuw": {
+                  "pos": "n",
+                  "ge": "traveler-tales",
+                  "gf": "contes-de-voyageurs"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "turn_id": 10,
+          "lang": "bam",
+          "zone": "banco_compounds",
+          "topic": "Flora, Fauna & Pastoral Ecology",
+          "semantic_domain": "Flora, Fauna & Pastoral Ecology",
+          "participants": [
+            "v2-jeli",
+            "v3-senekela"
+          ],
+          "spawned_agent_id": null,
+          "orchestrator_directive": "Discuss Flora, Fauna & Pastoral Ecology in natural bam.",
+          "utterances": [
+            {
+              "agent_id": "v2-jeli",
+              "speaker_name": "Jeli",
+              "model_id": "qwen-SEA-LION-v5-397b-a17b-plus",
+              "text_native": "I ni ce! Jeli bɛ baara kɛ Flora, Fauna & Pastoral Ecology la.",
+              "gloss_en": "Greetings! Jeli is working on Flora, Fauna & Pastoral Ecology.",
+              "gloss_fr": "Salutations! Jeli travaille dans le domaine Flora, Fauna & Pastoral Ecology.",
+              "candidate_terms": [],
+              "candidate_glosses": {}
+            },
+            {
+              "agent_id": "v3-senekela",
+              "speaker_name": "Sɛnɛkɛla",
+              "model_id": "glm-5.3-flash",
+              "text_native": "Balla, i ka sɔgɔsɔ bɛ sugu ɲuman yɔrɔ la, dɛsɛ ni yiriwali ka ɲi san kuru in na.",
+              "gloss_en": "Balla, your livestock are where the good grass is; pasture and browse are excellent this rainy season.",
+              "gloss_fr": "Balla, ton bétail est là où l'herbe est bonne ; le pâturage et le fourrage sont excellents en cette saison des pluies.",
+              "candidate_terms": [
+                "sɔgɔsɔ",
+                "sugu"
+              ],
+              "candidate_glosses": {
+                "sɔgɔsɔ": {
+                  "pos": "n",
+                  "ge": "livestock, herd",
+                  "gf": "bétail, troupeau"
+                },
+                "sugu": {
+                  "pos": "n",
+                  "ge": "grass, pasture grass",
+                  "gf": "herbe, herbe de pâturage"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "recent_decisions": [
+        {
+          "turn_id": 5,
+          "lang": "bam",
+          "candidate_raw": "penisilini",
+          "standardized_lx": "penisilini",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "penicillin",
+          "gloss_fr": "pénicilline",
+          "semantic_domain": "Hydrology, Fishing & Monsoon Seasons",
+          "example_native": "Eritoromisini bɛ bana caman fana kɛlɛ i n'a fɔ penisilini kulu kɔnɔfuraw cogo, nka ale de da ka gɛlɛn dɔɔni.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "COMMIT_LX",
+          "orthography_check": {
+            "raw_form": "penisilini",
+            "standardized_form": "penisilini",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid DNAFLA loanword from French 'pénicilline'. Orthography conforms to Bambara CV structure. Context confirms nominal usage as antibiotic. Domain tag mismatch noted but lexical validity stands. No inflectional variants required."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Standard loanword from French 'pénicilline', conforms to Bambara orthography. Valid lexical stem."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Borrowed medical noun adapted to Bambara phonology; valid lexical stem, not inflected."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Loanword follows standard orthography; approved as new lexical stem."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_APPROVE",
+            "revised_action": "COMMIT_LX",
+            "standardized_lx": "penisilini",
+            "rationale": "Approve: Well-attested Bambara medical loanword ('penisilini' = penicillin) with valid Bambara context.",
+            "latency_s": 0.875,
+            "error": ""
+          },
+          "mdf_block": "\\lx penisilini\n\\ps n\n\\ge penicillin\n\\gf pénicilline\n\\sd Hydrology, Fishing & Monsoon Seasons\n\\xv Eritoromisini bɛ bana caman fana kɛlɛ i n'a fɔ penisilini kulu kɔnɔfuraw cogo, nka ale de da ka gɛlɛn dɔɔni.\n\\dt 26/Nov/2026\n\\rem SEBENI_ED4_COUNCIL_ARGON\n",
+          "summary_reason": "Approve: Well-attested Bambara medical loanword ('penisilini' = penicillin) with valid Bambara context."
+        },
+        {
+          "turn_id": 5,
+          "lang": "bam",
+          "candidate_raw": "kena",
+          "standardized_lx": "kena",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "kena",
+          "gloss_fr": "kena",
+          "semantic_domain": "Hydrology, Fishing & Monsoon Seasons",
+          "example_native": "cumanya biler da period ni kena hati2 la pulak…",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "kena",
+            "standardized_form": "kena",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REVISE_TO_VA",
+              "rationale": "Candidate 'kena' is a Frenchified spelling using 'e' for open 'ɛ'. In hydrology/monsoon contexts, it represents 'kɛnɛ' (dry season). Enforcing DNAFLA standard orthography and routing the misspelling to \\va."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Unattested lexical stem (mdf_lx) approved as standardized entry per Gate-2 hint."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "kena",
+            "rationale": "Reject: Corpus contamination. The example sentence is in Malay, not Bambara.",
+            "latency_s": 0.875,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Reject: Corpus contamination. The example sentence is in Malay, not Bambara."
+        },
+        {
+          "turn_id": 5,
+          "lang": "bam",
+          "candidate_raw": "kidali",
+          "standardized_lx": "kidal",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "place",
+          "gloss_fr": "lieu",
+          "semantic_domain": "Hydrology, Fishing & Monsoon Seasons",
+          "example_native": "Kidali gɔfɛrɛnɛri ye taako fɔlɔ min kɛ yen utikalo kɔnɔna na, o kɛra sababu ye ka Mali fanga seginni sen na teliya Kidali mara kɔnɔ.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "kidali",
+            "standardized_form": "kidali",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REJECT",
+              "rationale": "Toponym not common lexical stem. Standard orthography is 'Kidal'. 'kidali' shows Frenchified vowel epenthesis. Context confirms geographic reference, mismatched domain. Proper nouns excluded from standard lexicon."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized Bambara orthography; context uses Kidali as a place name in the hydrology/fishing domain; no inflection or dialectal variant; approve as noun."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid lexical stem conforming to standard orthography; approved as new MDF entry."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "kidal",
+            "rationale": "Reject: 'Kidali' (Kidal) is a toponym with an overly generic gloss ('place') and non-Bambara standardization ('kidal').",
+            "latency_s": 0.875,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Reject: 'Kidali' (Kidal) is a toponym with an overly generic gloss ('place') and non-Bambara standardization ('kidal')."
+        },
+        {
+          "turn_id": 5,
+          "lang": "bam",
+          "candidate_raw": "pyjama",
+          "standardized_lx": "pyjama",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "pajamas",
+          "gloss_fr": "pyjama",
+          "semantic_domain": "Hydrology, Fishing & Monsoon Seasons",
+          "example_native": "Le garçon en pyjama rayé de John Boyne…",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "pyjama",
+            "standardized_form": "pyjama",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REVISE_TO_VA",
+              "rationale": "Frenchified spelling 'pyjama' violates standard Bambara phonotactics; standardizing to 'piyama' and attaching French orthography as variant."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized loanword noun; lexical head, not transparent inflection."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized loanword noun; conforms to orthography."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "pyjama",
+            "rationale": "Reject: Unassimilated French intrusion from a wholly French sentence ('Le garçon en pyjama rayé...').",
+            "latency_s": 0.875,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Reject: Unassimilated French intrusion from a wholly French sentence ('Le garçon en pyjama rayé...')."
+        },
+        {
+          "turn_id": 5,
+          "lang": "bam",
+          "candidate_raw": "sidiki",
+          "standardized_lx": "sidiki",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "fish",
+          "gloss_fr": "poisson",
+          "semantic_domain": "Hydrology, Fishing & Monsoon Seasons",
+          "example_native": "Gawusu girinna ka Masakɛ Sidiki sen minɛ nka Sidiki sera ka a yɛrɛ bɔ.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "sidiki",
+            "standardized_form": "sidiki",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Token 'sidiki' matches context 'Masakɛ Sidiki' (King Sidiki). DNAFLA orthography requires capitalization for proper nouns. Standardized as 'Sidiki'. It is a historical proper name (King of Segou), not a common noun, but accepted as lexical entry for historical domain. No tonal marking needed in standard orthography. Gloss restricted to headword identity."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid Bambara proper noun (personal name of Arabic origin) functioning as a noun. Conforms to standard orthography with no inflectional or dialectal issues. Approved as a new lexical stem."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Contextual Masakɛ Sidiki supports a fish noun; standardized Bambara orthography; no inflection or variant."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized lexical stem; conforms to orthography."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "sidiki",
+            "rationale": "Reject: 'Sidiki' is a personal proper name ('Masakɛ Sidiki' = King Sidiki), hallucinated as 'fish' / 'poisson' due to domain prompt bias.",
+            "latency_s": 0.875,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Reject: 'Sidiki' is a personal proper name ('Masakɛ Sidiki' = King Sidiki), hallucinated as 'fish' / 'poisson' due to domain prompt bias."
+        },
+        {
+          "turn_id": 6,
+          "lang": "bam",
+          "candidate_raw": "mode",
+          "standardized_lx": "mode",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "manner",
+          "gloss_fr": "manière",
+          "semantic_domain": "Kinship, Hospitality & Proverbs",
+          "example_native": "O toun ba yira kafô ko diffraction des rayons X de l'ADN modèli bé son ka kè 'formou X' déyé.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "mode",
+            "standardized_form": "mode",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": false,
+            "gram_compile_ok": true,
+            "candidate_parsed": false,
+            "baseline_devmini_pct": 0.0,
+            "shadow_devmini_pct": 0.0,
+            "regression_pct": 0.0,
+            "error": "Rejected by Council supermajority (<3/4 votes)"
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REJECT",
+              "rationale": "Raw French loanword violates DNAFLA standard; prefer native 'kalan' or nativized 'mɔdɛ'."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REJECT",
+              "rationale": "Candidate 'mode' is a Frenchified spelling or truncation of 'modeli' (modèle + li). Not a standard Bambara lexical stem; violates rules against Frenchified spellings."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "REJECT",
+              "rationale": "Candidate is a Frenchified/loan spelling, not an attested Bambara lexical stem; context is code-mixed scientific French. No standard Bambara lemma or transparent inflection is established."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "ROUTE_TO_GRAM",
+              "rationale": "Loanword from French used in technical context; routing to grammar for inflectional handling."
+            }
+          ],
+          "critic": null,
+          "mdf_block": "",
+          "summary_reason": "Rejected by Council (3/4 reject votes)."
+        },
+        {
+          "turn_id": 7,
+          "lang": "bam",
+          "candidate_raw": "done",
+          "standardized_lx": "done",
+          "variant_va": "",
+          "pos": "adj",
+          "gloss_en": "finished",
+          "gloss_fr": "terminé",
+          "semantic_domain": "Ethnomedicine & Herbal Lore",
+          "example_native": "cool cool kebé yeah adandédo adandédo well done.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "done",
+            "standardized_form": "done",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": false,
+            "gram_compile_ok": true,
+            "candidate_parsed": false,
+            "baseline_devmini_pct": 0.0,
+            "shadow_devmini_pct": 0.0,
+            "regression_pct": 0.0,
+            "error": "Rejected by Council supermajority (<3/4 votes)"
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REJECT",
+              "rationale": "Token 'done' is English code-switching, not Bambara lexicon. DNAFLA standards prohibit importing English orthography as Bambara lemmas. Bambara equivalent for 'work/finish' is 'kò' or 'fini'. Context indicates English phrase 'well done'. Reject as invalid Bambara headword."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REJECT",
+              "rationale": "Token 'done' is an English intrusion extracted from the phrase 'well done' in the context utterance. Standard Bambara 'done' (blood) is highly attested, contradicting the unattested status, indicating this is not a valid Bambara lexical stem here."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "REJECT",
+              "rationale": "English code-switch in context; not a Bambara lexical stem or standard DNAFLA/AMALAN form."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "REJECT",
+              "rationale": "Token is an English loan/interjection ('well done') and not a native Bambara lexical stem."
+            }
+          ],
+          "critic": null,
+          "mdf_block": "",
+          "summary_reason": "Rejected by Council (4/4 reject votes)."
+        },
+        {
+          "turn_id": 7,
+          "lang": "bam",
+          "candidate_raw": "gyihova",
+          "standardized_lx": "gyihova",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "",
+          "gloss_fr": "",
+          "semantic_domain": "Ethnomedicine & Herbal Lore",
+          "example_native": "Kɛ mɔɔ Gyihova * ɛva bɛ ɛtane ɛhyɛ bɛ la, bɛdabɛ noko bɛyɛ ye zɔhane ala.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "gyihova",
+            "standardized_form": "gyihova",
+            "is_standard": false,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "reject",
+            "issues": [
+              "non_DNAFLA_characters:v"
+            ],
+            "rationale": "Fails bam standardized character inventory: non_DNAFLA_characters:v"
+          },
+          "dabax_check": {
+            "dict_compile_ok": false,
+            "gram_compile_ok": true,
+            "candidate_parsed": false,
+            "baseline_devmini_pct": 0.0,
+            "shadow_devmini_pct": 0.0,
+            "regression_pct": 0.0,
+            "error": "Skipped DabaX compile after Gate 1 rejection"
+          },
+          "seat_votes": [],
+          "critic": null,
+          "mdf_block": "",
+          "summary_reason": "Fails bam standardized character inventory: non_DNAFLA_characters:v"
+        },
+        {
+          "turn_id": 8,
+          "lang": "bam",
+          "candidate_raw": "kera",
+          "standardized_lx": "kera",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "kera",
+          "gloss_fr": "kera",
+          "semantic_domain": "Civic Discourse, Mediation & Law",
+          "example_native": "6 Ado tele latelen, a kera Yakobala kɔlɔn ma, a bandannɛ.",
+          "example_fr": "",
+          "gram_rule": "kɛ + ra (past)",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "kera",
+            "standardized_form": "kera",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": false,
+            "gram_compile_ok": false,
+            "candidate_parsed": false,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": "Invalid .gram syntax (must include valid 'pattern ...' declaration)"
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "ROUTE_TO_GRAM",
+              "rationale": "'kera' is inflected verb (completive) of lemma 'kɛ', not a noun. DNAFLA requires lemmatization. Context 'a kera' means 'it became'. Gate-2 pos=n hint is linguistically invalid. Route to grammar patterns for verb 'kɛ'."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "ROUTE_TO_GRAM",
+              "rationale": "Token 'kera' is the past tense inflection of the verb 'kɛ' (to do/become) with the suffix '-ra'. It should be routed to grammatical patterns rather than entered as a new lexical stem."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid standardized lexical stem conforming to orthography; eligible as mdf_lx."
+            }
+          ],
+          "critic": null,
+          "mdf_block": "",
+          "summary_reason": "Invalid .gram syntax (must include valid 'pattern ...' declaration)"
+        },
+        {
+          "turn_id": 6,
+          "lang": "bam",
+          "candidate_raw": "parti",
+          "standardized_lx": "parti",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "party",
+          "gloss_fr": "parti",
+          "semantic_domain": "Kinship, Hospitality & Proverbs",
+          "example_native": "Pdci-rda: la position de bédié sur le parti unifié expliquée…",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "parti",
+            "standardized_form": "parti",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Established French loan in political Bambara; orthography conforms to DNAFLA loanword integration standards despite domain mismatch. Valid noun stem."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Standard French loanword integrated into Bambara; conforms to DNAFLA orthography without diacritics. Approved as lexical noun."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "REJECT",
+              "rationale": "Token is a French lexical item in a French context, not an attested Bambara stem; reject as Frenchified loan rather than standard Bambara entry."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized loanword for political party; conforms to orthography."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "parti",
+            "rationale": "Unadapted French intrusion from a purely French source text.",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Unadapted French intrusion from a purely French source text."
+        },
+        {
+          "turn_id": 6,
+          "lang": "bam",
+          "candidate_raw": "denmise",
+          "standardized_lx": "denmise",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "denmise",
+          "gloss_fr": "denmise",
+          "semantic_domain": "Kinship, Hospitality & Proverbs",
+          "example_native": "tèsè an na se ka nin denmisènninw ka maaya nyètaakunsi dòn,",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "denmise",
+            "standardized_form": "denmise",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid compound noun; context confirms stem via inflection."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REVISE_TO_VA",
+              "rationale": "Candidate 'denmise' uses closed 'e' where standard Bambara requires open 'ɛ'. Root is den (child) + misɛ (small), a productive compound. Context form 'denmiseènninw' reflects denmisɛ+nnin(pl diminutive)+w(pl) — transparent inflection of denmisɛ. Gate-1 erred in accepting orthography; must enforce DNAFLA standard. Route inflected forms to .gram; headword is denmisɛ."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Accepted as unattested lexical stem (mdf_lx) per Gate-2 instructions despite phonetic French influence."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "denmise",
+            "rationale": "Truncated/corrupted form of standard 'denmisɛn' (child/youth) paired with circular glosses.",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Truncated/corrupted form of standard 'denmisɛn' (child/youth) paired with circular glosses."
+        },
+        {
+          "turn_id": 6,
+          "lang": "bam",
+          "candidate_raw": "baru",
+          "standardized_lx": "baru",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "baru",
+          "gloss_fr": "baru",
+          "semantic_domain": "Kinship, Hospitality & Proverbs",
+          "example_native": "sila jgn folow cite baru nanti ye makcik syira…huhu.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "baru",
+            "standardized_form": "baru",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REJECT",
+              "rationale": "Token 'baru' is not a standard Bambara lexical stem. Context is Malay/Indonesian, not Bambara. Rejecting as invalid for Bambara lexicon."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid standardized lexical stem for 'news'; conforms to orthography."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "baru",
+            "rationale": "Foreign language intrusion (Malay/Indonesian source text).",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Foreign language intrusion (Malay/Indonesian source text)."
+        },
+        {
+          "turn_id": 6,
+          "lang": "bam",
+          "candidate_raw": "adan",
+          "standardized_lx": "adan",
+          "variant_va": "",
+          "pos": "adv",
+          "gloss_en": "inside",
+          "gloss_fr": "dans",
+          "semantic_domain": "Kinship, Hospitality & Proverbs",
+          "example_native": "O lyé ou véyé zafè a moun, véyé kochon i adan jaden aw.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "adan",
+            "standardized_form": "adan",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Attested Bambara locative/prepositional adverb meaning inside/in; not a noun."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Confirmed as unattested lexical stem (mdf_lx) per Gate-2 instructions."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "adan",
+            "rationale": "Foreign language intrusion (Antillean Creole source text).",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Foreign language intrusion (Antillean Creole source text)."
+        },
+        {
+          "turn_id": 7,
+          "lang": "bam",
+          "candidate_raw": "inafo",
+          "standardized_lx": "inafo",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "plant",
+          "gloss_fr": "plante",
+          "semantic_domain": "Ethnomedicine & Herbal Lore",
+          "example_native": "Ni joyɔrɔ bɛ ka ye inafo Brando ka fanamantiya joyɔrɔ.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "inafo",
+            "standardized_form": "inafo",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Adheres to DNAFLA orthography; Gate-2 eligible as specialized MDF entry despite low attestation. Context implies nominal role in ethnomedicine hierarchy. Phonology fits Bambara patterns despite potential loan origin. Approved for lexicon with dialectal monitoring."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REJECT",
+              "rationale": "Token 'inafo' has no existing lexicon match and cannot be verified as a standard Bambara lexical item. Context 'inafo Brando' suggests proper noun or place name rather than common noun. Domain is ethnomedicine but no evidence this is an attested plant/herb name. Rejecting per rule against rubber-stamping unverified forms."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized opaque Bambara noun in ethnomedical context; no transparent inflection or dialectal reduplication; context supports lexical plant name."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Unattested lexical stem conforming to standard orthography; approved as MDF entry."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "inafo",
+            "rationale": "Conjoined writing of the discourse phrase 'i na a fɔ' (like, as if), hallucinated as a noun meaning 'plant'.",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Conjoined writing of the discourse phrase 'i na a fɔ' (like, as if), hallucinated as a noun meaning 'plant'."
+        },
+        {
+          "turn_id": 7,
+          "lang": "bam",
+          "candidate_raw": "dawuda",
+          "standardized_lx": "dawuda",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "proper name",
+          "gloss_fr": "nom propre",
+          "semantic_domain": "Ethnomedicine & Herbal Lore",
+          "example_native": "Wulu ni Dawuda ka bò Wedebugu, u dòlòminnaw fila ye nyògòn sòrò, u ka dòlòminyòrò la, Syakaba ka so, Kònòdiminnin.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "dawuda",
+            "standardized_form": "dawuda",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Token 'dawuda' is a valid proper noun (David) in Bambara, conforming to standard orthography. It is not a transparent inflection or dialectal variant, and functions as a lexical stem in the context."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Context shows Dawuda as a personal name functioning as a noun; no inflection or dialectal variant is evident, so approve as a standardized proper-noun lemma."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Unattested lexical stem conforming to standard orthography; approved as new MDF entry."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "dawuda",
+            "rationale": "Proper name (Dawuda) inappropriately proposed as a common lexical item under Ethnomedicine.",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Proper name (Dawuda) inappropriately proposed as a common lexical item under Ethnomedicine."
+        },
+        {
+          "turn_id": 7,
+          "lang": "bam",
+          "candidate_raw": "kise",
+          "standardized_lx": "kise",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "kind",
+          "gloss_fr": "type",
+          "semantic_domain": "Ethnomedicine & Herbal Lore",
+          "example_native": "i bè witamini A kisè kelen di a ma, kabini bana daminè tuma.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "kise",
+            "standardized_form": "kise",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Standard Bambara noun for 'liver'. Conforms to orthography and is a valid lexical stem despite Gate-2 unattested flag."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Context 'kise kelen' means one kind/type; noun lexical stem, not inflection; tonal variant kisè recorded."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized lexical stem conforming to Bamanankan orthography; valid MDF entry for ethnomedicine domain."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "kise",
+            "rationale": "Under-specified orthographic form of standard 'kisɛ' (grain, seed, pill/tablet), misglossed as 'kind/type'.",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Under-specified orthographic form of standard 'kisɛ' (grain, seed, pill/tablet), misglossed as 'kind/type'."
+        },
+        {
+          "turn_id": 8,
+          "lang": "bam",
+          "candidate_raw": "yaya",
+          "standardized_lx": "yaya",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "birth",
+          "gloss_fr": "naissance",
+          "semantic_domain": "Civic Discourse, Mediation & Law",
+          "example_native": "Yaya ko: foli diyara ne ye, a' ka mɔgɔw, u ye sɛnɛkɛdaba bila wa?",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "yaya",
+            "standardized_form": "yaya",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "gram_rule",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Context confirms anthroponym usage, not derived common noun. Gate-2 derivation hint unsound. DNAFLA orthography valid. Accept as proper noun."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Contextually a proper noun (name), not a morphological derivation of 'ya'. Approved as lexical item."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "ROUTE_TO_GRAM",
+              "rationale": "Derived noun from yà 'to be born'; transparent -ya derivation, route to grammar."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standard noun derived from root 'ya' via nominalization."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "yaya",
+            "rationale": "Proper name 'Yaya' in the example sentence, hallucinated as a common noun meaning 'birth'.",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Proper name 'Yaya' in the example sentence, hallucinated as a common noun meaning 'birth'."
+        },
+        {
+          "turn_id": 8,
+          "lang": "bam",
+          "candidate_raw": "nyuman",
+          "standardized_lx": "ɲùman",
+          "variant_va": "ɲuman",
+          "pos": "n",
+          "gloss_en": "nyuman",
+          "gloss_fr": "nyuman",
+          "semantic_domain": "Civic Discourse, Mediation & Law",
+          "example_native": "Makaja ko: „o min kwòni kèra, ne bè n ta juru sara fò sarako nyuman.“",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "nyuman",
+            "standardized_form": "ɲuman",
+            "is_standard": true,
+            "normalized_changed": true,
+            "already_in_dict": false,
+            "existing_headword": "ɲùman",
+            "route_hint": "mdf_va",
+            "issues": [
+              "normalized French digraph 'ny' -> DNAFLA 'ɲ'",
+              "tonal_or_dialect_variant_of_existing_lx"
+            ],
+            "rationale": "Matches tonal/orthographic stem of '\\lx ɲùman'; integrate as \\va variant rather than duplicate \\lx."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REVISE_TO_VA",
+              "rationale": "Orthography violates DNAFLA ('ny' vs 'ɲ'). Token matches existing lemma 'ɲùman'. Per Gate-1, integrate as variant to avoid duplication. Context 'sarako nyuman' implies adjectival use ('good deal'). Standardize orthography to 'ɲ', retain tone marking on canonical lemma. Variant recorded as toneless 'ɲuman' under canonical 'ɲùman'."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REVISE_TO_VA",
+              "rationale": "Candidate 'ɲuman' is an unmarked tonal variant of standard 'ɲùman'. Route as \\va to existing lemma per Gate-1."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "REVISE_TO_VA",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "REVISE_TO_VA",
+              "rationale": "Non-standard spelling of existing lemma ɲùman; route as variant."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "ɲuman",
+            "rationale": "Pre-1979 orthographic form 'nyuman' with circular glosses ('nyuman') and a mismatched variant field.",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Pre-1979 orthographic form 'nyuman' with circular glosses ('nyuman') and a mismatched variant field."
+        },
+        {
+          "turn_id": 8,
+          "lang": "bam",
+          "candidate_raw": "yɛgɛ",
+          "standardized_lx": "yɛgɛ",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "anger",
+          "gloss_fr": "colère",
+          "semantic_domain": "Civic Discourse, Mediation & Law",
+          "example_native": "katugu wi yɛgɛ cɛnwɛ pìla jɔgɔ ma piri, pi sila yiri sɛnwee woo kɔrɔgɔ,.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "yɛgɛ",
+            "standardized_form": "yɛgɛ",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REJECT",
+              "rationale": "Candidate lacks attestation in DNAFLA/AMALAN standard lexicons. Context contains distorted morphemes suggesting nonsense or heavy interference. Gate-2 flags as unattested stem. Chair rule prohibits rubber-stamping unverified forms. Reject until corpus evidence supports lexical status or dialectal variant mapping."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid standard Bambara lexical stem meaning 'fear' or 'shame'. Fits the context of civic discourse and emotional state. No inflectional routing needed."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized Bambara lexical stem; context supports a civic/mediation noun sense; not transparent inflection or dialectal spelling."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized lexical stem (mdf_lx) conforming to BAM orthography; no dialectal deviation detected."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "yɛgɛ",
+            "rationale": "Non-Bambara source text (Senufo/Mamara intrusion).",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Non-Bambara source text (Senufo/Mamara intrusion)."
+        },
+        {
+          "turn_id": 8,
+          "lang": "bam",
+          "candidate_raw": "sɛnrɛ",
+          "standardized_lx": "sɛnrɛ",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "competence",
+          "gloss_fr": "compétence",
+          "semantic_domain": "Civic Discourse, Mediation & Law",
+          "example_native": "4 Kagala ŋgele fuun kàa yɔnlɔgɔ faa wa Yɛnŋɛlɛ sɛnrɛ sɛwɛ wi ni,.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "sɛnrɛ",
+            "standardized_form": "sɛnrɛ",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REJECT",
+              "rationale": "No DNAFLA attestation; context exhibits corrupted syntax."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid Bambara noun 'sɛnrɛ' (behavior, conduct, custom) derived from 'sɛn' (path). Fits context of civic discourse. Conforms to standard orthography."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized Bambara noun, plausibly nominalization of sɛn 'be able'; fits civic/legal context as competence or ability; no reduplication, dialectal raw form, or Frenchified spelling."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid standardized lexical stem for noun; conforms to DNAFLA orthography."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "sɛnrɛ",
+            "rationale": "Non-Bambara source text (Senufo intrusion).",
+            "latency_s": 1.577,
+            "error": ""
+          },
+          "mdf_block": "",
+          "summary_reason": "Non-Bambara source text (Senufo intrusion)."
+        },
+        {
+          "turn_id": 9,
+          "lang": "bam",
+          "candidate_raw": "lagi",
+          "standardized_lx": "lagi",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "unattested",
+          "gloss_fr": "inconnu",
+          "semantic_domain": "Culinary Grain, Shea & Spices",
+          "example_native": "kalo sape ade camera canggih ni sure amik gambar lagi cantik.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "lagi",
+            "standardized_form": "lagi",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": false,
+            "gram_compile_ok": true,
+            "candidate_parsed": false,
+            "baseline_devmini_pct": 0.0,
+            "shadow_devmini_pct": 0.0,
+            "regression_pct": 0.0,
+            "error": "Rejected by Council supermajority (<3/4 votes)"
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REJECT",
+              "rationale": "Context utterance is Malay/Indonesian, not Bambara. 'lagi' functions as adverb 'more/again' in Malay. No semantic match in Bambara culinary domain. Gate-1 orthography check false positive on language identification. DNAFLA standards cannot apply to non-Bambara text. Reject to prevent corpus contamination."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REJECT",
+              "rationale": "Token 'lagi' is Malay for 'more/again' and is unattested in Bambara. The context utterance is entirely Malay, not Bamanankan. Rejecting as an invalid cross-lingual form."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "REJECT",
+              "rationale": "Not attested in Bambara; context is Indonesian/Malay, not Bambara; no valid lexical evidence."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "REJECT",
+              "rationale": "Token is Malay/Indonesian ('more/again'), not Bambara; fails DNAFLA/AMALAN standardization for the target language."
+            }
+          ],
+          "critic": null,
+          "mdf_block": "",
+          "summary_reason": "Rejected by Council (4/4 reject votes)."
+        },
+        {
+          "turn_id": 10,
+          "lang": "bam",
+          "candidate_raw": "balla",
+          "standardized_lx": "balla",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "personal name",
+          "gloss_fr": "nom propre",
+          "semantic_domain": "Flora, Fauna & Pastoral Ecology",
+          "example_native": "Anhan, Ami, ɔn, [tonton] Balla, a y'a fɔ dɛ ko sabali.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "balla",
+            "standardized_form": "balla",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": false,
+            "gram_compile_ok": true,
+            "candidate_parsed": false,
+            "baseline_devmini_pct": 0.0,
+            "shadow_devmini_pct": 0.0,
+            "regression_pct": 0.0,
+            "error": "Rejected by Council supermajority (<3/4 votes)"
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REJECT",
+              "rationale": "Token is anthroponym (proper name), not common noun. Context 'tonton Balla' confirms personal name usage. Domain 'Flora, Fauna' mismatch. DNAFLA standards exclude proper names from general lexicon unless lexicalized. Unattested as common noun stem."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REJECT",
+              "rationale": "Context shows 'Balla' is a proper noun (Uncle Balla), not a flora/fauna lexical stem. Invalid for the specified domain and pos."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "REJECT",
+              "rationale": "Context uses capitalized Balla as a vocative personal name, not a common lexical stem; proper names are outside the lexical dictionary, so reject."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid mdf_lx stem for noun; conforms to standard orthography; approved for DabaX entry."
+            }
+          ],
+          "critic": null,
+          "mdf_block": "",
+          "summary_reason": "Rejected by Council (3/4 reject votes)."
+        },
+        {
+          "turn_id": 10,
+          "lang": "bam",
+          "candidate_raw": "akan",
+          "standardized_lx": "akan",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "akan",
+          "gloss_fr": "akan",
+          "semantic_domain": "Flora, Fauna & Pastoral Ecology",
+          "example_native": "lina: doakan byk2 ye…duk susah2, nati akan senang la bila duk sama tu.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "akan",
+            "standardized_form": "akan",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": false,
+            "gram_compile_ok": true,
+            "candidate_parsed": false,
+            "baseline_devmini_pct": 0.0,
+            "shadow_devmini_pct": 0.0,
+            "regression_pct": 0.0,
+            "error": "Rejected by Council supermajority (<3/4 votes)"
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REJECT",
+              "rationale": "Context utterance is Malay/Indonesian, not Bambara. 'akan' functions as a future marker in Malay, incompatible with Bambara lexicon here. Potential Bambara ethnonym 'Akan' does not fit Flora/Fauna domain or provided syntax. Rejecting cross-lingual contamination to enforce DNAFLA standard integrity."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REJECT",
+              "rationale": "Context utterance is Malay, not Bambara. 'akan' is not a valid Bambara lexical stem for Flora/Fauna; in Bambara it is a transparent postpositional phrase 'a kan' (on him/her/it). Rejecting as MDF lexical entry."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized MDF entry for noun stem; conforms to orthography."
+            }
+          ],
+          "critic": null,
+          "mdf_block": "",
+          "summary_reason": "Rejected by Council (2/4 reject votes)."
+        },
+        {
+          "turn_id": 9,
+          "lang": "bam",
+          "candidate_raw": "yahutuw",
+          "standardized_lx": "yahutuw",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "proper name",
+          "gloss_fr": "nom propre",
+          "semantic_domain": "Culinary Grain, Shea & Spices",
+          "example_native": "Nka Yahutuw tun ma da a la ko o cɛ tun ye fiyentɔ ye, ko a ɲɛ yɛlɛla, fo u ye a bangebaaw wele.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "yahutuw",
+            "standardized_form": "yahutuw",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "..."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Contextualized as a proper noun (capitalized in utterance). Approved as a standardized lexical stem."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "REJECT",
+              "rationale": "Unattested; context capitalization suggests a proper name rather than a culinary lexical stem, and no reliable headword gloss is available."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Unattested lexical stem (mdf_lx) conforming to standardized orthography; approved as new MDF entry."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "yahutuw",
+            "rationale": "Argon batch item 0 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto.",
+            "latency_s": 0.0,
+            "error": "Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden"
+          },
+          "mdf_block": "",
+          "summary_reason": "Argon batch item 0 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto."
+        },
+        {
+          "turn_id": 9,
+          "lang": "bam",
+          "candidate_raw": "kene",
+          "standardized_lx": "kene",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "millet",
+          "gloss_fr": "millet",
+          "semantic_domain": "Culinary Grain, Shea & Spices",
+          "example_native": "Mak: ye ke,sakit hati kan bila kene cam ni.sabor je la.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "kene",
+            "standardized_form": "kene",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized Bambara noun in culinary grain domain; no inflection or dialectal variant required."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Unattested lexical stem (mdf_lx) conforming to standard orthography; approved as new noun entry."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "kene",
+            "rationale": "Argon batch item 1 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto.",
+            "latency_s": 0.0,
+            "error": "Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden"
+          },
+          "mdf_block": "",
+          "summary_reason": "Argon batch item 1 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto."
+        },
+        {
+          "turn_id": 9,
+          "lang": "bam",
+          "candidate_raw": "witamini",
+          "standardized_lx": "witamini",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "vitamin",
+          "gloss_fr": "vitamine",
+          "semantic_domain": "Culinary Grain, Shea & Spices",
+          "example_native": "U y'a sɔrɔ ji y'a la 5,4% ye, sogo witamini y'a la 26% ye, tulu hakɛ y'a la 48% ye, sukaromafɛnw y'a la 17,6% ye, fuw y'a la 1,9% ye.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "witamini",
+            "standardized_form": "witamini",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Loanword adapted to Bambara phonology. Orthographically valid per DNAFLA. Functions as noun in nutritional context."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Standard Bambara adaptation of French 'vitamine' (-ine > -ini). Valid lexical noun, no inflectional routing needed."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Nutrition-context loan noun; standardized as witamini, with Frenchified vitamini retained as orthographic variant."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Unattested lexical stem (mdf_lx) conforming to standard orthography; functions as a noun in culinary context."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "witamini",
+            "rationale": "Argon batch item 2 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto.",
+            "latency_s": 0.0,
+            "error": "Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden"
+          },
+          "mdf_block": "",
+          "summary_reason": "Argon batch item 2 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto."
+        },
+        {
+          "turn_id": 9,
+          "lang": "bam",
+          "candidate_raw": "yuhana",
+          "standardized_lx": "yuhana",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "John",
+          "gloss_fr": "Jean",
+          "semantic_domain": "Culinary Grain, Shea & Spices",
+          "example_native": "Pierɛ ni Yuhana sera Samari tuma min na, u ye Ala deli dannabaaw ye, walisa olu ka Ni Senu sɔrɔ.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "yuhana",
+            "standardized_form": "yuhana",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "REJECT",
+              "rationale": "Proper noun anthroponym not common lexical stem; domain mismatch Culinary vs Biblical Person"
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Valid Bambara proper noun; biblical name John paired with Pierɛ (Peter) in Samaria context. Not dialectal, reduplicated, or Frenchified. Legitimate borrowed name conforming to standard orthography. Capitalized as proper noun. Domain tag appears mismatched but form is valid."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized Bambara proper name; not an inflection or dialectal variant; lexical headword only."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Conforms to standard orthography; identified as a valid lexical stem (mdf_lx) for a proper noun."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "yuhana",
+            "rationale": "Argon batch item 3 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto.",
+            "latency_s": 0.0,
+            "error": "Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden"
+          },
+          "mdf_block": "",
+          "summary_reason": "Argon batch item 3 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto."
+        },
+        {
+          "turn_id": 10,
+          "lang": "bam",
+          "candidate_raw": "france",
+          "standardized_lx": "france",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "France",
+          "gloss_fr": "France",
+          "semantic_domain": "Flora, Fauna & Pastoral Ecology",
+          "example_native": "̏ Franceʺ y'a laɲini k'u ka sɔrasiw ka baaraɲɔgɔnya sonsori ni Mali taw ye fɔlɔ.",
+          "example_fr": "",
+          "gram_rule": "propn",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "france",
+            "standardized_form": "france",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "..."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "REVISE_TO_VA",
+              "rationale": "'france' is a Frenchified spelling; standard Bambara adaptation is 'Fransi'."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Bambara standard adaptation of the proper name; raw French spelling is not approved."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized loanword for the nation; conforms to orthography."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "france",
+            "rationale": "Argon batch item 4 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto.",
+            "latency_s": 0.0,
+            "error": "Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden"
+          },
+          "mdf_block": "",
+          "summary_reason": "Argon batch item 4 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto."
+        },
+        {
+          "turn_id": 10,
+          "lang": "bam",
+          "candidate_raw": "iran",
+          "standardized_lx": "iran",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "Iran",
+          "gloss_fr": "Iran",
+          "semantic_domain": "Flora, Fauna & Pastoral Ecology",
+          "example_native": "Honduras +504 Hong Kong +852 Hungary +36 Iceland +354 India +91 Indonesia +62 Iran, Islamic Republic of +98 Iraq +964.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "iran",
+            "standardized_form": "iran",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "..."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Standard country name conforming to Bambara orthography; valid lexical stem with no dialectal or inflectional issues."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "REJECT",
+              "rationale": "Context is an English country list; 'iran' is a proper noun, not an attested Bambara lexical item in the target domain."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized proper noun for the country Iran; matches context."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "iran",
+            "rationale": "Argon batch item 5 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto.",
+            "latency_s": 0.0,
+            "error": "Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden"
+          },
+          "mdf_block": "",
+          "summary_reason": "Argon batch item 5 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto."
+        },
+        {
+          "turn_id": 10,
+          "lang": "bam",
+          "candidate_raw": "ibrahima",
+          "standardized_lx": "ibrahima",
+          "variant_va": "",
+          "pos": "n",
+          "gloss_en": "proper name",
+          "gloss_fr": "nom propre",
+          "semantic_domain": "Flora, Fauna & Pastoral Ecology",
+          "example_native": "Siyaw ka faamaw ye u lajɛ ka fara Ibrahima ka Ala ka mɔgɔw kan, katuguni diɲɛ la masakɛw ye Ala ta ye.",
+          "example_fr": "",
+          "gram_rule": "",
+          "final_action": "REJECT",
+          "orthography_check": {
+            "raw_form": "ibrahima",
+            "standardized_form": "ibrahima",
+            "is_standard": true,
+            "normalized_changed": false,
+            "already_in_dict": false,
+            "existing_headword": "",
+            "route_hint": "mdf_lx",
+            "issues": [],
+            "rationale": "Conforms to standardized bam orthography."
+          },
+          "dabax_check": {
+            "dict_compile_ok": true,
+            "gram_compile_ok": true,
+            "candidate_parsed": true,
+            "baseline_devmini_pct": 98.75,
+            "shadow_devmini_pct": 98.75,
+            "regression_pct": 0.0,
+            "error": ""
+          },
+          "seat_votes": [
+            {
+              "seat": 1,
+              "agent_id": "c1-orthography",
+              "name": "Chair Qwen-397B",
+              "model_id": "qwen3.5-397b",
+              "role_title": "Seat 1 · Orthography & DNAFLA Standardization Chair",
+              "vote": "APPROVE_LX",
+              "rationale": "Validated standard form."
+            },
+            {
+              "seat": 2,
+              "agent_id": "c2-morphotactics",
+              "name": "Architect GLM-5.2",
+              "model_id": "glm-5.2",
+              "role_title": "Seat 2 · Morphotactics & Grammar Architect",
+              "vote": "APPROVE_LX",
+              "rationale": "Proper noun (name) conforming to standard Bambara orthography. Approved as a lexical stem."
+            },
+            {
+              "seat": 3,
+              "agent_id": "c3-mdf-scribe",
+              "name": "Scribe Qwen-27B",
+              "model_id": "qwen3.8-27b",
+              "role_title": "Seat 3 · MDF Lexicographer & Scribe",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized Bambara proper noun; personal name in context; no transparent inflection; approve as lexical noun."
+            },
+            {
+              "seat": 4,
+              "agent_id": "c4-dabax-verifier",
+              "name": "Verifier Gemma-26B",
+              "model_id": "gemma-4-26b-a4b-it",
+              "role_title": "Seat 4 · Corpus & DabaX Verifier",
+              "vote": "APPROVE_LX",
+              "rationale": "Standardized anthroponym; conforms to orthography."
+            }
+          ],
+          "critic": {
+            "critic_name": "Gemini 4 Argon",
+            "model_id": "gemini-4-argon",
+            "verdict": "CRITIC_VETO",
+            "revised_action": "REJECT",
+            "standardized_lx": "ibrahima",
+            "rationale": "Argon batch item 6 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto.",
+            "latency_s": 0.0,
+            "error": "Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden"
+          },
+          "mdf_block": "",
+          "summary_reason": "Argon batch item 6 omitted or failed (Argon HTTP 401: {\n  \"error\": {\n    \"code\": 401,\n    \"message\": \"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/iden); strict fail-closed veto."
+        }
+      ]
     },
     "bmq": {
       "lang": "bmq",

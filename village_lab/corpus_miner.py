@@ -21,6 +21,17 @@ _TOK_RE = re.compile(
     r"(?:-[A-Za-z\u00C0-\u024F\u0250-\u02AF\u1E00-\u1EFF]+)?"
 )
 _EXTRA_SKIP = {"bonjour", "merci", "voila", "alors", "donc", "exemple", "article", "section", "page", "figure", "edition"}
+_BAM_DIAC = set("ɛɔɲŋƐƆƝŊ")
+_BAM_MARKERS = frozenset({
+    "bɛ", "tɛ", "kɔnɔ", "bɛɛ", "mɔgɔ", "fɛn", "don", "ye", "ka", "ni", "wa", "min", "ani", "nka", "fana",
+})
+
+
+def _is_plausible_bam_line(line: str) -> bool:
+    """Reject non-Bambara lines (French/Malay/Nzema/Senufo noise) lacking Bambara markers."""
+    if any(ch in _BAM_DIAC for ch in line):
+        return True
+    return any(tok.lower() in _BAM_MARKERS for tok in _TOK_RE.findall(line))
 
 
 @dataclass(frozen=True)
@@ -82,6 +93,8 @@ class CorpusOOVMiner:
                     break
                 line = raw_line.strip()
                 if not line:
+                    continue
+                if self.lang == "bam" and not _is_plausible_bam_line(line):
                     continue
                 for tok in _TOK_RE.findall(line):
                     nk = _norm_key(tok)

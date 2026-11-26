@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 from village_lab import ALL_ADAPTION_MODELS, BASE_VILLAGERS, COUNCIL_SEATS, CRITIC_SPEC, ORCHESTRATOR_SPEC
-from village_lab.corpus_miner import CorpusOOVMiner
+from village_lab.corpus_miner import CorpusOOVMiner, _is_plausible_bam_line
 from village_lab.hf_sync import build_ed4_hf_viewer_bundle, publish_ed4_site_data
 from village_lab.orthography import check_standardization, classify_lemma_vs_rule, normalize_bambara_dnafla
 from village_lab.schema import CriticVerdict, serialize_mdf_entry
@@ -124,6 +124,10 @@ def test_mock_epoch_spawn_council_and_hf_viewer_bundle(tmp_path: Path) -> None:
 
 
 def test_corpus_oov_miner_on_bam_txt(tmp_path: Path) -> None:
+    assert not _is_plausible_bam_line("Le ministre a visité le marché central aujourd'hui")
+    assert not _is_plausible_bam_line("Saya memohon maaf atas kelewatan ini")
+    assert _is_plausible_bam_line("A bɛ taa sugu kɔnɔ ka malɔ san")
+
     eng = LanguageVillageEngine("bam", runs_dir=tmp_path / "runs", mock_mode=True)
     miner = CorpusOOVMiner(
         "bam",
