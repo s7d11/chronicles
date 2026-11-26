@@ -33,46 +33,72 @@ async def _call_nim_with_deduction(
     spec: NimModelSpec,
     messages: List[Dict[str, str]],
 ) -> Tuple[str, str, str, float, Optional[str]]:
-    """Return `(content_clean, reasoning_trace, raw_text, latency_s, error)`."""
+    """Stream SSE chunks from NIM and return `(content_clean, reasoning_trace, raw_text, latency_s, error)`."""
     use_effort = spec.reasoning_effort is not None
     last_err: Optional[str] = None
-    for attempt in range(4):
+    stream_timeout = httpx.Timeout(connect=20.0, read=75.0, write=30.0, pool=20.0)
+    for attempt in range(3):
         payload: Dict[str, Any] = {
             "model": spec.model_id,
             "messages": messages,
-            "max_tokens": spec.max_tokens,
+            "max_tokens": min(spec.max_tokens, 5120),
             "temperature": 0.0,
+            "stream": True,
         }
         if use_effort and spec.reasoning_effort:
             payload["reasoning_effort"] = spec.reasoning_effort
 
         t0 = time.perf_counter()
         try:
-            resp = await client.post("/chat/completions", json=payload, timeout=spec.timeout_s)
-            elapsed = time.perf_counter() - t0
-            if resp.status_code == 400 and use_effort and "reasoning_effort" in resp.text:
-                use_effort = False
-                continue
-            if resp.status_code in {429, 500, 502, 503, 504}:
-                last_err = f"HTTP {resp.status_code}: {resp.text[:180]}"
-                await asyncio.sleep(min(12.0, (1.8 ** attempt) + 0.5))
-                continue
-            if resp.status_code != 200:
-                return "", "", resp.text[:300], elapsed, f"HTTP {resp.status_code}: {resp.text[:220]}"
-            data = resp.json()
-            choice = (data.get("choices") or [{}])[0]
-            msg = choice.get("message") or {}
-            raw_content = str(msg.get("content") or "")
-            reasoning = str(msg.get("reasoning_content") or "").strip()
-            clean = strip_thinking(raw_content)
-            if not reasoning and "<think>" in raw_content.lower():
-                reasoning = raw_content.strip()
-            return clean, reasoning, raw_content, elapsed, None
+            async with client.stream("POST", "/chat/completions", json=payload, timeout=stream_timeout) as resp:
+                if resp.status_code != 200:
+                    err_txt = (await resp.aread()).decode("utf-8", errors="replace")
+                    elapsed = time.perf_counter() - t0
+                    if resp.status_code == 400 and use_effort and "reasoning_effort" in err_txt:
+                        use_effort = False
+                        continue
+                    if resp.status_code in {429, 500, 502, 503, 504}:
+                        last_err = f"HTTP {resp.status_code}: {err_txt[:180]}"
+                        await asyncio.sleep(min(12.0, (1.8 ** attempt) + 0.5))
+                        continue
+                    return "", "", err_txt[:300], elapsed, f"HTTP {resp.status_code}: {err_txt[:220]}"
+
+                rc_parts: List[str] = []
+                ct_parts: List[str] = []
+                async for line in resp.aiter_lines():
+                    if time.perf_counter() - t0 > 210.0:
+                        break
+                    s = line.strip()
+                    if not s.startswith("data: "):
+                        continue
+                    body = s[6:].strip()
+                    if body == "[DONE]":
+                        break
+                    try:
+                        chunk = json.loads(body)
+                    except json.JSONDecodeError:
+                        continue
+                    choices = chunk.get("choices") or []
+                    if not choices:
+                        continue
+                    delta = choices[0].get("delta") or {}
+                    if delta.get("reasoning_content"):
+                        rc_parts.append(str(delta["reasoning_content"]))
+                    if delta.get("content"):
+                        ct_parts.append(str(delta["content"]))
+
+                elapsed = time.perf_counter() - t0
+                raw_content = "".join(ct_parts)
+                reasoning = "".join(rc_parts).strip()
+                clean = strip_thinking(raw_content)
+                if not reasoning and "<think>" in raw_content.lower():
+                    reasoning = raw_content.strip()
+                return clean, reasoning, raw_content, elapsed, None
         except Exception as exc:
             last_err = f"{type(exc).__name__}: {str(exc)[:180]}"
-            await asyncio.sleep(min(15.0, (1.8 ** attempt) + 0.5))
+            await asyncio.sleep(min(12.0, (1.8 ** attempt) + 0.5))
 
-    return "", "", "", 0.0, last_err or "NIM request failed"
+    return "", "", "", 0.0, last_err or "NIM stream request failed"
 
 
 def _evaluate_oracle_probes(
