@@ -23,10 +23,11 @@ COPY pyproject.toml prompt_native.csv entrypoint.sh /home/user/app/
 COPY bench/ /home/user/app/bench/
 COPY swarm_lab/ /home/user/app/swarm_lab/
 COPY proof_lab/ /home/user/app/proof_lab/
+COPY village_lab/ /home/user/app/village_lab/
 COPY site/ /home/user/app/site/
 
 RUN chmod +x /home/user/app/entrypoint.sh \
-    && mkdir -p /home/user/app/runtime_vendor /home/user/app/runs/edition2 /home/user/app/runs/edition3 \
+    && mkdir -p /home/user/app/runtime_vendor /home/user/app/runs/edition2 /home/user/app/runs/edition3 /home/user/app/runs/edition4 \
     && chown -R user:user /home/user/app
 
 USER user

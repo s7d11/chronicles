@@ -56,6 +56,7 @@
 
   async function hydrateFrontPage() {
     const kpiBox = document.getElementById("liveFactbox");
+    const ed4Box = document.getElementById("liveEd4Factbox");
     const ed3Box = document.getElementById("liveEd3Factbox");
     const ed3Body = document.getElementById("frontEd3Body");
     const ed2Box = document.getElementById("liveEd2Factbox");
@@ -64,6 +65,39 @@
     const archiveBody = document.getElementById("editionsArchiveBody");
     const metaEl = document.getElementById("liveRunMeta");
     const ribbonParts = [];
+
+    if (ed4Box) {
+      try {
+        const ed4 = await fetchJson("data/edition4.json");
+        const bam = (ed4.languages && ed4.languages[ed4.launch_lang || "bam"]) || {};
+        const baseLx = Number(bam.baseline_lx_count || 0);
+        const addedLx = Number(bam.added_lx_count || 0);
+        const addedVa = Number(bam.added_va_count || 0);
+        const addedGram = Number(bam.added_gram_rules_count || 0);
+        ribbonParts.push(
+          `EDITION NO. 4: ${esc(bam.lang_name || "bam")} ${(baseLx + addedLx).toLocaleString()} / 50,000 (+${addedLx} lx, +${addedVa} va, +${addedGram} gram)`
+        );
+        ed4Box.innerHTML = `
+          <div class="spec-item">
+            <div class="lbl">Launch Village (${esc(ed4.launch_lang || "bam")})</div>
+            <div class="val">${(baseLx + addedLx).toLocaleString()} / 50,000</div>
+            <div class="sub">Baseline ${baseLx.toLocaleString()} + ${addedLx} \\lx + ${addedVa} \\va + ${addedGram} .gram</div>
+          </div>
+          <div class="spec-item">
+            <div class="lbl">Orchestrator &amp; Critic</div>
+            <div class="val">Mande &times; Gemini 4 Argon</div>
+            <div class="sub"><code>nemotron-3-ultra-550b-a55b</code> + <code>gemini-4-argon</code> + 9 Adaption models</div>
+          </div>
+          <div class="spec-item">
+            <div class="lbl">3D Simulation Events</div>
+            <div class="val">${ed4.total_events || 0} Events</div>
+            <div class="sub">${(bam.active_agents || []).length || 11} village &amp; Council agents (${bam.total_turns || 0} turns)</div>
+          </div>
+        `;
+      } catch (err) {
+        ed4Box.innerHTML = `<div class="spec-item"><div class="lbl">Edition No. 4 Village</div><div class="sub">Awaiting edition4.json (${esc(err.message)})</div></div>`;
+      }
+    }
 
     if (ed3Box || ed3Body) {
       try {

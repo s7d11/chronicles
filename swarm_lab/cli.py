@@ -40,8 +40,10 @@ def main() -> None:
     p_viz.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8765")))
     p_viz.add_argument("--runs-dir", type=Path, default=DEFAULT_ED2_RUNS_DIR)
     p_viz.add_argument("--ed3-runs-dir", type=Path, default=None)
+    p_viz.add_argument("--ed4-runs-dir", type=Path, default=None)
     p_viz.add_argument("--auto-run-all-13", action="store_true")
     p_viz.add_argument("--auto-run-ed3", action="store_true")
+    p_viz.add_argument("--auto-run-ed4", action="store_true")
 
     p_pack = sub.add_parser("pack-runtime", help="Pack minimal beni + daba + baselines into tar.gz")
     p_pack.add_argument("--out", type=Path, required=True)
@@ -73,6 +75,7 @@ def main() -> None:
     elif args.cmd == "viz":
         auto_run = bool(args.auto_run_all_13 or os.environ.get("AUTO_RUN_ALL_13") == "1")
         auto_ed3 = bool(args.auto_run_ed3 or os.environ.get("AUTO_RUN_ED3") == "1")
+        auto_ed4 = bool(args.auto_run_ed4 or os.environ.get("AUTO_RUN_ED4") == "1")
         serve_viz(
             host=args.host,
             port=args.port,
@@ -80,6 +83,8 @@ def main() -> None:
             auto_run_all_13=auto_run,
             ed3_runs_dir=args.ed3_runs_dir,
             auto_run_ed3=auto_ed3,
+            ed4_runs_dir=args.ed4_runs_dir,
+            auto_run_ed4=auto_ed4,
         )
     elif args.cmd == "pack-runtime":
         out = pack_sebeni_runtime(args.out)

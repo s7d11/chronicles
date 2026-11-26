@@ -57,14 +57,17 @@ def deploy_cloud_run(
     runtime_repo: str = "s7d11/sebeni-runtime-private",
     state_repo: str = "s7d11/chronicles-edition2-state",
     ed3_state_repo: str = "s7d11/chronicles-edition3-state",
+    ed4_state_repo: str = "s7d11/chronicles-edition4-state",
     keep_warm: bool = False,
     auto_run_ed2: bool = False,
     auto_run_ed3: bool = False,
+    auto_run_ed4: bool = False,
 ) -> str:
     load_env()
     hf_tok = os.environ.get("HF_KEY") or os.environ.get("HF_TOKEN") or ""
     adoption_key = os.environ.get("ADOPTION_KEY") or ""
     nvidia_key = os.environ.get("NVIDIA_KEY") or ""
+    gemini_key = os.environ.get("GEMINI_API_KEY") or ""
     if not hf_tok or not adoption_key or not nvidia_key:
         raise RuntimeError("Missing HF_KEY, ADOPTION_KEY, or NVIDIA_KEY in environment/.env")
     admin_tok = _ensure_admin_token(REPO_ROOT / ".env")
@@ -73,7 +76,7 @@ def deploy_cloud_run(
     gcloud_env["CLOUDSDK_CORE_PROJECT"] = project
     gcloud_env["CLOUDSDK_BILLING_QUOTA_PROJECT"] = project
 
-    print(f"[cloud-run] Enabling Run/CloudBuild/ArtifactRegistry APIs on {project}...", flush=True)
+    print(f"[cloud-run] Enabling Run/CloudBuild/ArtifactRegistry/Vertex AI APIs on {project}...", flush=True)
     subprocess.run(
         [
             "gcloud",
@@ -82,6 +85,8 @@ def deploy_cloud_run(
             "run.googleapis.com",
             "cloudbuild.googleapis.com",
             "artifactregistry.googleapis.com",
+            "aiplatform.googleapis.com",
+            "generativelanguage.googleapis.com",
             "--project",
             project,
             "--quiet",
@@ -96,12 +101,13 @@ def deploy_cloud_run(
         text=True,
     ).strip()
     build_sa = f"{proj_num}-compute@developer.gserviceaccount.com"
-    print(f"[cloud-run] Ensuring documented Cloud Build IAM roles on {build_sa}...", flush=True)
+    print(f"[cloud-run] Ensuring documented Cloud Build + Vertex AI IAM roles on {build_sa}...", flush=True)
     for role in (
         "roles/cloudbuild.builds.builder",
         "roles/serviceusage.serviceUsageConsumer",
         "roles/artifactregistry.writer",
         "roles/logging.logWriter",
+        "roles/aiplatform.user",
     ):
         subprocess.run(
             [
@@ -129,6 +135,7 @@ def deploy_cloud_run(
         _copy_clean_tree(REPO_ROOT / "bench", stage / "bench")
         _copy_clean_tree(REPO_ROOT / "swarm_lab", stage / "swarm_lab")
         _copy_clean_tree(REPO_ROOT / "proof_lab", stage / "proof_lab")
+        _copy_clean_tree(REPO_ROOT / "village_lab", stage / "village_lab")
         _copy_clean_tree(REPO_ROOT / "site", stage / "site")
 
         env_vars = {
@@ -138,10 +145,15 @@ def deploy_cloud_run(
             "SWARM_ADMIN_TOKEN": admin_tok,
             "AUTO_RUN_ALL_13": "1" if auto_run_ed2 else "0",
             "AUTO_RUN_ED3": "1" if auto_run_ed3 else "0",
+            "AUTO_RUN_ED4": "1" if auto_run_ed4 else "0",
             "SEBENI_RUNTIME_REPO": runtime_repo,
             "SWARM_STATE_REPO": state_repo,
             "ED3_STATE_REPO": ed3_state_repo,
+            "ED4_STATE_REPO": ed4_state_repo,
+            "GCP_VERTEX_PROJECT": project,
         }
+        if gemini_key:
+            env_vars["GEMINI_API_KEY"] = gemini_key
         env_yaml = Path(tmp) / "env.yaml"
         env_yaml.write_text(
             "\n".join(f"{k}: {json.dumps(str(v))}" for k, v in env_vars.items()) + "\n",
@@ -168,7 +180,7 @@ def deploy_cloud_run(
                 "--cpu",
                 "1",
                 "--memory",
-                "1Gi",
+                "2Gi",
                 "--min-instances",
                 "1" if keep_warm else "0",
                 "--max-instances",
@@ -217,6 +229,7 @@ def main() -> None:
     )
     parser.add_argument("--auto-run-ed2", action="store_true", help="Auto-start pending Edition 2 runs on boot.")
     parser.add_argument("--auto-run-ed3", action="store_true", help="Auto-start pending Edition 3 runs on boot.")
+    parser.add_argument("--auto-run-ed4", action="store_true", help="Auto-start Edition 4 Living Lexicon Village epoch on boot.")
     args = parser.parse_args()
     deploy_cloud_run(
         project=args.project,
@@ -225,6 +238,7 @@ def main() -> None:
         keep_warm=args.keep_warm,
         auto_run_ed2=args.auto_run_ed2,
         auto_run_ed3=args.auto_run_ed3,
+        auto_run_ed4=args.auto_run_ed4,
     )
 
 

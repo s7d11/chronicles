@@ -19,11 +19,14 @@ from swarm_lab import ALL_LANGS, DEFAULT_LANGS
 from swarm_lab.hf_sync import push_language_state_to_hf
 from proof_lab import DATASET_LANGS
 from proof_lab.hf_sync import push_ed3_language_to_hf
+from village_lab import DEFAULT_LAUNCH_LANG, ED4_STATE_REPO, ORCHESTRATOR_SPEC, CRITIC_SPEC
+from village_lab.hf_sync import publish_ed4_site_data, push_ed4_state_to_hf
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SITE_DIR = REPO_ROOT / "site"
 DEFAULT_RUNS_DIR = REPO_ROOT / "runs" / "edition2"
 DEFAULT_ED3_RUNS_DIR = REPO_ROOT / "runs" / "edition3"
+DEFAULT_ED4_RUNS_DIR = REPO_ROOT / "runs" / "edition4"
 
 
 def ordered_all_langs() -> List[str]:
@@ -130,6 +133,21 @@ class LiveSwarmController:
     def stop(self) -> None:
         with self._lock:
             self.stop_requested = True
+
+    def reset(self, lang: str = DEFAULT_LAUNCH_LANG) -> bool:
+        import shutil
+
+        clean_lang = lang.strip().lower()
+        if clean_lang not in ALL_LANGS:
+            return False
+        with self._lock:
+            if self.running:
+                return False
+            ldir = self.runs_dir / clean_lang
+            if ldir.is_dir():
+                shutil.rmtree(ldir, ignore_errors=True)
+            publish_ed4_site_data(self.runs_dir, self.site_dir / "data")
+            return True
 
     def _worker(self, langs: List[str], resume: bool) -> None:
         from swarm_lab.runner import publish_edition2, run_language_swarm
@@ -245,6 +263,21 @@ class LiveProofController:
         with self._lock:
             self.stop_requested = True
 
+    def reset(self, lang: str = DEFAULT_LAUNCH_LANG) -> bool:
+        import shutil
+
+        clean_lang = lang.strip().lower()
+        if clean_lang not in ALL_LANGS:
+            return False
+        with self._lock:
+            if self.running:
+                return False
+            ldir = self.runs_dir / clean_lang
+            if ldir.is_dir():
+                shutil.rmtree(ldir, ignore_errors=True)
+            publish_ed4_site_data(self.runs_dir, self.site_dir / "data")
+            return True
+
     def _worker(self, langs: List[str], resume: bool) -> None:
         from proof_lab.runner import publish_edition3, run_language_proof
 
@@ -273,14 +306,143 @@ class LiveProofController:
             self.running = False
 
 
+class LiveVillageController:
+    """Single-flight background runner executing Edition No. 4 Living Lexicon Village epochs."""
+
+    def __init__(
+        self,
+        *,
+        runs_dir: Path = DEFAULT_ED4_RUNS_DIR,
+        site_dir: Path = SITE_DIR,
+        state_repo: Optional[str] = None,
+    ):
+        self.runs_dir = runs_dir
+        self.site_dir = site_dir
+        self.state_repo = state_repo or os.environ.get("ED4_STATE_REPO", ED4_STATE_REPO)
+        self._lock = threading.Lock()
+        self.running = False
+        self.active_lang: Optional[str] = None
+        self.max_turns: int = 3
+        self.stop_requested = False
+        self.last_error: Optional[str] = None
+        self._thread: Optional[threading.Thread] = None
+
+    def status_snapshot(self) -> Dict[str, object]:
+        lang_stats: Dict[str, object] = {}
+        for l in ALL_LANGS:
+            st_p = self.runs_dir / l / "state.json"
+            ev_p = self.runs_dir / l / "events.jsonl"
+            n_ev = 0
+            if ev_p.is_file():
+                try:
+                    n_ev = sum(1 for ln in ev_p.read_text(encoding="utf-8").splitlines() if ln.strip())
+                except Exception:
+                    pass
+            if st_p.is_file():
+                try:
+                    st = json.loads(st_p.read_text(encoding="utf-8"))
+                    lang_stats[l] = {
+                        "baseline_lx": int(st.get("baseline_lx_count") or 0),
+                        "added_lx": int(st.get("added_lx_count") or 0),
+                        "added_va": int(st.get("added_va_count") or 0),
+                        "added_gram": int(st.get("added_gram_rules_count") or 0),
+                        "total_turns": int(st.get("total_turns") or 0),
+                        "events": n_ev,
+                    }
+                except Exception:
+                    lang_stats[l] = {"events": n_ev}
+            else:
+                lang_stats[l] = {"events": n_ev}
+        return {
+            "status": "ok",
+            "edition": 4,
+            "running": self.running,
+            "active_lang": self.active_lang,
+            "launch_lang": DEFAULT_LAUNCH_LANG,
+            "orchestrator_model": ORCHESTRATOR_SPEC.model_id,
+            "critic_model": CRITIC_SPEC.model_id,
+            "state_repo": self.state_repo or None,
+            "last_error": self.last_error,
+            "languages": lang_stats,
+        }
+
+    def start(self, lang: str = DEFAULT_LAUNCH_LANG, *, max_turns: int = 3) -> bool:
+        clean_lang = lang.strip().lower()
+        if clean_lang not in ALL_LANGS:
+            return False
+        with self._lock:
+            if self.running:
+                return False
+            self.running = True
+            self.active_lang = clean_lang
+            self.max_turns = max(1, min(int(max_turns), 25))
+            self.stop_requested = False
+            self.last_error = None
+            t = threading.Thread(
+                target=self._worker,
+                args=(clean_lang, self.max_turns),
+                daemon=True,
+                name="edition4-village-runner",
+            )
+            self._thread = t
+            t.start()
+            return True
+
+    def stop(self) -> None:
+        with self._lock:
+            self.stop_requested = True
+
+    def reset(self, lang: str = DEFAULT_LAUNCH_LANG) -> bool:
+        import shutil
+
+        clean_lang = lang.strip().lower()
+        if clean_lang not in ALL_LANGS:
+            return False
+        with self._lock:
+            if self.running:
+                return False
+            ldir = self.runs_dir / clean_lang
+            if ldir.is_dir():
+                shutil.rmtree(ldir, ignore_errors=True)
+            publish_ed4_site_data(self.runs_dir, self.site_dir / "data")
+            return True
+
+    def _worker(self, lang: str, max_turns: int) -> None:
+        from village_lab.world_engine import LanguageVillageEngine
+
+        site_data_dir = self.site_dir / "data"
+        try:
+            eng = LanguageVillageEngine(lang, runs_dir=self.runs_dir)
+
+            def _on_turn(_turn_num: int) -> None:
+                publish_ed4_site_data(self.runs_dir, site_data_dir)
+                hf_tok = os.environ.get("HF_KEY") or os.environ.get("HF_TOKEN") or ""
+                if self.state_repo and hf_tok:
+                    push_ed4_state_to_hf(self.state_repo, self.runs_dir, lang, site_data_dir, hf_tok)
+
+            asyncio.run(eng.run_epoch(max_turns=max_turns, on_turn_complete=_on_turn))
+            publish_ed4_site_data(self.runs_dir, site_data_dir)
+            hf_tok = os.environ.get("HF_KEY") or os.environ.get("HF_TOKEN") or ""
+            if self.state_repo and hf_tok:
+                push_ed4_state_to_hf(self.state_repo, self.runs_dir, lang, site_data_dir, hf_tok)
+        except Exception as exc:
+            self.last_error = f"{lang}: {type(exc).__name__}: {str(exc)[:220]}"
+            print(f"[village-runner] error on {lang}: {self.last_error}", flush=True)
+        finally:
+            self.active_lang = None
+            self.running = False
+
+
 class SwarmVizHandler(SimpleHTTPRequestHandler):
     """Serves static site/ assets alongside CORS SSE streams and admin triggers."""
 
     runs_dir: Path = DEFAULT_RUNS_DIR
     ed3_runs_dir: Path = DEFAULT_ED3_RUNS_DIR
+    ed4_runs_dir: Path = DEFAULT_ED4_RUNS_DIR
     site_dir: Path = SITE_DIR
     controller: Optional[LiveSwarmController] = None
     ed3_controller: Optional[LiveProofController] = None
+    ed4_controller: Optional[LiveVillageController] = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(self.site_dir), **kwargs)
@@ -394,9 +556,44 @@ class SwarmVizHandler(SimpleHTTPRequestHandler):
             self._stream_jsonl_sse(ed3_root / "live" / f"{lang}.jsonl")
             return
 
+        # Edition No. 4 live routes (50k Living Lexicon Village & 4-Agent Council + Argon Critic)
+        ed4 = self.ed4_controller
+        ed4_active = ed4.active_lang if ed4 else None
+        ed4_root = ed4.runs_dir if ed4 else self.ed4_runs_dir
+        if parsed.path == "/api/ed4/status":
+            snap = ed4.status_snapshot() if ed4 else {"status": "ok", "edition": 4, "running": False}
+            self._send_json(snap)
+            return
+        if parsed.path == "/api/ed4/state":
+            qs = parse_qs(parsed.query)
+            lang = (qs.get("lang") or [""])[0].strip().lower() or str(ed4_active or DEFAULT_LAUNCH_LANG)
+            if lang not in ALL_LANGS:
+                self._send_json({"error": f"Unknown Edition 4 language '{lang}'"}, status=404)
+                return
+            st_path = ed4_root / lang / "state.json"
+            if st_path.is_file():
+                self._send_file_json(st_path)
+            else:
+                self._send_file_json(self.site_dir / "data" / "edition4.json")
+            return
+        if parsed.path == "/api/ed4/edition4.json":
+            self._send_file_json(self.site_dir / "data" / "edition4.json")
+            return
+        if parsed.path == "/api/ed4/edition4_events.json":
+            self._send_file_json(self.site_dir / "data" / "edition4_events.json")
+            return
+        if parsed.path == "/api/ed4/stream":
+            qs = parse_qs(parsed.query)
+            lang = (qs.get("lang") or [""])[0].strip().lower() or str(ed4_active or DEFAULT_LAUNCH_LANG)
+            if lang not in ALL_LANGS:
+                self._send_json({"error": f"Unknown Edition 4 language '{lang}'"}, status=404)
+                return
+            self._stream_jsonl_sse(ed4_root / lang / "events.jsonl", done_kind="epoch_checkpoint")
+            return
+
         if parsed.path == "/" and (os.environ.get("SPACE_ID") or os.environ.get("K_SERVICE")):
             self.send_response(302)
-            self.send_header("Location", "/editions/vol-01-no-03/observatory.html")
+            self.send_header("Location", "/editions/vol-01-no-04/world.html")
             self.end_headers()
             return
 
@@ -404,13 +601,57 @@ class SwarmVizHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
-        allowed = {"/api/admin/trigger", "/api/admin/stop", "/api/ed3/admin/trigger", "/api/ed3/admin/stop"}
+        allowed = {
+            "/api/admin/trigger",
+            "/api/admin/stop",
+            "/api/ed3/admin/trigger",
+            "/api/ed3/admin/stop",
+            "/api/ed4/start",
+            "/api/ed4/stop",
+            "/api/ed4/reset",
+        }
         if parsed.path not in allowed:
             self._send_json({"error": "Not found"}, status=404)
             return
         auth_err = self._check_admin_auth()
         if auth_err is not None:
             self._send_json(auth_err[1], status=auth_err[0])
+            return
+
+        if parsed.path.startswith("/api/ed4/"):
+            ed4_ctrl = self.ed4_controller
+            if ed4_ctrl is None:
+                self._send_json({"error": "Edition 4 controller unavailable"}, status=503)
+                return
+            if parsed.path.endswith("/stop"):
+                ed4_ctrl.stop()
+                self._send_json({"stopping": True})
+                return
+            length = int(self.headers.get("Content-Length") or "0")
+            raw_body = self.rfile.read(min(length, 65536)).decode("utf-8", errors="replace") if length > 0 else "{}"
+            try:
+                body = json.loads(raw_body or "{}")
+            except json.JSONDecodeError:
+                self._send_json({"error": "Invalid JSON body"}, status=400)
+                return
+            req_lang = str(body.get("lang") or DEFAULT_LAUNCH_LANG).strip().lower()
+            if parsed.path.endswith("/reset"):
+                if req_lang not in ALL_LANGS:
+                    self._send_json({"error": f"Invalid language code '{req_lang}'"}, status=400)
+                    return
+                if not ed4_ctrl.reset(req_lang):
+                    self._send_json({"error": "Cannot reset while epoch is running"}, status=409)
+                    return
+                self._send_json({"reset": True, "lang": req_lang}, status=200)
+                return
+            max_turns = int(body.get("max_turns") or 3)
+            if req_lang not in ALL_LANGS:
+                self._send_json({"error": f"Invalid language code '{req_lang}'"}, status=400)
+                return
+            if not ed4_ctrl.start(req_lang, max_turns=max_turns):
+                self._send_json({"error": "An Edition 4 epoch is already active", "active_lang": ed4_ctrl.active_lang}, status=409)
+                return
+            self._send_json({"accepted": True, "lang": req_lang, "max_turns": max_turns}, status=202)
             return
 
         is_ed3 = parsed.path.startswith("/api/ed3/")
@@ -450,7 +691,7 @@ class SwarmVizHandler(SimpleHTTPRequestHandler):
             return
         self._send_json({"accepted": True, "langs": langs, "resume": resume}, status=202)
 
-    def _stream_jsonl_sse(self, jsonl_path: Path) -> None:
+    def _stream_jsonl_sse(self, jsonl_path: Path, *, done_kind: str = "run_complete") -> None:
         self.send_response(HTTPStatus.OK)
         self._cors_headers()
         self.send_header("Content-Type", "text/event-stream; charset=utf-8")
@@ -461,6 +702,7 @@ class SwarmVizHandler(SimpleHTTPRequestHandler):
 
         pos = 0
         idle_ticks = 0
+        initial_drain = True
         try:
             while idle_ticks < 14400:
                 if jsonl_path.is_file():
@@ -481,11 +723,14 @@ class SwarmVizHandler(SimpleHTTPRequestHandler):
                             except Exception:
                                 pass
                         self.wfile.flush()
-                        if last_kind == "run_complete":
+                        is_ed4_epoch = done_kind == "epoch_checkpoint" and self.ed4_controller and self.ed4_controller.running
+                        if last_kind == done_kind and not (initial_drain and is_ed4_epoch):
                             self.wfile.write(b"event: done\ndata: {}\n\n")
                             self.wfile.flush()
                             return
+                        initial_drain = False
                         continue
+                initial_drain = False
                 idle_ticks += 1
                 if idle_ticks % 40 == 0:  # every 10s
                     self.wfile.write(b": keepalive\n\n")
@@ -502,6 +747,8 @@ def make_handler_class(
     controller: Optional[LiveSwarmController] = None,
     ed3_runs_dir: Path = DEFAULT_ED3_RUNS_DIR,
     ed3_controller: Optional[LiveProofController] = None,
+    ed4_runs_dir: Path = DEFAULT_ED4_RUNS_DIR,
+    ed4_controller: Optional[LiveVillageController] = None,
 ) -> type:
     """Create a bound SwarmVizHandler class (useful for tests & multi-instance servers)."""
 
@@ -510,9 +757,11 @@ def make_handler_class(
 
     BoundHandler.runs_dir = runs_dir
     BoundHandler.ed3_runs_dir = ed3_runs_dir
+    BoundHandler.ed4_runs_dir = ed4_runs_dir
     BoundHandler.site_dir = site_dir
     BoundHandler.controller = controller
     BoundHandler.ed3_controller = ed3_controller
+    BoundHandler.ed4_controller = ed4_controller
     return BoundHandler
 
 
@@ -527,13 +776,18 @@ def serve_viz(
     ed3_runs_dir: Optional[Path] = None,
     auto_run_ed3: bool = False,
     ed3_state_repo: Optional[str] = None,
+    ed4_runs_dir: Optional[Path] = None,
+    auto_run_ed4: bool = False,
+    ed4_state_repo: Optional[str] = None,
 ) -> None:
     mimetypes.add_type("application/javascript", ".js")
     mimetypes.add_type("text/css", ".css")
 
     ed3_dir = ed3_runs_dir or DEFAULT_ED3_RUNS_DIR
+    ed4_dir = ed4_runs_dir or DEFAULT_ED4_RUNS_DIR
     controller = LiveSwarmController(runs_dir=runs_dir, site_dir=site_dir, state_repo=state_repo)
     ed3_ctrl = LiveProofController(runs_dir=ed3_dir, site_dir=site_dir, state_repo=ed3_state_repo)
+    ed4_ctrl = LiveVillageController(runs_dir=ed4_dir, site_dir=site_dir, state_repo=ed4_state_repo)
 
     if auto_run_all_13:
         pending = [l for l in ordered_all_langs() if not (runs_dir / l / "language_summary.json").is_file()]
@@ -545,6 +799,9 @@ def serve_viz(
         if pending3:
             print(f"[proof-viz] Auto-starting remaining {len(pending3)}/14 Ed.3 languages: {', '.join(pending3)}", flush=True)
             ed3_ctrl.start(pending3, resume=True)
+    if auto_run_ed4:
+        print(f"[village-viz] Auto-starting Edition 4 epoch on {DEFAULT_LAUNCH_LANG}...", flush=True)
+        ed4_ctrl.start(DEFAULT_LAUNCH_LANG, max_turns=3)
 
     handler_cls = make_handler_class(
         runs_dir=runs_dir,
@@ -552,7 +809,9 @@ def serve_viz(
         controller=controller,
         ed3_runs_dir=ed3_dir,
         ed3_controller=ed3_ctrl,
+        ed4_runs_dir=ed4_dir,
+        ed4_controller=ed4_ctrl,
     )
     server = ThreadingHTTPServer((host, port), handler_cls)
-    print(f"[chronicle-viz] Listening on http://{host}:{port}/editions/vol-01-no-03/observatory.html", flush=True)
+    print(f"[chronicle-viz] Listening on http://{host}:{port}/editions/vol-01-no-04/world.html", flush=True)
     server.serve_forever()

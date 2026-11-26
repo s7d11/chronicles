@@ -12,6 +12,7 @@
 | **Edition No. 1** · *MALI13 Benchmark* | [`vol-01-no-01/`](https://s7d11.github.io/chronicles/editions/vol-01-no-01/) | [Leaderboard](https://s7d11.github.io/chronicles/leaderboard.html) | — |
 | **Edition No. 2** · *Swarm Linguistics Lab* | [`vol-01-no-02/`](https://s7d11.github.io/chronicles/editions/vol-01-no-02/) | [Swarm Theater](https://s7d11.github.io/chronicles/editions/vol-01-no-02/theater.html) | [`s7d11/chronicles-edition2-state`](https://huggingface.co/datasets/s7d11/chronicles-edition2-state) |
 | **Edition No. 3** · *SebeniProofs Metric Stress Test* | [`vol-01-no-03/`](https://s7d11.github.io/chronicles/editions/vol-01-no-03/) | [Proof Observatory](https://s7d11.github.io/chronicles/editions/vol-01-no-03/observatory.html) | [`s7d11/chronicles-edition3-state`](https://huggingface.co/datasets/s7d11/chronicles-edition3-state) |
+| **Edition No. 4** · *Living Lexicon Village (50k)* | [`vol-01-no-04/`](https://s7d11.github.io/chronicles/editions/vol-01-no-04/) | [3D Sahelian World](https://s7d11.github.io/chronicles/editions/vol-01-no-04/world.html) | [`s7d11/chronicles-edition4-state`](https://huggingface.co/datasets/s7d11/chronicles-edition4-state) |
 
 ## Local Preview
 
@@ -74,6 +75,14 @@ If you use *The Sebeni Chronicle* benchmarks, swarm dispatches, or `SebeniProofs
   year         = {2026},
   howpublished = {\url{https://s7d11.github.io/chronicles/editions/vol-01-no-03/}},
   note         = {Dataset: \url{https://huggingface.co/datasets/s7d11/chronicles-edition3-state}}
+}
+
+@misc{s7d11_sebeni_chronicle_ed4_2026,
+  author       = {s7d11},
+  title        = {The Sebeni Chronicle, Edition No. 4: The Living Lexicon Village — Building a 50k Standardized MALI13 Dictionary},
+  year         = {2026},
+  howpublished = {\url{https://s7d11.github.io/chronicles/editions/vol-01-no-04/}},
+  note         = {Dataset: \url{https://huggingface.co/datasets/s7d11/chronicles-edition4-state}}
 }
 ```
 

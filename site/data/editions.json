@@ -1,5 +1,57 @@
 [
   {
+    "id": "vol-01-no-04",
+    "short_title": "Edition No. 4",
+    "issue_num": 4,
+    "is_edition": true,
+    "parent_edition": null,
+    "vol_issue": "VOL. I · NO. 4",
+    "date": "2026-11-26",
+    "title": "Edition No. 4: The Living Lexicon Village — Scaling MALI13 Dictionaries Toward 50,000 Standardized Entries",
+    "summary": "Cloud-executed Three.js Sudano-Sahelian village orchestrated by Mande (nemotron-3-ultra-550b-a55b) with all 9 Adaption Labs models (5+ villagers & 4-Chair Field Linguist Council) and Primary Critic Gemini 4 Argon enforcing 5-gate DNAFLA & DabaX standardization.",
+    "url": "editions/vol-01-no-04/index.html",
+    "kind": "Lead Edition",
+    "tagCls": "api",
+    "builds_on": [
+      {
+        "id": "vol-01-no-03",
+        "note": "Enforces SebeniProofs formal metric invariants and live strict DabaX verification inside a continuous lexicon-growth world."
+      },
+      {
+        "id": "vol-01-no-02",
+        "note": "Expands Edition No. 2's 9 Adaption Labs + Nemotron-550B multi-agent clusters into a persistent 50k MDF dictionary & .gram society."
+      },
+      {
+        "id": "vol-01-no-01",
+        "note": "Builds on Edition No. 1's strict DabaX(strict_parse=True) parser guard and MALI13 hygiene."
+      },
+      {
+        "id": "morphotactics-supplement",
+        "note": "Routes regular inflections and compounds to the 13 baseline .gram grammars while gating standardized \\lx / \\va entries."
+      }
+    ]
+  },
+  {
+    "id": "ed4-world",
+    "short_title": "Living Village (3D)",
+    "issue_num": null,
+    "is_edition": false,
+    "parent_edition": "vol-01-no-04",
+    "vol_issue": "3D VILLAGE WORLD",
+    "date": "2026-11-26",
+    "title": "Edition No. 4 Three.js Living Lexicon Village & Cloud Run SSE Observatory",
+    "summary": "Sunlit & lantern-lit traditional Sudano-Sahelian 3D village featuring walking agents, specialist spawns, exchange logs, and 5-gate Council + Gemini 4 Argon deliberations.",
+    "url": "editions/vol-01-no-04/world.html",
+    "kind": "3D World",
+    "tagCls": "slm",
+    "builds_on": [
+      {
+        "id": "vol-01-no-04",
+        "note": "Interactive Three.js village stage and Cloud Run SSE live viewer for Edition No. 4."
+      }
+    ]
+  },
+  {
     "id": "vol-01-no-03",
     "short_title": "Edition No. 3",
     "issue_num": 3,
@@ -10,7 +62,7 @@
     "title": "Edition No. 3: Formal Proof & 4,200-Sentence Stress Audit of MER, MCS & UWEC",
     "summary": "Bridges Lean 4.36.0 machine-checked proofs in SebeniProofs with all 4,200 raw sentences of dataset_300_samples.jsonl (13 MALI13 codes + bbo OOD control) and live verbatim deductions from Mistral Large V4, Nemotron-3-Ultra-550B, Minimax M3.1 Flash, and Nemotron-3.5-Super-120B.",
     "url": "editions/vol-01-no-03/index.html",
-    "kind": "Lead Edition",
+    "kind": "Archive Edition",
     "tagCls": "api",
     "builds_on": [
       {
