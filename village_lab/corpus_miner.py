@@ -83,6 +83,8 @@ class CorpusOOVMiner:
 
     def _build_index(self, *, max_scan_lines: int) -> None:
         counts: Counter[str] = Counter()
+        lower_counts: Counter[str] = Counter()
+        mid_cap_counts: Counter[str] = Counter()
         best_sent: Dict[str, str] = {}
         noise = _EN_FR_NOISE | _EXTRA_SKIP
 
@@ -96,7 +98,7 @@ class CorpusOOVMiner:
                     continue
                 if self.lang == "bam" and not _is_plausible_bam_line(line):
                     continue
-                for tok in _TOK_RE.findall(line):
+                for tok_idx, tok in enumerate(_TOK_RE.findall(line)):
                     nk = _norm_key(tok)
                     if not nk or len(nk) < 4 or len(nk) > 30:
                         continue
@@ -106,6 +108,10 @@ class CorpusOOVMiner:
                     if toneless in noise or toneless in self._toneless_dict:
                         continue
                     counts[nk] += 1
+                    if tok.islower():
+                        lower_counts[nk] += 1
+                    elif tok_idx > 0 and tok[0].isupper():
+                        mid_cap_counts[nk] += 1
                     prev = best_sent.get(nk)
                     if prev is None:
                         best_sent[nk] = line[:240]
@@ -126,7 +132,7 @@ class CorpusOOVMiner:
                 source_file=src_name,
             )
             for term, freq in counts.most_common(6000)
-            if freq >= min_freq
+            if freq >= min_freq and not (mid_cap_counts[term] >= 2 and lower_counts[term] == 0)
         ]
 
     def _ensure_dabax(self) -> Optional[DabaX]:

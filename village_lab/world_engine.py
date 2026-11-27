@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import shutil
 import tempfile
 from collections import deque
@@ -50,7 +51,12 @@ from village_lab.schema import (
     VillageExchange,
     serialize_mdf_entry,
 )
-from village_lab.shadow_verify import _append_va_to_dict_file, _sanitize_gram_rule, verify_shadow_candidate
+from village_lab.shadow_verify import (
+    _append_va_to_dict_file,
+    _sanitize_gram_rule,
+    verify_shadow_batch,
+    verify_shadow_candidate,
+)
 
 
 def _utc_now_iso() -> str:
@@ -110,6 +116,8 @@ def _default_agents() -> List[VillageAgent]:
     return agents
 
 
+DEFAULT_CANDIDATES_PER_TURN = max(5, min(25, int(os.environ.get("ED4_CANDIDATES_PER_TURN", "16"))))
+COUNCIL_BATCH_SIZE = 8
 ARGON_BATCH_MIN = 10
 ARGON_BATCH_MAX = 15
 
@@ -124,6 +132,7 @@ class LanguageVillageEngine:
         runs_dir: Path,
         event_callback: Optional[Callable[[VillageEvent], None]] = None,
         mock_mode: bool = False,
+        candidates_per_turn: int = DEFAULT_CANDIDATES_PER_TURN,
         argon_batch_min: int = ARGON_BATCH_MIN,
         argon_batch_max: int = ARGON_BATCH_MAX,
     ):
@@ -133,6 +142,7 @@ class LanguageVillageEngine:
         self.lang_dir.mkdir(parents=True, exist_ok=True)
         self.event_callback = event_callback
         self.mock_mode = mock_mode
+        self.candidates_per_turn = max(5, int(candidates_per_turn))
         self.argon_batch_min = max(1, int(argon_batch_min))
         self.argon_batch_max = max(self.argon_batch_min, int(argon_batch_max))
         self._pending_argon: List[Dict[str, Any]] = []
@@ -536,6 +546,331 @@ class LanguageVillageEngine:
             orchestrator_directive=plan["directive"],
             utterances=utterances,
         )
+
+    async def _council_seat_batch_call(
+        self,
+        client: httpx.AsyncClient,
+        sp: Any,
+        items: Sequence[Dict[str, Any]],
+        domain: str,
+    ) -> Tuple[Any, Dict[int, Dict[str, Any]], Optional[str]]:
+        """Invoke one Council seat across a chunk of up to COUNCIL_BATCH_SIZE candidates."""
+        lines = []
+        for idx, it in enumerate(items):
+            ortho = it["ortho"]
+            utt = it["utt"]
+            lines.append(
+                f"[{idx}] Cand='{it['cand_raw']}' -> Gate1='{ortho.standardized_form}' "
+                f"(Match='{ortho.existing_headword or 'none'}', Hint={it['route_hint']}) | "
+                f"Ex=\"{utt.text_native[:120]}\" | EN=\"{utt.gloss_en[:60]}\""
+            )
+        c_prompt = (
+            f"You are {sp.name}, {sp.title} on the 4-Agent Council of Field Linguists for {self.state.lang_name} ({self.lang}).\n"
+            f"Domain: {domain}. Evaluate ALL {len(items)} candidates below in ONE pass.\n"
+            "Rule: NEVER rubber-stamp raw dialectal, French/English intrusions, proper names, or inflected forms as \\lx; "
+            "enforce DNAFLA/AMALAN standard form, attach variants under \\va, route inflections to .gram, or REJECT invalid forms.\n"
+            "CRITICAL: Respond cleanly as compact single-line JSON with NO markdown fences and 1-4 word lexical glosses only.\n\n"
+            + "\n".join(lines)
+            + '\n\nJSON schema:\n'
+            '{"reviews":[{"idx":0,"vote":"APPROVE_LX|REVISE_TO_VA|ROUTE_TO_GRAM|REJECT","standardized_lx":"...","variant_va":"","pos":"n|v|adj|adv|ideo","gloss_en":"short gloss","gloss_fr":"glose courte","gram_rule":"","rationale":"short note"}]}'
+        )
+        raw, _, err = await call_adaption(
+            client,
+            sp.model_id,
+            [
+                {"role": "system", "content": "Respond concisely with single-line JSON matching the exact schema."},
+                {"role": "user", "content": c_prompt},
+            ],
+            max_tokens=4096,
+            temperature=0.1,
+            json_mode=True,
+        )
+        parsed = extract_json_object(raw) if not err else None
+        by_idx: Dict[int, Dict[str, Any]] = {}
+        raw_reviews = (parsed or {}).get("reviews") if isinstance(parsed, dict) else None
+        if isinstance(raw_reviews, list):
+            for r in raw_reviews:
+                if not isinstance(r, dict) or r.get("idx") is None:
+                    continue
+                try:
+                    iv = int(r["idx"])
+                except (TypeError, ValueError):
+                    continue
+                if 0 <= iv < len(items):
+                    by_idx[iv] = r
+        return sp, by_idx, err
+
+    async def _process_candidates_batch(
+        self,
+        client: httpx.AsyncClient,
+        turn_id: int,
+        cand_pairs: Sequence[Tuple[str, DialogueUtterance]],
+        domain: str,
+    ) -> List[Dict[str, Any]]:
+        """Run Gates 1-2 deterministically, batch Gate 4 across parallel Council seats, and run batch Gate 3 DabaX."""
+        prepared: List[Dict[str, Any]] = []
+        for cand_raw, utt in cand_pairs:
+            ortho = check_standardization(cand_raw, self.lang, working_dict_keys=self.working_index)
+            route_hint, route_rationale = classify_lemma_vs_rule(
+                ortho.standardized_form or cand_raw,
+                "n",
+                self.lang,
+                working_dict_keys=self.working_index,
+            )
+            if not ortho.is_standard:
+                ortho.route_hint = "reject"
+            elif ortho.route_hint != "mdf_va" and route_hint == "gram_rule":
+                ortho.route_hint = "gram_rule"
+
+            if not ortho.is_standard or ortho.already_in_dict:
+                self._commit_decision(
+                    CouncilDecision(
+                        turn_id=turn_id,
+                        lang=self.lang,
+                        candidate_raw=cand_raw,
+                        standardized_lx=ortho.standardized_form,
+                        semantic_domain=domain,
+                        example_native=utt.text_native,
+                        example_fr=utt.gloss_fr or utt.gloss_en,
+                        final_action="REJECT",
+                        orthography_check=ortho,
+                        dabax_check=DabaXCheck(error="Skipped DabaX compile after Gate 1 rejection"),
+                        summary_reason=ortho.rationale,
+                    )
+                )
+                continue
+
+            proposed_lx = ortho.existing_headword if ortho.route_hint == "mdf_va" else ortho.standardized_form
+            proposed_va = ortho.standardized_form if ortho.route_hint == "mdf_va" else ""
+            cg = (utt.candidate_glosses or {}).get(cand_raw) or {}
+            proposed_ps = str(cg.get("pos") or "n")[:16]
+            proposed_ge = str(cg.get("ge") or cand_raw)[:80]
+            proposed_gf = str(cg.get("gf") or proposed_ge)[:80]
+            prepared.append(
+                {
+                    "cand_raw": cand_raw,
+                    "utt": utt,
+                    "ortho": ortho,
+                    "route_hint": route_hint,
+                    "route_rationale": route_rationale,
+                    "proposed_lx": proposed_lx,
+                    "proposed_va": proposed_va,
+                    "proposed_ps": proposed_ps,
+                    "proposed_ge": proposed_ge,
+                    "proposed_gf": proposed_gf,
+                    "proposed_gram": "",
+                }
+            )
+
+        if not prepared:
+            return []
+
+        council_approved: List[Dict[str, Any]] = []
+        for start in range(0, len(prepared), COUNCIL_BATCH_SIZE):
+            chunk = prepared[start : start + COUNCIL_BATCH_SIZE]
+            seat_results: Dict[int, Dict[int, Dict[str, Any]]] = {}
+            seat_errs: Dict[int, Optional[str]] = {}
+
+            if not self.mock_mode:
+                calls = [self._council_seat_batch_call(client, sp, chunk, domain) for sp in COUNCIL_SEATS]
+                for sp, by_idx, err in await asyncio.gather(*calls):
+                    seat_results[sp.seat] = by_idx
+                    seat_errs[sp.seat] = err
+
+            for i, it in enumerate(chunk):
+                ortho = it["ortho"]
+                utt = it["utt"]
+                proposed_lx = it["proposed_lx"]
+                proposed_va = it["proposed_va"]
+                proposed_ps = it["proposed_ps"]
+                proposed_ge = it["proposed_ge"]
+                proposed_gf = it["proposed_gf"]
+                proposed_gram = ""
+                seat_votes: List[CouncilSeatVote] = []
+
+                if self.mock_mode:
+                    v_default = (
+                        "REVISE_TO_VA" if ortho.route_hint == "mdf_va"
+                        else ("ROUTE_TO_GRAM" if ortho.route_hint == "gram_rule" else "APPROVE_LX")
+                    )
+                    for sp in COUNCIL_SEATS:
+                        seat_votes.append(
+                            CouncilSeatVote(
+                                seat=sp.seat,
+                                agent_id=sp.agent_id,
+                                name=sp.name,
+                                model_id=sp.model_id,
+                                role_title=sp.title,
+                                vote=v_default,  # type: ignore[arg-type]
+                                rationale=f"{sp.name} checked standardized form '{proposed_lx}' via {sp.domain}.",
+                            )
+                        )
+                else:
+                    for sp in COUNCIL_SEATS:
+                        obj = (seat_results.get(sp.seat) or {}).get(i)
+                        err = seat_errs.get(sp.seat)
+                        vote_str = str((obj or {}).get("vote") or "").upper()
+                        if vote_str not in {"APPROVE_LX", "REVISE_TO_VA", "ROUTE_TO_GRAM", "REJECT"}:
+                            vote_str = (
+                                "REVISE_TO_VA" if ortho.route_hint == "mdf_va"
+                                else ("ROUTE_TO_GRAM" if ortho.route_hint == "gram_rule" else "APPROVE_LX")
+                            )
+                        if obj:
+                            if sp.seat == 1 and obj.get("standardized_lx") and vote_str != "REVISE_TO_VA":
+                                cand_std = str(obj["standardized_lx"]).strip()
+                                recheck = check_standardization(cand_std, self.lang, working_dict_keys=self.working_index)
+                                if recheck.is_standard and not recheck.already_in_dict:
+                                    proposed_lx = recheck.standardized_form
+                            if sp.seat == 2 and obj.get("gram_rule"):
+                                proposed_gram = str(obj["gram_rule"]).strip()
+                            if sp.seat == 3:
+                                proposed_ps = str(obj.get("pos") or proposed_ps).strip()[:16]
+                                proposed_ge = str(obj.get("gloss_en") or proposed_ge).strip()[:120]
+                                proposed_gf = str(obj.get("gloss_fr") or proposed_gf).strip()[:120]
+                        seat_votes.append(
+                            CouncilSeatVote(
+                                seat=sp.seat,
+                                agent_id=sp.agent_id,
+                                name=sp.name,
+                                model_id=sp.model_id,
+                                role_title=sp.title,
+                                vote=vote_str,  # type: ignore[arg-type]
+                                rationale=str((obj or {}).get("rationale") or err or "Validated standard form."),
+                            )
+                        )
+
+                non_reject = [v for v in seat_votes if v.vote != "REJECT"]
+                if len(non_reject) < 3:
+                    self._commit_decision(
+                        CouncilDecision(
+                            turn_id=turn_id,
+                            lang=self.lang,
+                            candidate_raw=it["cand_raw"],
+                            standardized_lx=proposed_lx,
+                            variant_va=proposed_va,
+                            pos=proposed_ps,
+                            gloss_en=proposed_ge,
+                            gloss_fr=proposed_gf,
+                            semantic_domain=domain,
+                            example_native=utt.text_native,
+                            example_fr=utt.gloss_fr or utt.gloss_en,
+                            final_action="REJECT",
+                            orthography_check=ortho,
+                            dabax_check=DabaXCheck(error="Rejected by Council supermajority (<3/4 votes)"),
+                            seat_votes=seat_votes,
+                            summary_reason=f"Rejected by Council ({4 - len(non_reject)}/4 reject votes).",
+                        )
+                    )
+                    continue
+
+                vote_counts: Dict[str, int] = {}
+                for v in non_reject:
+                    vote_counts[v.vote] = vote_counts.get(v.vote, 0) + 1
+                top_vote = max(vote_counts.items(), key=lambda kv: kv[1])[0]
+                if ortho.route_hint == "mdf_va" and ortho.existing_headword:
+                    council_action = "COMMIT_VA"
+                    proposed_lx = ortho.existing_headword
+                    proposed_va = ortho.standardized_form
+                elif top_vote == "ROUTE_TO_GRAM" and proposed_gram:
+                    council_action = "COMMIT_GRAM"
+                else:
+                    council_action = "COMMIT_LX"
+
+                mdf_preview = serialize_mdf_entry(
+                    lx=proposed_lx,
+                    va=proposed_va,
+                    ps=proposed_ps,
+                    ge=proposed_ge,
+                    gf=proposed_gf,
+                    domain=domain,
+                    xv=utt.text_native,
+                    xf=utt.gloss_fr or utt.gloss_en,
+                )
+                council_approved.append(
+                    {
+                        "turn_id": turn_id,
+                        "cand_raw": it["cand_raw"],
+                        "proposed_lx": proposed_lx,
+                        "proposed_va": proposed_va,
+                        "proposed_ps": proposed_ps,
+                        "proposed_ge": proposed_ge,
+                        "proposed_gf": proposed_gf,
+                        "proposed_gram": proposed_gram,
+                        "domain": domain,
+                        "utt": utt,
+                        "ortho": ortho,
+                        "route_rationale": it["route_rationale"],
+                        "seat_votes": seat_votes,
+                        "council_action": council_action,
+                        "mdf_preview": mdf_preview,
+                    }
+                )
+
+        if not council_approved:
+            return []
+
+        shadow_inputs = [
+            {
+                "candidate_term": item["proposed_va"] or item["proposed_lx"],
+                "mdf_block": item["mdf_preview"] if item["council_action"] == "COMMIT_LX" else "",
+                "va_addition": (
+                    {"target_lx": item["proposed_lx"], "va": item["proposed_va"]}
+                    if item["council_action"] == "COMMIT_VA"
+                    else None
+                ),
+                "gram_rule": item["proposed_gram"] if item["council_action"] == "COMMIT_GRAM" else "",
+            }
+            for item in council_approved
+        ]
+        dabax_results = verify_shadow_batch(
+            lang=self.lang,
+            working_dict_path=self.dict_path,
+            working_gram_path=self.gram_path,
+            items=shadow_inputs,
+        )
+
+        queued_items: List[Dict[str, Any]] = []
+        for item, dabax_chk in zip(council_approved, dabax_results):
+            self._emit(
+                turn_id=turn_id,
+                kind="dabax_gate",
+                agent_id="c4-dabax-verifier",
+                zone="toguna_council",
+                label=f"Shadow DabaX Gate: {item['proposed_va'] or item['proposed_lx']}",
+                summary=(
+                    f"dict_ok={dabax_chk.dict_compile_ok}, gram_ok={dabax_chk.gram_compile_ok}, "
+                    f"dev-mini={dabax_chk.shadow_devmini_pct:.2f}% (regression={dabax_chk.regression_pct:.2f}%)"
+                ),
+                meta=dabax_chk.model_dump(),
+            )
+            if not dabax_chk.dict_compile_ok or not dabax_chk.gram_compile_ok or dabax_chk.error:
+                utt = item["utt"]
+                self._commit_decision(
+                    CouncilDecision(
+                        turn_id=turn_id,
+                        lang=self.lang,
+                        candidate_raw=item["cand_raw"],
+                        standardized_lx=item["proposed_lx"],
+                        variant_va=item["proposed_va"],
+                        pos=item["proposed_ps"],
+                        gloss_en=item["proposed_ge"],
+                        gloss_fr=item["proposed_gf"],
+                        semantic_domain=domain,
+                        example_native=utt.text_native,
+                        example_fr=utt.gloss_fr or utt.gloss_en,
+                        gram_rule=item["proposed_gram"],
+                        final_action="REJECT",
+                        orthography_check=item["ortho"],
+                        dabax_check=dabax_chk,
+                        seat_votes=item["seat_votes"],
+                        summary_reason=dabax_chk.error or "Failed strict DabaX compilation gate.",
+                    )
+                )
+            else:
+                item["dabax_chk"] = dabax_chk
+                queued_items.append(item)
+
+        return queued_items
 
     async def _precheck_and_council(
         self,
@@ -1052,14 +1387,14 @@ class LanguageVillageEngine:
                     working_gram_path=self.gram_path,
                 )
             corpus_batch = self._corpus_miner.next_batch(
-                5,
+                self.candidates_per_turn,
                 exclude=self._mined_seen,
                 working_dict_index=self.working_index,
             )
             for cb in corpus_batch:
                 self._mined_seen.add(cb.term.lower())
 
-        plan = await self._mande_plan_turn(client, turn_id, corpus_batch=corpus_batch)
+        plan = await self._mande_plan_turn(client, turn_id, corpus_batch=corpus_batch[:6])
 
         mande = self._get_agent(ORCHESTRATOR_SPEC.agent_id)
         if mande is not None and plan["zone"] != mande.zone:
@@ -1073,7 +1408,10 @@ class LanguageVillageEngine:
                 turn_id,
             )
 
-        corpus_label = f" | From {corpus_batch[0].source_file}: {', '.join(c.term for c in corpus_batch)}" if corpus_batch else ""
+        corpus_preview = ", ".join(c.term for c in corpus_batch[:6])
+        if len(corpus_batch) > 6:
+            corpus_preview += f" (+{len(corpus_batch) - 6} more)"
+        corpus_label = f" | From {corpus_batch[0].source_file}: {corpus_preview}" if corpus_batch else ""
         self._emit(
             turn_id=turn_id,
             kind="orchestrator_directive",
@@ -1098,7 +1436,7 @@ class LanguageVillageEngine:
             if ag.zone != plan["zone"]:
                 self._move_agent(ag, plan["zone"], turn_id, f"Joining discussion on {plan['topic']}")
 
-        exchange = await self._run_villager_dialogue(client, turn_id, plan, participants, corpus_batch=corpus_batch)
+        exchange = await self._run_villager_dialogue(client, turn_id, plan, participants, corpus_batch=corpus_batch[:6])
         if spawned is not None:
             exchange.spawned_agent_id = spawned.agent_id
 
@@ -1136,7 +1474,7 @@ class LanguageVillageEngine:
                 if ck and ck not in seen_cands:
                     seen_cands.add(ck)
                     cand_pairs.append((c.strip(), utt))
-        cand_pairs = cand_pairs[:5]
+        cand_pairs = cand_pairs[: self.candidates_per_turn]
 
         if cand_pairs:
             self._emit(
@@ -1148,33 +1486,32 @@ class LanguageVillageEngine:
                 target_zone="toguna_council",
                 path=compute_zone_path(plan["zone"], "toguna_council"),
                 label=f"Field Scroll -> Toguna Council ({len(cand_pairs)} terms)",
-                summary=f"Submitting {', '.join(c for c, _ in cand_pairs)} for DNAFLA & DabaX review.",
+                summary=f"Submitting {', '.join(c for c, _ in cand_pairs[:8])}{'...' if len(cand_pairs) > 8 else ''} for batched DNAFLA & DabaX review.",
                 meta={"candidates": [c for c, _ in cand_pairs]},
             )
-
-        decisions: List[CouncilDecision] = []
-        for cand_raw, utt in cand_pairs:
             self._emit(
                 turn_id=turn_id,
                 kind="council_deliberation",
                 agent_id="c1-orthography",
                 zone="toguna_council",
-                label=f"Toguna Reviewing '{cand_raw}'",
-                summary="Examining orthography, lemma-vs-.gram boundary, and strict DabaX compliance.",
-                meta={"candidate": cand_raw},
+                label=f"Toguna Reviewing {len(cand_pairs)} Terms (Batched)",
+                summary="Parallel 4-Chair Council review + batched Shadow DabaX verification.",
+                meta={"candidates": [c for c, _ in cand_pairs]},
             )
-            queued = await self._precheck_and_council(client, turn_id, cand_raw, utt, plan["semantic_domain"])
-            if queued is not None:
-                self._pending_argon.append(queued)
-                self._emit(
-                    turn_id=turn_id,
-                    kind="council_deliberation",
-                    agent_id=CRITIC_SPEC.agent_id,
-                    zone="toguna_council",
-                    label=f"Queued for Gemini 3.5 Flash Batch ({len(self._pending_argon)}/{self.argon_batch_min})",
-                    summary=f"'{queued['proposed_lx']}' passed Gates 1-4; awaiting batched Flash critic review.",
-                    meta={"queue_len": len(self._pending_argon), "batch_min": self.argon_batch_min},
-                )
+
+        decisions: List[CouncilDecision] = []
+        queued_batch = await self._process_candidates_batch(client, turn_id, cand_pairs, plan["semantic_domain"])
+        for queued in queued_batch:
+            self._pending_argon.append(queued)
+            self._emit(
+                turn_id=turn_id,
+                kind="council_deliberation",
+                agent_id=CRITIC_SPEC.agent_id,
+                zone="toguna_council",
+                label=f"Queued for Gemini 3.5 Flash Batch ({len(self._pending_argon)}/{self.argon_batch_min})",
+                summary=f"'{queued['proposed_lx']}' passed Gates 1-4; awaiting batched Flash critic review.",
+                meta={"queue_len": len(self._pending_argon), "batch_min": self.argon_batch_min},
+            )
 
         if len(self._pending_argon) >= self.argon_batch_min:
             decisions.extend(await self._flush_argon_batch(client, turn_id))

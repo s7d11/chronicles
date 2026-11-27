@@ -25,8 +25,14 @@ from village_lab.schema import (
     OrthographyCheck,
     serialize_mdf_entry,
 )
-from village_lab.shadow_verify import verify_shadow_candidate
-from village_lab.world_engine import ARGON_BATCH_MAX, ARGON_BATCH_MIN, LanguageVillageEngine, compute_zone_path
+from village_lab.shadow_verify import verify_shadow_batch, verify_shadow_candidate
+from village_lab.world_engine import (
+    ARGON_BATCH_MAX,
+    ARGON_BATCH_MIN,
+    DEFAULT_CANDIDATES_PER_TURN,
+    LanguageVillageEngine,
+    compute_zone_path,
+)
 
 
 def test_cast_matches_approved_models() -> None:
@@ -264,4 +270,57 @@ def test_push_ed4_state_to_hf_lang_only_avoids_shared_bundle(tmp_path: Path, mon
     assert len(uploads) == 1
     assert uploads[0]["path_in_repo"] == "edition4/bmq"
     assert not (out_dir / "edition4.json").exists()
+
+
+def test_proper_noun_filter_and_batch_shadow_dabax(tmp_path: Path, monkeypatch) -> None:
+    raw_dir = tmp_path / "raw"
+    raw_dir.mkdir(parents=True)
+    (raw_dir / "bam.txt").write_text(
+        "\n".join(
+            [
+                "Mɔgɔw bɛ taa Dawuda yɔrɔ la bi.",
+                "An bɛ Dawuda kɛlɛya fɔ sisan kɔnɔ.",
+                "U bɛ furamuguba san furaw la sugu kɔnɔ.",
+                "Furamuguba ka ɲi bana caman na fana.",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    import village_lab.corpus_miner as cm
+
+    monkeypatch.setattr(cm, "_resolve_raw_corpus_path", lambda lang: raw_dir / "bam.txt")
+    eng = LanguageVillageEngine("bam", runs_dir=tmp_path / "runs", mock_mode=True)
+    miner = CorpusOOVMiner(
+        "bam",
+        working_dict_index=eng.working_index,
+        working_dict_path=eng.dict_path,
+        working_gram_path=eng.gram_path,
+    )
+    terms = [c.term for c in miner._ranked]
+    assert "dawuda" not in terms
+    assert "furamuguba" in terms
+
+    # Optimistic batch verify: valid item + broken .gram rule must isolate the failure
+    good_mdf = serialize_mdf_entry(
+        lx="furamuguba",
+        ps="n",
+        ge="herbal powder",
+        gf="poudre médicinale",
+        xv="U bɛ furamuguba san sugu kɔnɔ.",
+    )
+    res = verify_shadow_batch(
+        lang="bam",
+        working_dict_path=eng.dict_path,
+        working_gram_path=eng.gram_path,
+        items=[
+            {"candidate_term": "furamuguba", "mdf_block": good_mdf, "va_addition": None, "gram_rule": ""},
+            {"candidate_term": "brokenrule", "mdf_block": "", "va_addition": None, "gram_rule": "INVALID SYNTAX NO PATTERN"},
+        ],
+    )
+    assert len(res) == 2
+    assert res[0].dict_compile_ok is True
+    assert res[1].gram_compile_ok is False
+    assert DEFAULT_CANDIDATES_PER_TURN >= 16
+
 

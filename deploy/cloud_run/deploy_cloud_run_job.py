@@ -42,6 +42,7 @@ def deploy_job(
     langs: str = "all",
     turns_per_lang: int = 40,
     checkpoint_every: int = 5,
+    candidates_per_turn: int = 16,
     tasks: int = 13,
     parallelism: int = 5,
     critic_model: str = "gemini-3.5-flash",
@@ -95,6 +96,7 @@ def deploy_job(
             "ED4_JOB_LANGS": langs,
             "ED4_JOB_TURNS": str(int(turns_per_lang)),
             "ED4_CHECKPOINT_EVERY": str(int(checkpoint_every)),
+            "ED4_CANDIDATES_PER_TURN": str(max(5, int(candidates_per_turn))),
             "ED4_MAX_PARALLEL_TASKS": str(max_parallel),
         }
         if gemini_key:
@@ -175,6 +177,7 @@ def main() -> None:
     parser.add_argument("--langs", default="all", help="Comma-separated MALI13 codes, 'uncovered', or 'all'")
     parser.add_argument("--turns", type=int, default=40, help="Turns per language")
     parser.add_argument("--checkpoint-every", type=int, default=5)
+    parser.add_argument("--candidates-per-turn", type=int, default=16, help="Mined/elicited candidate words per turn (5..25)")
     parser.add_argument("--tasks", type=int, default=13, help="Number of Cloud Run Job tasks")
     parser.add_argument("--parallelism", type=int, default=5, help="Max concurrent Cloud Run Job tasks")
     parser.add_argument("--critic-model", default="gemini-3.5-flash")
@@ -188,6 +191,7 @@ def main() -> None:
         langs=args.langs,
         turns_per_lang=args.turns,
         checkpoint_every=args.checkpoint_every,
+        candidates_per_turn=args.candidates_per_turn,
         tasks=args.tasks,
         parallelism=args.parallelism,
         critic_model=args.critic_model,
