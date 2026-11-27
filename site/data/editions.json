@@ -1,5 +1,45 @@
 [
   {
+    "id": "vol-02-no-01",
+    "short_title": "Vol. II · No. 1",
+    "issue_num": 5,
+    "is_edition": true,
+    "parent_edition": null,
+    "vol_issue": "VOL. II · NO. 1",
+    "date": "2026-11-27",
+    "title": "Vol. II, No. 1: Mali Conflict OSINT Observatory & Live Mathematical Proofs",
+    "summary": "Concurrent twin-volume launch: 9 isolated agents (NVIDIA Build, OpenRouter :free only, and Gemini 3.1 Flash-Lite) synthesizing UCDP GED, HDX ACLED, ReliefWeb, GDELT, fama.mil.ml DIRPA, and public X reports into Hawkes, Overdispersion, Markov, Harmattan, and Beta-Binomial statistical proofs on an interactive Mali map.",
+    "url": "editions/vol-02-no-01/index.html",
+    "kind": "Vol. II Lead",
+    "tagCls": "api",
+    "builds_on": [
+      {
+        "id": "vol-01-no-04",
+        "note": "Concurrent twin volume applying Chronicle multi-agent rigor and Cloud Run + Firestore static-first architecture to Mali OSINT and quantitative conflict pattern proofs."
+      }
+    ]
+  },
+  {
+    "id": "vol2-map",
+    "short_title": "Live Mali Map",
+    "issue_num": null,
+    "is_edition": false,
+    "parent_edition": "vol-02-no-01",
+    "vol_issue": "VOL. II · MAP",
+    "date": "2026-11-27",
+    "title": "Interactive Mali Conflict Map & Live Mathematical Proof Workbench",
+    "summary": "Fullscreen Leaflet + CartoDB Newsprint workbench over all 38 Malian cercles with live Hawkes/Beta parameter sliders, causal temporal cutoff scrubber, and Cloud Firestore streaming.",
+    "url": "editions/vol-02-no-01/map.html",
+    "kind": "Interactive Observatory",
+    "tagCls": "api",
+    "builds_on": [
+      {
+        "id": "vol-02-no-01",
+        "note": "Fullscreen interactive map and live mathematical proof simulator companion to Volume II · Edition No. 1."
+      }
+    ]
+  },
+  {
     "id": "vol-01-no-04",
     "short_title": "Edition No. 4",
     "issue_num": 4,

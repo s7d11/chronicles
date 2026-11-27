@@ -56,6 +56,7 @@
 
   async function hydrateFrontPage() {
     const kpiBox = document.getElementById("liveFactbox");
+    const vol2Box = document.getElementById("liveVol2Factbox");
     const ed4Box = document.getElementById("liveEd4Factbox");
     const ed3Box = document.getElementById("liveEd3Factbox");
     const ed3Body = document.getElementById("frontEd3Body");
@@ -65,6 +66,34 @@
     const archiveBody = document.getElementById("editionsArchiveBody");
     const metaEl = document.getElementById("liveRunMeta");
     const ribbonParts = [];
+
+    if (vol2Box) {
+      try {
+        const v2 = await fetchJson("data/vol2_meta.json");
+        ribbonParts.push(
+          `VOL. II NO. 1: ${Number(v2.total_verified_incidents || 0).toLocaleString()} MALI EVENTS · ${v2.total_hypotheses || 0} MATH PROOFS · AUROC ${v2.global_auroc ?? "-"}`
+        );
+        vol2Box.innerHTML = `
+          <div class="spec-item">
+            <div class="lbl">Verified Incidents &amp; Clusters</div>
+            <div class="val">${Number(v2.total_verified_incidents || 0).toLocaleString()} / ${v2.total_clusters || 0} clusters</div>
+            <div class="sub">From ${Number(v2.total_raw_records || 0).toLocaleString()} raw records (${Object.keys(v2.perspective_counts || {}).length} perspectives)</div>
+          </div>
+          <div class="spec-item">
+            <div class="lbl">Mathematical Proof Engine</div>
+            <div class="val">${v2.proven_or_supported_count || 0} / ${v2.total_hypotheses || 0} Verified</div>
+            <div class="sub">Hawkes &middot; Overdispersion &middot; Markov &middot; Harmattan &middot; Beta-Binomial</div>
+          </div>
+          <div class="spec-item">
+            <div class="lbl">Strict Walk-Forward Score</div>
+            <div class="val">AUROC ${v2.global_auroc ?? "—"} (Brier ${v2.global_brier ?? "—"})</div>
+            <div class="sub">${v2.walk_forward_folds || 0} causal folds &bull; NVIDIA + OpenRouter Free + Gemini 3.1 Flash-Lite</div>
+          </div>
+        `;
+      } catch (err) {
+        vol2Box.innerHTML = `<div class="spec-item"><div class="lbl">Vol. II Observatory</div><div class="sub">Awaiting vol2_meta.json (${esc(err.message)})</div></div>`;
+      }
+    }
 
     if (ed4Box) {
       try {
@@ -85,8 +114,8 @@
           </div>
           <div class="spec-item">
             <div class="lbl">Orchestrator &amp; Critic</div>
-            <div class="val">Mande &times; Gemini 4 Argon</div>
-            <div class="sub"><code>nemotron-3-ultra-550b-a55b</code> + <code>gemini-4-argon</code> + 9 Adaption models</div>
+            <div class="val">Mande &times; Gemini 3.5 Flash</div>
+            <div class="sub"><code>nemotron-3-ultra-550b-a55b</code> + <code>gemini-3.5-flash</code> + 9 Adaption models</div>
           </div>
           <div class="spec-item">
             <div class="lbl">3D Simulation Events</div>

@@ -1,0 +1,330 @@
+/* Volume II · Edition No. 1 — Mali Conflict OSINT Observatory & Live Mathematical Proof Workbench */
+
+.vol2-mount {
+  border: 1px solid var(--rule);
+  background: var(--paper-2, #f5f0e6);
+  color: var(--ink);
+  margin: 18px 0;
+  font-family: inherit;
+}
+
+.vol2-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.vol2-toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.vol2-btn {
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.vol2-btn.active,
+.vol2-btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.vol2-btn-live {
+  border-color: #8b1e1e;
+  color: #8b1e1e;
+}
+
+.vol2-btn-live.connected,
+.vol2-btn-live:hover {
+  background: #8b1e1e;
+  color: #fff;
+}
+
+.vol2-select {
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.vol2-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.vol2-kpi {
+  padding: 9px 12px;
+  border-right: 1px solid var(--rule);
+}
+
+.vol2-kpi:last-child {
+  border-right: none;
+}
+
+.vol2-kpi .k-lbl {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+.vol2-kpi .k-val {
+  font-size: 1.18rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.vol2-kpi .k-sub {
+  font-size: 0.72rem;
+  opacity: 0.78;
+}
+
+.vol2-stage {
+  display: grid;
+  grid-template-columns: minmax(360px, 1.15fr) minmax(360px, 1fr);
+  min-height: 620px;
+}
+
+@media (max-width: 1020px) {
+  .vol2-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vol2-map-col {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.vol2-map-canvas {
+  width: 100%;
+  height: 540px;
+  min-height: 460px;
+  background: #ede6d6;
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="evening"] .vol2-map-canvas {
+  background: #1d1c19;
+}
+
+.vol2-scrubber {
+  padding: 10px 14px;
+  border-top: 1px solid var(--rule);
+  background: var(--paper);
+  font-size: 0.8rem;
+}
+
+.vol2-scrubber label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.vol2-scrubber input[type="range"] {
+  width: 100%;
+}
+
+.vol2-workbench-col {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 760px;
+  background: var(--paper);
+}
+
+.vol2-wb-header {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 8px;
+}
+
+.vol2-wb-header h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.15rem;
+}
+
+.vol2-wb-meta {
+  font-size: 0.78rem;
+  opacity: 0.82;
+}
+
+.vol2-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 8px;
+}
+
+.vol2-tab-btn {
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.vol2-tab-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.vol2-proof-card {
+  border: 1px solid var(--rule);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: var(--paper-2, #f7f3ea);
+}
+
+.vol2-proof-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.vol2-verdict {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  letter-spacing: 0.05em;
+  border: 1px solid currentColor;
+}
+
+.vol2-verdict.PROVEN {
+  color: #145a32;
+  background: rgba(20, 90, 50, 0.12);
+}
+
+.vol2-verdict.SUPPORTED {
+  color: #1b4f72;
+  background: rgba(27, 79, 114, 0.12);
+}
+
+.vol2-verdict.INCONCLUSIVE {
+  color: #7d6608;
+  background: rgba(125, 102, 8, 0.12);
+}
+
+.vol2-verdict.FALSIFIED {
+  color: #78281f;
+  background: rgba(120, 40, 31, 0.12);
+}
+
+.vol2-formula {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.77rem;
+  background: var(--paper);
+  border-left: 3px solid var(--ink);
+  padding: 6px 8px;
+  margin: 6px 0;
+  overflow-x: auto;
+}
+
+.vol2-sliders {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  border: 1px dashed var(--rule);
+  background: var(--paper-2, #f7f3ea);
+}
+
+.vol2-slider-item label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.vol2-slider-item input[type="range"] {
+  width: 100%;
+}
+
+.vol2-svg-wrap {
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  padding: 8px;
+}
+
+.vol2-svg-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.vol2-events-list {
+  max-height: 360px;
+  overflow-y: auto;
+  border: 1px solid var(--rule);
+}
+
+.vol2-event-row {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.79rem;
+}
+
+.vol2-event-row:last-child {
+  border-bottom: none;
+}
+
+.vol2-badge {
+  display: inline-block;
+  font-size: 0.66rem;
+  padding: 1px 5px;
+  border: 1px solid var(--rule);
+  margin-right: 4px;
+  text-transform: uppercase;
+}
+
+.vol2-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 7px 14px;
+  font-size: 0.74rem;
+  border-top: 1px solid var(--rule);
+  background: var(--paper-2, #f5f0e6);
+}
+
+.vol2-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}

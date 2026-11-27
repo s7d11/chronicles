@@ -12,6 +12,15 @@ STATE_REPO="${SWARM_STATE_REPO:-s7d11/chronicles-edition2-state}"
 ED3_STATE_REPO="${ED3_STATE_REPO:-s7d11/chronicles-edition3-state}"
 ED4_STATE_REPO="${ED4_STATE_REPO:-s7d11/chronicles-edition4-state}"
 
+if [[ "${JOB_MODE:-}" == "vol2" ]]; then
+  echo "[entrypoint] Launching Volume II Mali OSINT Sweep & Mathematical Proof Job..."
+  exec python3 -m conflict_lab.cli sweep \
+    --out-dir "${SITE_DATA_DIR}" \
+    --max-ucdp-rows "${VOL2_MAX_UCDP_ROWS:-1200}" \
+    --push-hf \
+    --push-firestore
+fi
+
 echo "[entrypoint] Fetching private runtime from ${RUNTIME_REPO}..."
 python3 - <<'PY'
 import os

@@ -24,6 +24,7 @@ COPY bench/ /home/user/app/bench/
 COPY swarm_lab/ /home/user/app/swarm_lab/
 COPY proof_lab/ /home/user/app/proof_lab/
 COPY village_lab/ /home/user/app/village_lab/
+COPY conflict_lab/ /home/user/app/conflict_lab/
 COPY site/ /home/user/app/site/
 
 RUN chmod +x /home/user/app/entrypoint.sh \

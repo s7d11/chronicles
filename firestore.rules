@@ -5,7 +5,8 @@ rules_version = '2';
 // ===============================================================
 //
 // This security rules file assumes the following Cloud Firestore
-// structures for Edition No. 4 ("The Living Lexicon Village"):
+// structures for Edition No. 4 ("The Living Lexicon Village") and
+// Volume II ("Mali Conflict OSINT Observatory & Mathematical Proof Workbench"):
 //
 // Collection: ed4_languages
 // Document ID: {lang} matching ^(bam|bmq|boz|dtm|ful|kao|mey|mku|myk|ses|snk|spp|taq)$
@@ -48,6 +49,154 @@ rules_version = '2';
 //   - label: string (required, 1..256 chars)
 //   - summary: string (required, <= 2048 chars)
 //   - meta_json: string (optional, <= 65536 chars)
+//
+// Collection: vol2_meta
+// Document ID: {docId} matching ^[a-z0-9_-]{1,64}$
+// Fields (public Volume II observatory sweep metadata; zero PII):
+//   - sweep_id: string (required, 1..128 chars)
+//   - updated_at: timestamp or string (required, <= 64 chars if string)
+//   - total_raw_records: int (optional, >= 0)
+//   - total_verified_incidents: int (optional, >= 0)
+//   - total_clusters: int (optional, >= 0)
+//   - total_hypotheses: int (optional, >= 0)
+//   - proven_or_supported_count: int (optional, >= 0)
+//   - walk_forward_folds: int (optional, >= 0)
+//   - global_auroc: number (optional, 0..1)
+//   - global_pr_auc: number (optional, 0..1)
+//   - global_brier: number (optional, 0..1)
+//   - global_bss: number (optional)
+//   - source_counts: map (optional, <= 128 keys)
+//   - perspective_counts: map (optional, <= 32 keys)
+//   - actor_counts: map (optional, <= 128 keys)
+//   - tactic_counts: map (optional, <= 32 keys)
+//   - corridor_edges: list (optional, <= 500 items)
+//   - active_agents: list (optional, <= 64 items)
+//   - running: bool (optional)
+//
+// Collection: vol2_incidents
+// Document ID: {incidentId} matching ^[a-zA-Z0-9_-]{4,80}$
+// Fields (public adjudicated Mali OSINT incident; zero PII):
+//   - incident_id: string (required, matches {incidentId}, 4..80 chars)
+//   - date_start: string (required, 1..64 chars)
+//   - date_end: string (required, 1..64 chars)
+//   - precision_level: string (optional, in ['exact_locality', 'cercle_centroid', 'region_centroid'])
+//   - admin1: string (required, 1..120 chars)
+//   - admin2: string (required, 1..120 chars)
+//   - cercle_id: string (required, 2..64 chars)
+//   - locality: string (optional, <= 160 chars)
+//   - lat: number (required)
+//   - lon: number (required)
+//   - actor_primary: string (required, 1..160 chars)
+//   - actor_secondary: string (optional, <= 160 chars)
+//   - tactic: string (optional, 1..64 chars)
+//   - fatalities_best: int (optional, >= 0)
+//   - source_count: int (optional, >= 0)
+//   - sources: list (optional, <= 64 items)
+//   - perspectives: list (optional, <= 16 items)
+//   - corroboration_tier: string (optional, in ['high', 'medium', 'single_source'])
+//   - headline: string (optional, <= 512 chars)
+//   - summary: string (optional, <= 4096 chars)
+//   - adjudicator_note: string (optional, <= 2048 chars)
+//
+// Collection: vol2_clusters
+// Document ID: {clusterId} matching ^[a-zA-Z0-9_-]{2,80}$
+// Fields (public spatiotemporal attack cluster; zero PII):
+//   - cluster_id: string (required, matches {clusterId}, 2..80 chars)
+//   - label: string (required, 1..256 chars)
+//   - admin1: string (required, 1..120 chars)
+//   - dominant_cercle_id: string (required, 2..64 chars)
+//   - centroid_lat: number (required)
+//   - centroid_lon: number (required)
+//   - radius_km: number (required, >= 0)
+//   - event_count: int (required, >= 0)
+//   - fatalities_total: int (optional, >= 0)
+//   - date_first: string (required, 1..64 chars)
+//   - date_last: string (required, 1..64 chars)
+//   - dominant_actors: map (optional, <= 128 keys)
+//   - tactic_breakdown: map (optional, <= 32 keys)
+//   - dry_season_share: number (optional, 0..1)
+//   - corroborated_share: number (optional, 0..1)
+//   - sample_events: list (optional, <= 100 items)
+//
+// Collection: vol2_hypotheses
+// Document ID: {hypId} matching ^[a-zA-Z0-9_-]{2,80}$
+// Fields (public mathematical hypothesis proof record; zero PII):
+//   - hyp_id: string (required, matches {hypId}, 2..80 chars)
+//   - cluster_id: string (required, 2..80 chars)
+//   - cercle_id: string (required, 2..64 chars)
+//   - family: string (required, in ['H_hawkes', 'H_dispersion', 'H_markov', 'H_seasonal', 'H_beta'])
+//   - title: string (required, 1..256 chars)
+//   - symbolic_formula: string (required, 1..1024 chars)
+//   - null_hypothesis: string (required, 1..1024 chars)
+//   - alternative_hypothesis: string (required, 1..1024 chars)
+//   - parameters: map (optional, <= 64 keys)
+//   - test_statistic_name: string (required, 1..120 chars)
+//   - test_statistic_value: number (required)
+//   - p_value: number (required, 0..1)
+//   - log_likelihood_ratio: number (optional)
+//   - verdict: string (required, in ['PROVEN', 'SUPPORTED', 'INCONCLUSIVE', 'FALSIFIED'])
+//   - alpha: number (optional, 0..1)
+//   - n_observations: int (optional, >= 0)
+//   - derivation_steps: list (optional, <= 64 items)
+//   - analyst_narrative: string (optional, <= 4096 chars)
+//   - updated_at: timestamp or string (optional, <= 64 chars if string)
+//
+// Collection: vol2_proofs
+// Document ID: {cercleId} matching ^[a-z0-9_-]{2,64}$
+// Fields (public per-cercle mathematical proof state; zero PII):
+//   - cercle_id: string (required, matches {cercleId}, 2..64 chars)
+//   - cercle_name: string (required, 1..120 chars)
+//   - admin1: string (required, 1..120 chars)
+//   - lat: number (required)
+//   - lon: number (required)
+//   - event_count: int (required, >= 0)
+//   - event_timestamps_days: list (optional, <= 5000 items)
+//   - hawkes_mu: number (required)
+//   - hawkes_alpha: number (required)
+//   - hawkes_beta: number (required)
+//   - hawkes_branching_ratio: number (required)
+//   - hawkes_half_life_days: number (required)
+//   - hawkes_lambda_now: number (required)
+//   - beta_alpha0: number (optional)
+//   - beta_beta0: number (optional)
+//   - beta_active_weeks: int (optional, >= 0)
+//   - beta_total_weeks: int (optional, >= 0)
+//   - beta_posterior_mean: number (optional, 0..1)
+//   - beta_ci_low: number (optional, 0..1)
+//   - beta_ci_high: number (optional, 0..1)
+//   - dispersion_ratio: number (optional)
+//   - dry_season_rate: number (optional)
+//   - rainy_season_rate: number (optional)
+//   - dominant_actor: string (optional, <= 160 chars)
+//   - markov_next_tactics: map (optional, <= 32 keys)
+//   - risk_7d_prob: number (optional, 0..1)
+//   - risk_30d_prob: number (optional, 0..1)
+//   - expected_30d_count: number (optional, >= 0)
+//   - walk_forward_auroc: number (optional, 0..1)
+//   - walk_forward_brier: number (optional, 0..1)
+//   - brier_skill_score: number (optional)
+//   - updated_at: timestamp or string (optional, <= 64 chars if string)
+//
+// Collection: vol2_predictions
+// Document ID: {cercleId} matching ^[a-z0-9_-]{2,64}$
+// Fields (public per-cercle walk-forward forecast; zero PII):
+//   - cercle_id: string (required, matches {cercleId}, 2..64 chars)
+//   - cercle_name: string (required, 1..120 chars)
+//   - admin1: string (required, 1..120 chars)
+//   - lat: number (required)
+//   - lon: number (required)
+//   - risk_7d_prob: number (required, 0..1)
+//   - risk_30d_prob: number (required, 0..1)
+//   - expected_30d_count: number (required, >= 0)
+//   - dominant_actor: string (required, 1..160 chars)
+//   - predicted_next_tactic: string (required, 1..64 chars)
+//   - tactic_probs: map (optional, <= 32 keys)
+//   - ci_low: number (required, 0..1)
+//   - ci_high: number (required, 0..1)
+//   - walk_forward_auroc: number (required, 0..1)
+//   - walk_forward_brier: number (required, 0..1)
+//   - brier_skill_score: number (required)
+//   - updated_at: timestamp or string (optional, <= 64 chars if string)
 //
 // Write Authority:
 //   - Cloud Run Jobs write via GCP ADC (roles/datastore.user) over the
@@ -142,6 +291,12 @@ service cloud.firestore {
         eventId.matches('^[0-9]{6}$');
     }
 
+    // Validate timestamp or short ISO timestamp string
+    function isValidTimestampOrString(val) {
+      return val is timestamp ||
+        (val is string && val.size() > 0 && val.size() <= 64);
+    }
+
     // ===============================================================
     // Domain Validators
     // ===============================================================
@@ -211,6 +366,221 @@ service cloud.firestore {
         (!('meta_json' in data) || (data.meta_json is string && data.meta_json.size() <= 65536));
     }
 
+    function isValidVol2Meta(data) {
+      return data.keys().hasAll(['sweep_id', 'updated_at']) &&
+        data.keys().hasOnly([
+          'sweep_id', 'updated_at', 'total_raw_records', 'total_verified_incidents',
+          'total_clusters', 'total_hypotheses', 'proven_or_supported_count',
+          'walk_forward_folds', 'global_auroc', 'global_pr_auc',
+          'global_brier', 'global_bss', 'source_counts', 'perspective_counts',
+          'actor_counts', 'tactic_counts', 'corridor_edges', 'active_agents',
+          'running'
+        ]) &&
+        data.sweep_id is string && data.sweep_id.size() > 0 && data.sweep_id.size() <= 128 &&
+        isValidTimestampOrString(data.updated_at) &&
+        (!('total_raw_records' in data) || (data.total_raw_records is int && data.total_raw_records >= 0)) &&
+        (!('total_verified_incidents' in data) || (data.total_verified_incidents is int && data.total_verified_incidents >= 0)) &&
+        (!('total_clusters' in data) || (data.total_clusters is int && data.total_clusters >= 0)) &&
+        (!('total_hypotheses' in data) || (data.total_hypotheses is int && data.total_hypotheses >= 0)) &&
+        (!('proven_or_supported_count' in data) || (data.proven_or_supported_count is int && data.proven_or_supported_count >= 0)) &&
+        (!('walk_forward_folds' in data) || (data.walk_forward_folds is int && data.walk_forward_folds >= 0)) &&
+        (!('global_auroc' in data) || (data.global_auroc is number && data.global_auroc >= 0 && data.global_auroc <= 1)) &&
+        (!('global_pr_auc' in data) || (data.global_pr_auc is number && data.global_pr_auc >= 0 && data.global_pr_auc <= 1)) &&
+        (!('global_brier' in data) || (data.global_brier is number && data.global_brier >= 0 && data.global_brier <= 1)) &&
+        (!('global_bss' in data) || data.global_bss is number) &&
+        (!('source_counts' in data) || (data.source_counts is map && data.source_counts.keys().size() <= 128)) &&
+        (!('perspective_counts' in data) || (data.perspective_counts is map && data.perspective_counts.keys().size() <= 32)) &&
+        (!('actor_counts' in data) || (data.actor_counts is map && data.actor_counts.keys().size() <= 128)) &&
+        (!('tactic_counts' in data) || (data.tactic_counts is map && data.tactic_counts.keys().size() <= 32)) &&
+        (!('corridor_edges' in data) || isValidList(data.corridor_edges, 500)) &&
+        (!('active_agents' in data) || isValidList(data.active_agents, 64)) &&
+        (!('running' in data) || data.running is bool);
+    }
+
+    function isValidVol2Incident(data, incidentId) {
+      return data.keys().hasAll([
+          'incident_id', 'date_start', 'date_end', 'admin1', 'admin2',
+          'cercle_id', 'lat', 'lon', 'actor_primary'
+        ]) &&
+        data.keys().hasOnly([
+          'incident_id', 'date_start', 'date_end', 'precision_level',
+          'admin1', 'admin2', 'cercle_id', 'locality', 'lat', 'lon',
+          'actor_primary', 'actor_secondary', 'tactic', 'fatalities_best',
+          'source_count', 'sources', 'perspectives', 'corroboration_tier',
+          'headline', 'summary', 'adjudicator_note'
+        ]) &&
+        data.incident_id == incidentId &&
+        data.date_start is string && data.date_start.size() > 0 && data.date_start.size() <= 64 &&
+        data.date_end is string && data.date_end.size() > 0 && data.date_end.size() <= 64 &&
+        (!('precision_level' in data) || data.precision_level in ['exact_locality', 'cercle_centroid', 'region_centroid']) &&
+        data.admin1 is string && data.admin1.size() > 0 && data.admin1.size() <= 120 &&
+        data.admin2 is string && data.admin2.size() > 0 && data.admin2.size() <= 120 &&
+        data.cercle_id is string && data.cercle_id.size() >= 2 && data.cercle_id.size() <= 64 &&
+        (!('locality' in data) || (data.locality is string && data.locality.size() <= 160)) &&
+        data.lat is number &&
+        data.lon is number &&
+        data.actor_primary is string && data.actor_primary.size() > 0 && data.actor_primary.size() <= 160 &&
+        (!('actor_secondary' in data) || (data.actor_secondary is string && data.actor_secondary.size() <= 160)) &&
+        (!('tactic' in data) || (data.tactic is string && data.tactic.size() > 0 && data.tactic.size() <= 64)) &&
+        (!('fatalities_best' in data) || (data.fatalities_best is int && data.fatalities_best >= 0)) &&
+        (!('source_count' in data) || (data.source_count is int && data.source_count >= 0)) &&
+        (!('sources' in data) || isValidList(data.sources, 64)) &&
+        (!('perspectives' in data) || isValidList(data.perspectives, 16)) &&
+        (!('corroboration_tier' in data) || data.corroboration_tier in ['high', 'medium', 'single_source']) &&
+        (!('headline' in data) || (data.headline is string && data.headline.size() <= 512)) &&
+        (!('summary' in data) || (data.summary is string && data.summary.size() <= 4096)) &&
+        (!('adjudicator_note' in data) || (data.adjudicator_note is string && data.adjudicator_note.size() <= 2048));
+    }
+
+    function isValidVol2Cluster(data, clusterId) {
+      return data.keys().hasAll([
+          'cluster_id', 'label', 'admin1', 'dominant_cercle_id',
+          'centroid_lat', 'centroid_lon', 'radius_km', 'event_count',
+          'date_first', 'date_last'
+        ]) &&
+        data.keys().hasOnly([
+          'cluster_id', 'label', 'admin1', 'dominant_cercle_id',
+          'centroid_lat', 'centroid_lon', 'radius_km', 'event_count',
+          'fatalities_total', 'date_first', 'date_last', 'dominant_actors',
+          'tactic_breakdown', 'dry_season_share', 'corroborated_share',
+          'sample_events'
+        ]) &&
+        data.cluster_id == clusterId &&
+        data.label is string && data.label.size() > 0 && data.label.size() <= 256 &&
+        data.admin1 is string && data.admin1.size() > 0 && data.admin1.size() <= 120 &&
+        data.dominant_cercle_id is string && data.dominant_cercle_id.size() >= 2 && data.dominant_cercle_id.size() <= 64 &&
+        data.centroid_lat is number &&
+        data.centroid_lon is number &&
+        data.radius_km is number && data.radius_km >= 0 &&
+        data.event_count is int && data.event_count >= 0 &&
+        (!('fatalities_total' in data) || (data.fatalities_total is int && data.fatalities_total >= 0)) &&
+        data.date_first is string && data.date_first.size() > 0 && data.date_first.size() <= 64 &&
+        data.date_last is string && data.date_last.size() > 0 && data.date_last.size() <= 64 &&
+        (!('dominant_actors' in data) || (data.dominant_actors is map && data.dominant_actors.keys().size() <= 128)) &&
+        (!('tactic_breakdown' in data) || (data.tactic_breakdown is map && data.tactic_breakdown.keys().size() <= 32)) &&
+        (!('dry_season_share' in data) || (data.dry_season_share is number && data.dry_season_share >= 0 && data.dry_season_share <= 1)) &&
+        (!('corroborated_share' in data) || (data.corroborated_share is number && data.corroborated_share >= 0 && data.corroborated_share <= 1)) &&
+        (!('sample_events' in data) || isValidList(data.sample_events, 100));
+    }
+
+    function isValidVol2Hypothesis(data, hypId) {
+      return data.keys().hasAll([
+          'hyp_id', 'cluster_id', 'cercle_id', 'family', 'title',
+          'symbolic_formula', 'null_hypothesis', 'alternative_hypothesis',
+          'test_statistic_name', 'test_statistic_value', 'p_value', 'verdict'
+        ]) &&
+        data.keys().hasOnly([
+          'hyp_id', 'cluster_id', 'cercle_id', 'family', 'title',
+          'symbolic_formula', 'null_hypothesis', 'alternative_hypothesis',
+          'parameters', 'test_statistic_name', 'test_statistic_value',
+          'p_value', 'log_likelihood_ratio', 'verdict', 'alpha',
+          'n_observations', 'derivation_steps', 'analyst_narrative', 'updated_at'
+        ]) &&
+        data.hyp_id == hypId &&
+        data.cluster_id is string && data.cluster_id.size() >= 2 && data.cluster_id.size() <= 80 &&
+        data.cercle_id is string && data.cercle_id.size() >= 2 && data.cercle_id.size() <= 64 &&
+        data.family in ['H_hawkes', 'H_dispersion', 'H_markov', 'H_seasonal', 'H_beta'] &&
+        data.title is string && data.title.size() > 0 && data.title.size() <= 256 &&
+        data.symbolic_formula is string && data.symbolic_formula.size() > 0 && data.symbolic_formula.size() <= 1024 &&
+        data.null_hypothesis is string && data.null_hypothesis.size() > 0 && data.null_hypothesis.size() <= 1024 &&
+        data.alternative_hypothesis is string && data.alternative_hypothesis.size() > 0 && data.alternative_hypothesis.size() <= 1024 &&
+        (!('parameters' in data) || (data.parameters is map && data.parameters.keys().size() <= 64)) &&
+        data.test_statistic_name is string && data.test_statistic_name.size() > 0 && data.test_statistic_name.size() <= 120 &&
+        data.test_statistic_value is number &&
+        data.p_value is number && data.p_value >= 0 && data.p_value <= 1 &&
+        (!('log_likelihood_ratio' in data) || data.log_likelihood_ratio is number) &&
+        data.verdict in ['PROVEN', 'SUPPORTED', 'INCONCLUSIVE', 'FALSIFIED'] &&
+        (!('alpha' in data) || (data.alpha is number && data.alpha >= 0 && data.alpha <= 1)) &&
+        (!('n_observations' in data) || (data.n_observations is int && data.n_observations >= 0)) &&
+        (!('derivation_steps' in data) || isValidList(data.derivation_steps, 64)) &&
+        (!('analyst_narrative' in data) || (data.analyst_narrative is string && data.analyst_narrative.size() <= 4096)) &&
+        (!('updated_at' in data) || isValidTimestampOrString(data.updated_at));
+    }
+
+    function isValidVol2Proof(data, cercleId) {
+      return data.keys().hasAll([
+          'cercle_id', 'cercle_name', 'admin1', 'lat', 'lon', 'event_count',
+          'hawkes_mu', 'hawkes_alpha', 'hawkes_beta',
+          'hawkes_branching_ratio', 'hawkes_half_life_days', 'hawkes_lambda_now'
+        ]) &&
+        data.keys().hasOnly([
+          'cercle_id', 'cercle_name', 'admin1', 'lat', 'lon', 'event_count',
+          'event_timestamps_days', 'hawkes_mu', 'hawkes_alpha', 'hawkes_beta',
+          'hawkes_branching_ratio', 'hawkes_half_life_days', 'hawkes_lambda_now',
+          'beta_alpha0', 'beta_beta0', 'beta_active_weeks', 'beta_total_weeks',
+          'beta_posterior_mean', 'beta_ci_low', 'beta_ci_high', 'dispersion_ratio',
+          'dry_season_rate', 'rainy_season_rate', 'dominant_actor',
+          'markov_next_tactics', 'risk_7d_prob', 'risk_30d_prob',
+          'expected_30d_count', 'walk_forward_auroc', 'walk_forward_brier',
+          'brier_skill_score', 'updated_at'
+        ]) &&
+        data.cercle_id == cercleId &&
+        data.cercle_name is string && data.cercle_name.size() > 0 && data.cercle_name.size() <= 120 &&
+        data.admin1 is string && data.admin1.size() > 0 && data.admin1.size() <= 120 &&
+        data.lat is number &&
+        data.lon is number &&
+        data.event_count is int && data.event_count >= 0 &&
+        (!('event_timestamps_days' in data) || isValidList(data.event_timestamps_days, 5000)) &&
+        data.hawkes_mu is number &&
+        data.hawkes_alpha is number &&
+        data.hawkes_beta is number &&
+        data.hawkes_branching_ratio is number &&
+        data.hawkes_half_life_days is number &&
+        data.hawkes_lambda_now is number &&
+        (!('beta_alpha0' in data) || data.beta_alpha0 is number) &&
+        (!('beta_beta0' in data) || data.beta_beta0 is number) &&
+        (!('beta_active_weeks' in data) || (data.beta_active_weeks is int && data.beta_active_weeks >= 0)) &&
+        (!('beta_total_weeks' in data) || (data.beta_total_weeks is int && data.beta_total_weeks >= 0)) &&
+        (!('beta_posterior_mean' in data) || (data.beta_posterior_mean is number && data.beta_posterior_mean >= 0 && data.beta_posterior_mean <= 1)) &&
+        (!('beta_ci_low' in data) || (data.beta_ci_low is number && data.beta_ci_low >= 0 && data.beta_ci_low <= 1)) &&
+        (!('beta_ci_high' in data) || (data.beta_ci_high is number && data.beta_ci_high >= 0 && data.beta_ci_high <= 1)) &&
+        (!('dispersion_ratio' in data) || data.dispersion_ratio is number) &&
+        (!('dry_season_rate' in data) || data.dry_season_rate is number) &&
+        (!('rainy_season_rate' in data) || data.rainy_season_rate is number) &&
+        (!('dominant_actor' in data) || (data.dominant_actor is string && data.dominant_actor.size() <= 160)) &&
+        (!('markov_next_tactics' in data) || (data.markov_next_tactics is map && data.markov_next_tactics.keys().size() <= 32)) &&
+        (!('risk_7d_prob' in data) || (data.risk_7d_prob is number && data.risk_7d_prob >= 0 && data.risk_7d_prob <= 1)) &&
+        (!('risk_30d_prob' in data) || (data.risk_30d_prob is number && data.risk_30d_prob >= 0 && data.risk_30d_prob <= 1)) &&
+        (!('expected_30d_count' in data) || (data.expected_30d_count is number && data.expected_30d_count >= 0)) &&
+        (!('walk_forward_auroc' in data) || (data.walk_forward_auroc is number && data.walk_forward_auroc >= 0 && data.walk_forward_auroc <= 1)) &&
+        (!('walk_forward_brier' in data) || (data.walk_forward_brier is number && data.walk_forward_brier >= 0 && data.walk_forward_brier <= 1)) &&
+        (!('brier_skill_score' in data) || data.brier_skill_score is number) &&
+        (!('updated_at' in data) || isValidTimestampOrString(data.updated_at));
+    }
+
+    function isValidVol2Prediction(data, cercleId) {
+      return data.keys().hasAll([
+          'cercle_id', 'cercle_name', 'admin1', 'lat', 'lon',
+          'risk_7d_prob', 'risk_30d_prob', 'expected_30d_count',
+          'dominant_actor', 'predicted_next_tactic', 'ci_low', 'ci_high',
+          'walk_forward_auroc', 'walk_forward_brier', 'brier_skill_score'
+        ]) &&
+        data.keys().hasOnly([
+          'cercle_id', 'cercle_name', 'admin1', 'lat', 'lon',
+          'risk_7d_prob', 'risk_30d_prob', 'expected_30d_count',
+          'dominant_actor', 'predicted_next_tactic', 'tactic_probs',
+          'ci_low', 'ci_high', 'walk_forward_auroc', 'walk_forward_brier',
+          'brier_skill_score', 'updated_at'
+        ]) &&
+        data.cercle_id == cercleId &&
+        data.cercle_name is string && data.cercle_name.size() > 0 && data.cercle_name.size() <= 120 &&
+        data.admin1 is string && data.admin1.size() > 0 && data.admin1.size() <= 120 &&
+        data.lat is number &&
+        data.lon is number &&
+        data.risk_7d_prob is number && data.risk_7d_prob >= 0 && data.risk_7d_prob <= 1 &&
+        data.risk_30d_prob is number && data.risk_30d_prob >= 0 && data.risk_30d_prob <= 1 &&
+        data.expected_30d_count is number && data.expected_30d_count >= 0 &&
+        data.dominant_actor is string && data.dominant_actor.size() > 0 && data.dominant_actor.size() <= 160 &&
+        data.predicted_next_tactic is string && data.predicted_next_tactic.size() > 0 && data.predicted_next_tactic.size() <= 64 &&
+        (!('tactic_probs' in data) || (data.tactic_probs is map && data.tactic_probs.keys().size() <= 32)) &&
+        data.ci_low is number && data.ci_low >= 0 && data.ci_low <= 1 &&
+        data.ci_high is number && data.ci_high >= 0 && data.ci_high <= 1 &&
+        data.walk_forward_auroc is number && data.walk_forward_auroc >= 0 && data.walk_forward_auroc <= 1 &&
+        data.walk_forward_brier is number && data.walk_forward_brier >= 0 && data.walk_forward_brier <= 1 &&
+        data.brier_skill_score is number &&
+        (!('updated_at' in data) || isValidTimestampOrString(data.updated_at));
+    }
+
     // ===============================================================
     // Collection Rules
     // ===============================================================
@@ -232,6 +602,48 @@ service cloud.firestore {
         allow list: if isValidMali13Lang(lang);
         allow create, update, delete: if false;
       }
+    }
+
+    // Public read-only livestream access for Volume II ("Mali Conflict OSINT
+    // Observatory & Mathematical Proof Workbench") collections.
+    // `list` uses `true` on each collection so Firestore static query evaluation
+    // permits `collection(db, "vol2_*")` / `runQuery` cleanly without rejecting
+    // `.matches()` on the collection's own wildcard.
+    // All client writes are unconditionally denied.
+
+    match /vol2_meta/{docId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    match /vol2_incidents/{incidentId} {
+      allow get: if incidentId.matches('^[a-zA-Z0-9_-]{4,80}$');
+      allow list: if true;
+      allow create, update, delete: if false;
+    }
+
+    match /vol2_clusters/{clusterId} {
+      allow get: if clusterId.matches('^[a-zA-Z0-9_-]{2,80}$');
+      allow list: if true;
+      allow create, update, delete: if false;
+    }
+
+    match /vol2_hypotheses/{hypId} {
+      allow get: if hypId.matches('^[a-zA-Z0-9_-]{2,80}$');
+      allow list: if true;
+      allow create, update, delete: if false;
+    }
+
+    match /vol2_proofs/{cercleId} {
+      allow get: if cercleId.matches('^[a-z0-9_-]{2,64}$');
+      allow list: if true;
+      allow create, update, delete: if false;
+    }
+
+    match /vol2_predictions/{cercleId} {
+      allow get: if cercleId.matches('^[a-z0-9_-]{2,64}$');
+      allow list: if true;
+      allow create, update, delete: if false;
     }
 
     // Explicit default-deny rule for every other path.

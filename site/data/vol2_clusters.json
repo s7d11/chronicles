@@ -1,0 +1,1550 @@
+[
+  {
+    "cluster_id": "cluster_menaka",
+    "label": "Ménaka Corridor",
+    "admin1": "Ménaka",
+    "dominant_cercle_id": "menaka",
+    "centroid_lat": 15.24446,
+    "centroid_lon": -2.69262,
+    "radius_km": 795.9,
+    "event_count": 959,
+    "fatalities_total": 6876,
+    "date_first": "2021-11-02",
+    "date_last": "2024-12-31",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 591,
+      "FAMa / Allied Security Forces": 178,
+      "ISGS / Islamic State Sahel": 171,
+      "Local Militias / Self-Defense": 18,
+      "CSP-PSD / Azawad Groups": 1
+    },
+    "tactic_breakdown": {
+      "other": 505,
+      "raid_assault": 397,
+      "indirect_fire": 32,
+      "airstrike_clash": 13,
+      "ambush": 7,
+      "ied_mine": 3,
+      "kidnapping_intimidation": 2
+    },
+    "dry_season_share": 0.609,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_f7b37b78161f21",
+        "date_start": "2024-12-31",
+        "cercle_id": "douentza",
+        "locality": "Douentza town",
+        "lat": 15.0014,
+        "lon": -2.9498,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_12f5348db24628",
+        "date_start": "2024-12-28",
+        "cercle_id": "macina",
+        "locality": "Saye town",
+        "lat": 13.829,
+        "lon": -4.9928,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 22,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_c010015a1420a0",
+        "date_start": "2024-12-28",
+        "cercle_id": "abeibara",
+        "locality": "Boughessa commune",
+        "lat": 20.0172,
+        "lon": 2.2081,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_e7d7fcdc962cee",
+        "date_start": "2024-12-27",
+        "cercle_id": "douentza",
+        "locality": "Dounkoye village",
+        "lat": 15.0538,
+        "lon": -3.6987,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_d0b701a5041177",
+        "date_start": "2024-12-26",
+        "cercle_id": "bandiagara",
+        "locality": "Ouro-Féro village",
+        "lat": 14.5724,
+        "lon": -3.8354,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_d65fec7afd5425",
+        "date_start": "2024-12-26",
+        "cercle_id": "douentza",
+        "locality": "Serma town",
+        "lat": 14.8597,
+        "lon": -2.2642,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_742e96b632c708",
+        "date_start": "2024-12-25",
+        "cercle_id": "niafunke",
+        "locality": "Léré commune",
+        "lat": 15.9322,
+        "lon": -3.9906,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_3f70add6c4e29c",
+        "date_start": "2024-12-24",
+        "cercle_id": "niafunke",
+        "locality": "Lere town",
+        "lat": 15.9322,
+        "lon": -3.9906,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "indirect_fire",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_807aff21e232c5",
+        "date_start": "2024-12-24",
+        "cercle_id": "bandiagara",
+        "locality": "Makou village",
+        "lat": 14.3432,
+        "lon": -3.9322,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_8b101ca6135bba",
+        "date_start": "2024-12-22",
+        "cercle_id": "niafunke",
+        "locality": "area between Goundam and Niafunke",
+        "lat": 15.9322,
+        "lon": -3.9906,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_adccc12652126f",
+        "date_start": "2024-12-21",
+        "cercle_id": "tombouctou",
+        "locality": "Tombouctou region",
+        "lat": 16.7735,
+        "lon": -3.0074,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_c4fbe35c002c84",
+        "date_start": "2024-12-21",
+        "cercle_id": "goundam",
+        "locality": "Gargando village",
+        "lat": 16.4682,
+        "lon": -4.1686,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "indirect_fire",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_47d681620bbb80",
+        "date_start": "2024-12-20",
+        "cercle_id": "bandiagara",
+        "locality": "Banguel Toupé village",
+        "lat": 14.6572,
+        "lon": -3.6553,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_65413f126206b4",
+        "date_start": "2024-12-20",
+        "cercle_id": "bandiagara",
+        "locality": "Kendié commune",
+        "lat": 14.3501,
+        "lon": -3.6104,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 4,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_8f01975a691967",
+        "date_start": "2024-12-20",
+        "cercle_id": "bankass",
+        "locality": "Sonfounou-Dogon village",
+        "lat": 13.8273,
+        "lon": -3.771,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_d0bdc33c9e546c",
+        "date_start": "2024-12-20",
+        "cercle_id": "mopti",
+        "locality": "Mopti region",
+        "lat": 14.4843,
+        "lon": -4.183,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_f81ec14683c4ad",
+        "date_start": "2024-12-20",
+        "cercle_id": "bandiagara",
+        "locality": "Lowol Gueou commune",
+        "lat": 14.8411,
+        "lon": -3.7465,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 15,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_4940dfb016eec9",
+        "date_start": "2024-12-19",
+        "cercle_id": "ansongo",
+        "locality": "Tessit village",
+        "lat": 15.6597,
+        "lon": 0.5022,
+        "actor_primary": "ISGS / Islamic State Sahel",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_757ba52f19dbd1",
+        "date_start": "2024-12-19",
+        "cercle_id": "niafunke",
+        "locality": "Lere town",
+        "lat": 15.9322,
+        "lon": -3.9906,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_774e19a702fe9a",
+        "date_start": "2024-12-19",
+        "cercle_id": "goundam",
+        "locality": "Acharane village",
+        "lat": 16.6314,
+        "lon": -3.3253,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "indirect_fire",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_02d7f0705391b6",
+        "date_start": "2024-12-16",
+        "cercle_id": "goundam",
+        "locality": "Razelma village",
+        "lat": 16.5924,
+        "lon": -4.4596,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_b4adbd53ea335f",
+        "date_start": "2024-12-16",
+        "cercle_id": "ansongo",
+        "locality": "Tessit village",
+        "lat": 15.6597,
+        "lon": 0.5022,
+        "actor_primary": "ISGS / Islamic State Sahel",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_4358a064992e93",
+        "date_start": "2024-12-15",
+        "cercle_id": "bankass",
+        "locality": "Ségué village",
+        "lat": 13.8441,
+        "lon": -3.752,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 7,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_6afbe1424fa6f9",
+        "date_start": "2024-12-15",
+        "cercle_id": "goundam",
+        "locality": "Arâtene well",
+        "lat": 16.3531,
+        "lon": -4.5905,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_78c264afdaeb4c",
+        "date_start": "2024-12-15",
+        "cercle_id": "niono",
+        "locality": "Diabaly town",
+        "lat": 14.2526,
+        "lon": -5.993,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_tessalit",
+    "label": "Tessalit Corridor",
+    "admin1": "Kidal",
+    "dominant_cercle_id": "tessalit",
+    "centroid_lat": 19.94498,
+    "centroid_lon": 0.79444,
+    "radius_km": 157.8,
+    "event_count": 14,
+    "fatalities_total": 33,
+    "date_first": "2023-10-24",
+    "date_last": "2024-12-10",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 7,
+      "FAMa / Allied Security Forces": 7
+    },
+    "tactic_breakdown": {
+      "other": 7,
+      "raid_assault": 4,
+      "indirect_fire": 3
+    },
+    "dry_season_share": 0.357,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_8cedf9d26d0e92",
+        "date_start": "2024-12-10",
+        "cercle_id": "tessalit",
+        "locality": "Eleoudji wadi",
+        "lat": 19.3936,
+        "lon": 0.5919,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "indirect_fire",
+        "fatalities_best": 3,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_51916c9d8fd252",
+        "date_start": "2024-11-14",
+        "cercle_id": "tessalit",
+        "locality": "Aguelhok commune",
+        "lat": 20.1972,
+        "lon": 1.0128,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "indirect_fire",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_9fc239271aa8b8",
+        "date_start": "2024-10-30",
+        "cercle_id": "tessalit",
+        "locality": "Tessalit town",
+        "lat": 20.1972,
+        "lon": 1.0128,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_d6dce6131f631e",
+        "date_start": "2024-10-22",
+        "cercle_id": "tessalit",
+        "locality": "Aguelhok commune",
+        "lat": 20.1972,
+        "lon": 1.0128,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "indirect_fire",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_de28b2a669227e",
+        "date_start": "2024-10-16",
+        "cercle_id": "tessalit",
+        "locality": "Tessalit cercle",
+        "lat": 20.1972,
+        "lon": 1.0128,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_7a11c5c6a2645d",
+        "date_start": "2024-08-27",
+        "cercle_id": "tessalit",
+        "locality": "Aguelhok village",
+        "lat": 20.1972,
+        "lon": 1.0128,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_557ec3cade861d",
+        "date_start": "2024-08-26",
+        "cercle_id": "tessalit",
+        "locality": "Kal Relle Tadjmart village",
+        "lat": 19.3309,
+        "lon": 0.6995,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 7,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_7f2e2fb47f71df",
+        "date_start": "2024-07-23",
+        "cercle_id": "tessalit",
+        "locality": "Eleoudji wadi",
+        "lat": 19.3936,
+        "lon": 0.5919,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 4,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_1d52a424789759",
+        "date_start": "2024-06-20",
+        "cercle_id": "tessalit",
+        "locality": "Tessalit town",
+        "lat": 20.1972,
+        "lon": 1.0128,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 13,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_bc888d59e42e38",
+        "date_start": "2024-06-02",
+        "cercle_id": "tessalit",
+        "locality": "Aguelhok commune",
+        "lat": 20.1972,
+        "lon": 1.0128,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_1dd1618a9f500d",
+        "date_start": "2024-05-07",
+        "cercle_id": "tessalit",
+        "locality": "Saboghak well",
+        "lat": 19.9269,
+        "lon": 0.8654,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_a3f3be5809b93d",
+        "date_start": "2024-02-08",
+        "cercle_id": "tessalit",
+        "locality": "Timtaghene commune",
+        "lat": 19.6521,
+        "lon": -0.6809,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_d5615edf9ced81",
+        "date_start": "2024-01-19",
+        "cercle_id": "tessalit",
+        "locality": "Abanko well",
+        "lat": 19.955,
+        "lon": 0.952,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 3,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_95c2865c4e5370",
+        "date_start": "2023-10-24",
+        "cercle_id": "tessalit",
+        "locality": "Aguelhok village",
+        "lat": 20.1972,
+        "lon": 1.0128,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_bourem",
+    "label": "Bourem Corridor",
+    "admin1": "Gao",
+    "dominant_cercle_id": "bourem",
+    "centroid_lat": 17.17717,
+    "centroid_lon": -0.1865,
+    "radius_km": 74.5,
+    "event_count": 13,
+    "fatalities_total": 161,
+    "date_first": "2023-09-07",
+    "date_last": "2024-03-14",
+    "dominant_actors": {
+      "FAMa / Allied Security Forces": 9,
+      "JNIM / Katiba Coalition": 4
+    },
+    "tactic_breakdown": {
+      "other": 7,
+      "raid_assault": 6
+    },
+    "dry_season_share": 0.308,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_eba941e3822a63",
+        "date_start": "2024-03-14",
+        "cercle_id": "bourem",
+        "locality": "Tabankort village",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_ac1244631b5c0a",
+        "date_start": "2024-03-01",
+        "cercle_id": "bourem",
+        "locality": "Bamba town",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 10,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_f7e8e18e750fbe",
+        "date_start": "2024-02-21",
+        "cercle_id": "bourem",
+        "locality": "Bourem cercle",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_2ffd9ef6a7d1bb",
+        "date_start": "2024-01-05",
+        "cercle_id": "bourem",
+        "locality": "Almoustrat village",
+        "lat": 17.3585,
+        "lon": 0.1501,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 3,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_2cbb801abf76b5",
+        "date_start": "2023-10-10",
+        "cercle_id": "bourem",
+        "locality": "Tarkint village",
+        "lat": 17.4789,
+        "lon": 0.1148,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_58445c2b982e41",
+        "date_start": "2023-10-05",
+        "cercle_id": "bourem",
+        "locality": "Ersan village",
+        "lat": 17.7927,
+        "lon": 0.0108,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 17,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_38a0ca13ea7dba",
+        "date_start": "2023-10-04",
+        "cercle_id": "bourem",
+        "locality": "Tabankort village",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_9cdbe9a91c4c47",
+        "date_start": "2023-10-04",
+        "cercle_id": "bourem",
+        "locality": "Taoussa village",
+        "lat": 16.9398,
+        "lon": -0.5735,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_51b9d34fb7fa72",
+        "date_start": "2023-10-02",
+        "cercle_id": "bourem",
+        "locality": "Tabrichate village",
+        "lat": 17.7325,
+        "lon": 0.2061,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_671636f0446663",
+        "date_start": "2023-10-01",
+        "cercle_id": "bourem",
+        "locality": "Bamba town",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "other",
+        "fatalities_best": 27,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_8a5aed5948e948",
+        "date_start": "2023-09-13",
+        "cercle_id": "bourem",
+        "locality": "Almoustrat village",
+        "lat": 17.3585,
+        "lon": 0.1501,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "other",
+        "fatalities_best": 3,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_9f12379a18bb04",
+        "date_start": "2023-09-12",
+        "cercle_id": "bourem",
+        "locality": "Bourem town",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 28,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_8e29c2500eab41",
+        "date_start": "2023-09-07",
+        "cercle_id": "bourem",
+        "locality": "Bamba town",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 65,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_koulikoro",
+    "label": "Koulikoro Corridor",
+    "admin1": "Koulikoro",
+    "dominant_cercle_id": "koulikoro",
+    "centroid_lat": 12.32626,
+    "centroid_lon": -8.23043,
+    "radius_km": 94.1,
+    "event_count": 8,
+    "fatalities_total": 102,
+    "date_first": "2024-03-07",
+    "date_last": "2024-12-24",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 6,
+      "FAMa / Allied Security Forces": 2
+    },
+    "tactic_breakdown": {
+      "raid_assault": 6,
+      "other": 1,
+      "ambush": 1
+    },
+    "dry_season_share": 0.75,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_635d1ae005ec13",
+        "date_start": "2024-12-24",
+        "cercle_id": "bamako",
+        "locality": "between Bamako and Kita",
+        "lat": 12.6392,
+        "lon": -8.0029,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "ambush",
+        "fatalities_best": 8,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_6741c826b54953",
+        "date_start": "2024-09-17",
+        "cercle_id": "bamako",
+        "locality": "Bamako city",
+        "lat": 12.6392,
+        "lon": -8.0029,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 87,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_faa4ecaf097a35",
+        "date_start": "2024-09-13",
+        "cercle_id": "kati",
+        "locality": "Kationa village",
+        "lat": 12.7441,
+        "lon": -8.0726,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_6f9483028d1da3",
+        "date_start": "2024-05-23",
+        "cercle_id": "koulikoro",
+        "locality": "Koulikoro region",
+        "lat": 12.8627,
+        "lon": -7.5599,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_4fb25bb64562a8",
+        "date_start": "2024-04-29",
+        "cercle_id": "kati",
+        "locality": "Kansamana village",
+        "lat": 12.1408,
+        "lon": -8.2118,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_520d16cd6b78ae",
+        "date_start": "2024-03-16",
+        "cercle_id": "koulikoro",
+        "locality": "Kangaba cercle",
+        "lat": 11.9652,
+        "lon": -8.6013,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_71a67345c68050",
+        "date_start": "2024-03-16",
+        "cercle_id": "koulikoro",
+        "locality": "Nouga commune",
+        "lat": 11.6665,
+        "lon": -8.6153,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 4,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_8e57edc5181e2c",
+        "date_start": "2024-03-07",
+        "cercle_id": "koulikoro",
+        "locality": "Kourémalé town",
+        "lat": 11.9524,
+        "lon": -8.7767,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 0,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_sikasso",
+    "label": "Sikasso Corridor",
+    "admin1": "Sikasso",
+    "dominant_cercle_id": "sikasso",
+    "centroid_lat": 11.46334,
+    "centroid_lon": -5.72004,
+    "radius_km": 53.6,
+    "event_count": 5,
+    "fatalities_total": 19,
+    "date_first": "2021-12-30",
+    "date_last": "2022-04-15",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 5
+    },
+    "tactic_breakdown": {
+      "other": 4,
+      "raid_assault": 1
+    },
+    "dry_season_share": 1.0,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_4a59f51577d019",
+        "date_start": "2022-04-15",
+        "cercle_id": "sikasso",
+        "locality": "Bougala Hameau village",
+        "lat": 11.3448,
+        "lon": -5.7724,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 3,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_5548ac10fb8542",
+        "date_start": "2022-02-13",
+        "cercle_id": "sikasso",
+        "locality": "Kinian town",
+        "lat": 11.8502,
+        "lon": -6.0132,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 4,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_4f84018acac9fb",
+        "date_start": "2022-01-24",
+        "cercle_id": "sikasso",
+        "locality": "Sikasso cercle",
+        "lat": 11.3176,
+        "lon": -5.6665,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 9,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_5b2a7b2cc73ab1",
+        "date_start": "2022-01-17",
+        "cercle_id": "sikasso",
+        "locality": "Sikasso cercle",
+        "lat": 11.3176,
+        "lon": -5.6665,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_9ce4568cd6dd77",
+        "date_start": "2021-12-30",
+        "cercle_id": "sikasso",
+        "locality": "Dandéresso village",
+        "lat": 11.4865,
+        "lon": -5.4816,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_mopti",
+    "label": "Mopti Corridor",
+    "admin1": "Mopti",
+    "dominant_cercle_id": "mopti",
+    "centroid_lat": 14.4843,
+    "centroid_lon": -4.183,
+    "radius_km": 5.0,
+    "event_count": 4,
+    "fatalities_total": 10,
+    "date_first": "2026-11-05",
+    "date_last": "2026-11-23",
+    "dominant_actors": {
+      "Unattributed Armed Group": 3,
+      "FAMa / Allied Security Forces": 1
+    },
+    "tactic_breakdown": {
+      "blockade_siege": 1,
+      "other": 1,
+      "ied_mine": 1,
+      "raid_assault": 1
+    },
+    "dry_season_share": 1.0,
+    "corroborated_share": 0.5,
+    "sample_events": [
+      {
+        "incident_id": "inc_e50c098ad9734b",
+        "date_start": "2026-11-23",
+        "cercle_id": "mopti",
+        "locality": "MSF Mali attacks: MSF strongly condemns deadly attacks against civilians and a health facility",
+        "lat": 14.4843,
+        "lon": -4.183,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 10,
+        "source_count": 3
+      },
+      {
+        "incident_id": "inc_c0132974798795",
+        "date_start": "2026-11-19",
+        "cercle_id": "mopti",
+        "locality": "Mali: HDP Nexus Programming in the Sahel: Partnering for Social Cohesion in a Changing Geopolitical and Aid Landscape",
+        "lat": 14.4843,
+        "lon": -4.183,
+        "actor_primary": "Unattributed Armed Group",
+        "tactic": "ied_mine",
+        "fatalities_best": 0,
+        "source_count": 2
+      },
+      {
+        "incident_id": "inc_e88fea525a32d3",
+        "date_start": "2026-11-12",
+        "cercle_id": "mopti",
+        "locality": "UNFPA Situation Report: Crisis in Mali - September 2026",
+        "lat": 14.4843,
+        "lon": -4.183,
+        "actor_primary": "Unattributed Armed Group",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_ebfb0572e5bf9b",
+        "date_start": "2026-11-05",
+        "cercle_id": "mopti",
+        "locality": "UNICEF Mali Humanitarian Situation Report No. 3, 30 September 2026",
+        "lat": 14.4843,
+        "lon": -4.183,
+        "actor_primary": "Unattributed Armed Group",
+        "tactic": "blockade_siege",
+        "fatalities_best": 0,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_mopti_2",
+    "label": "Mopti Wave 2",
+    "admin1": "Mopti",
+    "dominant_cercle_id": "mopti",
+    "centroid_lat": 14.4843,
+    "centroid_lon": -4.183,
+    "radius_km": 5.0,
+    "event_count": 4,
+    "fatalities_total": 0,
+    "date_first": "2026-05-01",
+    "date_last": "2026-07-04",
+    "dominant_actors": {
+      "Unattributed Armed Group": 4
+    },
+    "tactic_breakdown": {
+      "other": 4
+    },
+    "dry_season_share": 0.75,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_3b4c04c4d2e07e",
+        "date_start": "2026-07-04",
+        "cercle_id": "mopti",
+        "locality": "Attaques au Mali : l'Union africaine exprime sa solidarité au Mali - BBC",
+        "lat": 14.4843,
+        "lon": -4.183,
+        "actor_primary": "Unattributed Armed Group",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_715c07b9bdadec",
+        "date_start": "2026-05-12",
+        "cercle_id": "mopti",
+        "locality": "Mali : Situation humanitaire suite aux attaques du 25 avril 2026 - OCHA",
+        "lat": 14.4843,
+        "lon": -4.183,
+        "actor_primary": "Unattributed Armed Group",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_38b40535cb30b7",
+        "date_start": "2026-05-05",
+        "cercle_id": "mopti",
+        "locality": "Mali : dégradation des droits humains après les attaques des djihadistes et indépendantistes - UN News",
+        "lat": 14.4843,
+        "lon": -4.183,
+        "actor_primary": "Unattributed Armed Group",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_30b1a6f162e0b8",
+        "date_start": "2026-05-01",
+        "cercle_id": "mopti",
+        "locality": "Attaques au Mali : l’UNICEF appelle à protéger les enfants, les écoles et les centres de santé - UNICEF",
+        "lat": 14.4843,
+        "lon": -4.183,
+        "actor_primary": "Unattributed Armed Group",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_koutiala",
+    "label": "Koutiala Corridor",
+    "admin1": "Sikasso",
+    "dominant_cercle_id": "koutiala",
+    "centroid_lat": 12.31012,
+    "centroid_lon": -5.34205,
+    "radius_km": 44.8,
+    "event_count": 4,
+    "fatalities_total": 15,
+    "date_first": "2022-01-17",
+    "date_last": "2022-08-07",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 4
+    },
+    "tactic_breakdown": {
+      "other": 2,
+      "raid_assault": 2
+    },
+    "dry_season_share": 0.5,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_ee1cd5a3697ce1",
+        "date_start": "2022-08-07",
+        "cercle_id": "koutiala",
+        "locality": "Koutiala town",
+        "lat": 12.3917,
+        "lon": -5.4642,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 5,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_0afede38c2733d",
+        "date_start": "2022-06-11",
+        "cercle_id": "koutiala",
+        "locality": "NGountjina village",
+        "lat": 12.2969,
+        "lon": -5.4806,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "raid_assault",
+        "fatalities_best": 8,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_f5191f27910b2d",
+        "date_start": "2022-03-08",
+        "cercle_id": "koutiala",
+        "locality": "Tanio village",
+        "lat": 12.1602,
+        "lon": -4.9592,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_4e5fc654abd0ae",
+        "date_start": "2022-01-17",
+        "cercle_id": "koutiala",
+        "locality": "Koutiala cercle",
+        "lat": 12.3917,
+        "lon": -5.4642,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_gourma-rharous",
+    "label": "Gourma-Rharous Corridor",
+    "admin1": "Tombouctou",
+    "dominant_cercle_id": "gourma-rharous",
+    "centroid_lat": 16.20107,
+    "centroid_lon": -1.36,
+    "radius_km": 104.0,
+    "event_count": 4,
+    "fatalities_total": 14,
+    "date_first": "2021-12-03",
+    "date_last": "2022-06-02",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 4
+    },
+    "tactic_breakdown": {
+      "other": 2,
+      "kidnapping_intimidation": 1,
+      "ambush": 1
+    },
+    "dry_season_share": 0.75,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_44b72ebf9aed5f",
+        "date_start": "2022-06-02",
+        "cercle_id": "gourma-rharous",
+        "locality": "Doro village",
+        "lat": 16.1399,
+        "lon": -0.8492,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "ambush",
+        "fatalities_best": 9,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_5eeba7207aa47a",
+        "date_start": "2022-04-22",
+        "cercle_id": "gourma-rharous",
+        "locality": "N'Daki village",
+        "lat": 15.3761,
+        "lon": -0.9017,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "kidnapping_intimidation",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_bfd8fda14d8af9",
+        "date_start": "2022-03-27",
+        "cercle_id": "gourma-rharous",
+        "locality": "Gossi commune",
+        "lat": 16.8794,
+        "lon": -1.9228,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_fa533f912a026c",
+        "date_start": "2021-12-03",
+        "cercle_id": "gourma-rharous",
+        "locality": "In-Alata village",
+        "lat": 16.4089,
+        "lon": -1.7663,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 4,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_tombouctou",
+    "label": "Tombouctou Corridor",
+    "admin1": "Tombouctou",
+    "dominant_cercle_id": "tombouctou",
+    "centroid_lat": 17.48393,
+    "centroid_lon": -3.18043,
+    "radius_km": 162.2,
+    "event_count": 3,
+    "fatalities_total": 9,
+    "date_first": "2022-02-19",
+    "date_last": "2022-06-08",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 3
+    },
+    "tactic_breakdown": {
+      "other": 3
+    },
+    "dry_season_share": 0.667,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_fc913ca663b65c",
+        "date_start": "2022-06-08",
+        "cercle_id": "tombouctou",
+        "locality": "Tombouctou town",
+        "lat": 16.7735,
+        "lon": -3.0074,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_e0e102c5c6a949",
+        "date_start": "2022-02-25",
+        "cercle_id": "tombouctou",
+        "locality": "Araouane village",
+        "lat": 18.9048,
+        "lon": -3.5265,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_88c38725723f11",
+        "date_start": "2022-02-19",
+        "cercle_id": "tombouctou",
+        "locality": "Tombouctou cercle",
+        "lat": 16.7735,
+        "lon": -3.0074,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 5,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_bourem_2",
+    "label": "Bourem Wave 2",
+    "admin1": "Gao",
+    "dominant_cercle_id": "bourem",
+    "centroid_lat": 17.3274,
+    "centroid_lon": 0.2733,
+    "radius_km": 78.9,
+    "event_count": 2,
+    "fatalities_total": 4,
+    "date_first": "2024-11-02",
+    "date_last": "2024-12-24",
+    "dominant_actors": {
+      "FAMa / Allied Security Forces": 2
+    },
+    "tactic_breakdown": {
+      "indirect_fire": 1,
+      "raid_assault": 1
+    },
+    "dry_season_share": 1.0,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_d3dd9d6a5ec0a4",
+        "date_start": "2024-12-24",
+        "cercle_id": "bourem",
+        "locality": "Tabankort village",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "raid_assault",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_cb007dd771c7ed",
+        "date_start": "2024-11-02",
+        "cercle_id": "bourem",
+        "locality": "Teknewene village",
+        "lat": 17.7059,
+        "lon": 0.9013,
+        "actor_primary": "FAMa / Allied Security Forces",
+        "tactic": "indirect_fire",
+        "fatalities_best": 4,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_kayes",
+    "label": "Kayes Corridor",
+    "admin1": "Kayes",
+    "dominant_cercle_id": "kayes",
+    "centroid_lat": 15.139,
+    "centroid_lon": -11.632,
+    "radius_km": 31.4,
+    "event_count": 2,
+    "fatalities_total": 3,
+    "date_first": "2023-05-15",
+    "date_last": "2023-05-21",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 2
+    },
+    "tactic_breakdown": {
+      "other": 2
+    },
+    "dry_season_share": 1.0,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_e419d8d583dcac",
+        "date_start": "2023-05-21",
+        "cercle_id": "kayes",
+        "locality": "Bafarara town",
+        "lat": 15.3764,
+        "lon": -11.4734,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_ffad3d291799d7",
+        "date_start": "2023-05-15",
+        "cercle_id": "kayes",
+        "locality": "Melgué village",
+        "lat": 14.9016,
+        "lon": -11.7906,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_sikasso_2",
+    "label": "Sikasso Wave 2",
+    "admin1": "Sikasso",
+    "dominant_cercle_id": "sikasso",
+    "centroid_lat": 11.7666,
+    "centroid_lon": -5.7136,
+    "radius_km": 45.4,
+    "event_count": 2,
+    "fatalities_total": 2,
+    "date_first": "2022-11-19",
+    "date_last": "2022-11-28",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 2
+    },
+    "tactic_breakdown": {
+      "other": 2
+    },
+    "dry_season_share": 1.0,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_76e61c701a28b5",
+        "date_start": "2022-11-28",
+        "cercle_id": "sikasso",
+        "locality": "Dandérosso commune",
+        "lat": 11.5309,
+        "lon": -5.3735,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_aa0c95f444f407",
+        "date_start": "2022-11-19",
+        "cercle_id": "sikasso",
+        "locality": "Kobala village",
+        "lat": 12.0023,
+        "lon": -6.0537,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_bourem_3",
+    "label": "Bourem Wave 3",
+    "admin1": "Gao",
+    "dominant_cercle_id": "bourem",
+    "centroid_lat": 16.9489,
+    "centroid_lon": -0.3547,
+    "radius_km": 5.0,
+    "event_count": 2,
+    "fatalities_total": 3,
+    "date_first": "2022-07-05",
+    "date_last": "2022-08-21",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 2
+    },
+    "tactic_breakdown": {
+      "other": 2
+    },
+    "dry_season_share": 0.0,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_680a68ccc5d189",
+        "date_start": "2022-08-21",
+        "cercle_id": "bourem",
+        "locality": "Bourem cercle",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_bebfd2a1265458",
+        "date_start": "2022-07-05",
+        "cercle_id": "bourem",
+        "locality": "Bourem cercle",
+        "lat": 16.9489,
+        "lon": -0.3547,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 2,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_kidal",
+    "label": "Kidal Corridor",
+    "admin1": "Kidal",
+    "dominant_cercle_id": "kidal",
+    "centroid_lat": 18.4411,
+    "centroid_lon": 1.4078,
+    "radius_km": 5.0,
+    "event_count": 2,
+    "fatalities_total": 2,
+    "date_first": "2022-06-01",
+    "date_last": "2022-06-19",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 2
+    },
+    "tactic_breakdown": {
+      "ambush": 1,
+      "other": 1
+    },
+    "dry_season_share": 0.0,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_88d0ba57f3220f",
+        "date_start": "2022-06-19",
+        "cercle_id": "kidal",
+        "locality": "Kidal town",
+        "lat": 18.4411,
+        "lon": 1.4078,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 1,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_c526d001efa66e",
+        "date_start": "2022-06-01",
+        "cercle_id": "kidal",
+        "locality": "Kidal town",
+        "lat": 18.4411,
+        "lon": 1.4078,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "ambush",
+        "fatalities_best": 1,
+        "source_count": 1
+      }
+    ]
+  },
+  {
+    "cluster_id": "cluster_nioro",
+    "label": "Nioro du Sahel Corridor",
+    "admin1": "Kayes",
+    "dominant_cercle_id": "nioro",
+    "centroid_lat": 14.82815,
+    "centroid_lon": -8.9323,
+    "radius_km": 83.6,
+    "event_count": 2,
+    "fatalities_total": 0,
+    "date_first": "2022-03-22",
+    "date_last": "2022-04-04",
+    "dominant_actors": {
+      "JNIM / Katiba Coalition": 2
+    },
+    "tactic_breakdown": {
+      "other": 2
+    },
+    "dry_season_share": 1.0,
+    "corroborated_share": 0.0,
+    "sample_events": [
+      {
+        "incident_id": "inc_ae3fd196c3fb54",
+        "date_start": "2022-04-04",
+        "cercle_id": "nioro",
+        "locality": "Diéma - Sebabougou road",
+        "lat": 15.2286,
+        "lon": -9.5897,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      },
+      {
+        "incident_id": "inc_d45500306c9e2f",
+        "date_start": "2022-03-22",
+        "cercle_id": "nioro",
+        "locality": "Gomitra village",
+        "lat": 14.4277,
+        "lon": -8.2749,
+        "actor_primary": "JNIM / Katiba Coalition",
+        "tactic": "other",
+        "fatalities_best": 0,
+        "source_count": 1
+      }
+    ]
+  }
+]

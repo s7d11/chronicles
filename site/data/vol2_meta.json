@@ -1,0 +1,507 @@
+{
+  "sweep_id": "vol2_20261127_165938Z",
+  "updated_at": "2026-11-27T16:59:38Z",
+  "total_raw_records": 1230,
+  "total_verified_incidents": 1056,
+  "total_clusters": 16,
+  "total_hypotheses": 80,
+  "proven_or_supported_count": 11,
+  "walk_forward_folds": 16,
+  "global_auroc": 0.7583,
+  "global_pr_auc": 0.1462,
+  "global_brier": 0.01527,
+  "global_bss": -0.3415,
+  "source_counts": {
+    "ucdp_ged_hdx": 1200,
+    "reliefweb_api": 10,
+    "gdelt_doc2": 11,
+    "fama_dirpa_official": 0,
+    "public_x_osint": 9
+  },
+  "perspective_counts": {
+    "sahel_press": 3,
+    "public_x_post": 3,
+    "multilateral_un": 8,
+    "independent_event_db": 1044
+  },
+  "actor_counts": {
+    "JNIM / Katiba Coalition": 657,
+    "FAMa / Allied Security Forces": 200,
+    "ISGS / Islamic State Sahel": 171,
+    "Local Militias / Self-Defense": 18,
+    "Unattributed Armed Group": 7,
+    "armed_men": 1,
+    "Army": 1,
+    "CSP-PSD / Azawad Groups": 1
+  },
+  "tactic_counts": {
+    "other": 558,
+    "raid_assault": 427,
+    "indirect_fire": 36,
+    "ambush": 13,
+    "airstrike_clash": 13,
+    "ied_mine": 4,
+    "kidnapping_intimidation": 3,
+    "blockade_siege": 2
+  },
+  "corridor_edges": [
+    {
+      "from_cercle": "menaka",
+      "to_cercle": "ansongo",
+      "from_lat": 16.0825,
+      "from_lon": 2.0632,
+      "to_lat": 16.3293,
+      "to_lon": 1.2013,
+      "weight": 25,
+      "top_actor": "ISGS / Islamic State Sahel",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "ansongo",
+      "to_cercle": "menaka",
+      "from_lat": 15.1493,
+      "from_lon": 0.3916,
+      "to_lat": 15.8686,
+      "to_lon": 1.5276,
+      "weight": 24,
+      "top_actor": "ISGS / Islamic State Sahel",
+      "median_gap_days": 3
+    },
+    {
+      "from_cercle": "menaka",
+      "to_cercle": "gao",
+      "from_lat": 15.9182,
+      "from_lon": 2.4022,
+      "to_lat": 17.0527,
+      "to_lon": 0.8992,
+      "weight": 12,
+      "top_actor": "ISGS / Islamic State Sahel",
+      "median_gap_days": 6
+    },
+    {
+      "from_cercle": "douentza",
+      "to_cercle": "bandiagara",
+      "from_lat": 14.6264,
+      "from_lon": -2.1611,
+      "to_lat": 14.1472,
+      "to_lon": -3.7762,
+      "weight": 10,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "gao",
+      "to_cercle": "menaka",
+      "from_lat": 17.0527,
+      "from_lon": 0.8992,
+      "to_lat": 15.9182,
+      "to_lon": 2.4022,
+      "weight": 9,
+      "top_actor": "ISGS / Islamic State Sahel",
+      "median_gap_days": 3
+    },
+    {
+      "from_cercle": "bandiagara",
+      "to_cercle": "mopti",
+      "from_lat": 14.3651,
+      "from_lon": -3.6854,
+      "to_lat": 14.5353,
+      "to_lon": -3.9619,
+      "weight": 8,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 2
+    },
+    {
+      "from_cercle": "bandiagara",
+      "to_cercle": "niono",
+      "from_lat": 14.1358,
+      "from_lon": -3.8452,
+      "to_lat": 14.8117,
+      "to_lon": -5.9584,
+      "weight": 8,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 2
+    },
+    {
+      "from_cercle": "gao",
+      "to_cercle": "ansongo",
+      "from_lat": 16.3061,
+      "from_lon": 0.7175,
+      "to_lat": 15.6597,
+      "to_lon": 0.5022,
+      "weight": 8,
+      "top_actor": "ISGS / Islamic State Sahel",
+      "median_gap_days": 0
+    },
+    {
+      "from_cercle": "ansongo",
+      "to_cercle": "gao",
+      "from_lat": 16.3293,
+      "from_lon": 1.2013,
+      "to_lat": 16.3428,
+      "to_lon": 0.2784,
+      "weight": 8,
+      "top_actor": "ISGS / Islamic State Sahel",
+      "median_gap_days": 6
+    },
+    {
+      "from_cercle": "mopti",
+      "to_cercle": "bandiagara",
+      "from_lat": 14.5353,
+      "from_lon": -3.9619,
+      "to_lat": 14.3501,
+      "to_lon": -3.6104,
+      "weight": 7,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "niono",
+      "to_cercle": "bankass",
+      "from_lat": 14.2526,
+      "from_lon": -5.993,
+      "to_lat": 13.4978,
+      "to_lon": -3.3493,
+      "weight": 7,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "bankass",
+      "to_cercle": "bandiagara",
+      "from_lat": 13.6144,
+      "from_lon": -3.8994,
+      "to_lat": 14.1358,
+      "to_lon": -3.8452,
+      "weight": 7,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "niono",
+      "to_cercle": "douentza",
+      "from_lat": 14.8117,
+      "from_lon": -5.9584,
+      "to_lat": 15.0238,
+      "to_lon": -2.8959,
+      "weight": 7,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "douentza",
+      "to_cercle": "mopti",
+      "from_lat": 15.0014,
+      "from_lon": -2.9498,
+      "to_lat": 14.4843,
+      "to_lon": -4.183,
+      "weight": 7,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "niono",
+      "to_cercle": "nara",
+      "from_lat": 13.9487,
+      "from_lon": -6.0258,
+      "to_lat": 15.1686,
+      "to_lon": -7.2878,
+      "weight": 6,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 3
+    },
+    {
+      "from_cercle": "mopti",
+      "to_cercle": "djenne",
+      "from_lat": 14.4843,
+      "from_lon": -4.183,
+      "to_lat": 13.9922,
+      "to_lon": -4.3325,
+      "weight": 6,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 0
+    },
+    {
+      "from_cercle": "djenne",
+      "to_cercle": "douentza",
+      "from_lat": 13.973,
+      "from_lon": -4.3111,
+      "to_lat": 15.0014,
+      "to_lon": -2.9498,
+      "weight": 6,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 2
+    },
+    {
+      "from_cercle": "niafunke",
+      "to_cercle": "niono",
+      "from_lat": 15.7267,
+      "from_lon": -4.642,
+      "to_lat": 14.2526,
+      "to_lon": -5.993,
+      "weight": 6,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "djenne",
+      "to_cercle": "niono",
+      "from_lat": 13.9061,
+      "from_lon": -4.5533,
+      "to_lat": 13.9487,
+      "to_lon": -6.0258,
+      "weight": 5,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 3
+    },
+    {
+      "from_cercle": "bandiagara",
+      "to_cercle": "bankass",
+      "from_lat": 14.3501,
+      "from_lon": -3.6104,
+      "to_lat": 13.7777,
+      "to_lon": -3.7723,
+      "weight": 5,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 2
+    },
+    {
+      "from_cercle": "bandiagara",
+      "to_cercle": "douentza",
+      "from_lat": 14.3501,
+      "from_lon": -3.6104,
+      "to_lat": 14.6264,
+      "to_lon": -2.1611,
+      "weight": 5,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "niono",
+      "to_cercle": "djenne",
+      "from_lat": 14.3934,
+      "from_lon": -5.9352,
+      "to_lat": 13.9267,
+      "to_lon": -4.4545,
+      "weight": 5,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 2
+    },
+    {
+      "from_cercle": "bankass",
+      "to_cercle": "mopti",
+      "from_lat": 13.6603,
+      "from_lon": -3.6732,
+      "to_lat": 14.4843,
+      "to_lon": -4.183,
+      "weight": 5,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "niono",
+      "to_cercle": "mopti",
+      "from_lat": 14.2526,
+      "from_lon": -5.993,
+      "to_lat": 15.365,
+      "to_lon": -3.7689,
+      "weight": 5,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 2
+    },
+    {
+      "from_cercle": "bandiagara",
+      "to_cercle": "koro",
+      "from_lat": 14.3501,
+      "from_lon": -3.6104,
+      "to_lat": 14.2333,
+      "to_lon": -2.9724,
+      "weight": 5,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "kidal",
+      "to_cercle": "bourem",
+      "from_lat": 18.3925,
+      "from_lon": 1.1244,
+      "to_lat": 17.3585,
+      "to_lon": 0.1501,
+      "weight": 5,
+      "top_actor": "FAMa / Allied Security Forces",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "niono",
+      "to_cercle": "bandiagara",
+      "from_lat": 14.2526,
+      "from_lon": -5.993,
+      "to_lat": 14.3501,
+      "to_lon": -3.6104,
+      "weight": 4,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "nara",
+      "to_cercle": "niono",
+      "from_lat": 15.1686,
+      "from_lon": -7.2878,
+      "to_lat": 14.2526,
+      "to_lon": -5.993,
+      "weight": 4,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "koro",
+      "to_cercle": "douentza",
+      "from_lat": 14.0642,
+      "from_lon": -3.0744,
+      "to_lat": 15.0014,
+      "to_lon": -2.9498,
+      "weight": 4,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 2
+    },
+    {
+      "from_cercle": "nara",
+      "to_cercle": "djenne",
+      "from_lat": 14.9882,
+      "from_lon": -7.454,
+      "to_lat": 13.9568,
+      "to_lon": -4.5237,
+      "weight": 4,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 3
+    },
+    {
+      "from_cercle": "gourma-rharous",
+      "to_cercle": "douentza",
+      "from_lat": 16.8794,
+      "from_lon": -1.9228,
+      "to_lat": 14.6264,
+      "to_lon": -2.1611,
+      "weight": 4,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "tombouctou",
+      "to_cercle": "bandiagara",
+      "from_lat": 16.7735,
+      "from_lon": -3.0074,
+      "to_lat": 14.5281,
+      "to_lon": -3.2712,
+      "weight": 4,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 1
+    },
+    {
+      "from_cercle": "niafunke",
+      "to_cercle": "nara",
+      "from_lat": 15.9322,
+      "from_lon": -3.9906,
+      "to_lat": 15.1686,
+      "to_lon": -7.2878,
+      "weight": 4,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 6
+    },
+    {
+      "from_cercle": "bandiagara",
+      "to_cercle": "tombouctou",
+      "from_lat": 14.5722,
+      "from_lon": -3.8047,
+      "to_lat": 16.7735,
+      "to_lon": -3.0074,
+      "weight": 4,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 2
+    },
+    {
+      "from_cercle": "macina",
+      "to_cercle": "douentza",
+      "from_lat": 13.8036,
+      "from_lon": -5.0126,
+      "to_lat": 15.0014,
+      "to_lon": -2.9498,
+      "weight": 4,
+      "top_actor": "JNIM / Katiba Coalition",
+      "median_gap_days": 3
+    }
+  ],
+  "active_agents": [
+    {
+      "agent_id": "a0-coordinator",
+      "name": "Bamako Watch Coordinator",
+      "provider": "nvidia",
+      "model": "mistralai/mistral-large-4-1t-a52b",
+      "role": "Cross-Source Coordinator & OSINT Arbiter"
+    },
+    {
+      "agent_id": "a1-ucdp-ingestor",
+      "name": "UCDP GED Ingestor",
+      "provider": "deterministic",
+      "model": "deterministic",
+      "role": "HDX UCDP Mali Disaggregated Event Ingestor"
+    },
+    {
+      "agent_id": "a2-acled-hdx",
+      "name": "ACLED HDX Reconciler",
+      "provider": "deterministic",
+      "model": "deterministic",
+      "role": "HDX Mali Conflict Aggregate Benchmark"
+    },
+    {
+      "agent_id": "a3-reliefweb-envoy",
+      "name": "ReliefWeb UN Analyst",
+      "provider": "openrouter_free",
+      "model": "baidu/ernie-5.5-flash-preview:free",
+      "role": "ReliefWeb v1 Report Extractor & Digest"
+    },
+    {
+      "agent_id": "a4-gdelt-wire",
+      "name": "GDELT Sahel Wire",
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3.5-lightning-30b-a3b",
+      "role": "GDELT 2.0 French/English Conflict Stream"
+    },
+    {
+      "agent_id": "a5-fama-dirpa",
+      "name": "FAMa DIRPA Sentinel",
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+      "role": "Official Malian Armed Forces Portal (fama.mil.ml)"
+    },
+    {
+      "agent_id": "a6-public-x-osint",
+      "name": "Sahel Public X Scout",
+      "provider": "openrouter_free",
+      "model": "recursive/flint-v1.0:free",
+      "role": "Sanctioned Public X / Press Cross-Reference"
+    },
+    {
+      "agent_id": "a7-georesolver",
+      "name": "Sahel Geo-Dedup Reasoner",
+      "provider": "nvidia",
+      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+      "role": "Malian Toponym Normalization & (±2d, 15km) Dedup"
+    },
+    {
+      "agent_id": "a8-math-theorist",
+      "name": "Cluster Hypothesis & Proof Analyst",
+      "provider": "nvidia",
+      "model": "stepfun-ai/step-5-preview",
+      "role": "Hawkes / NB / Markov / Beta Hypothesis Formulation"
+    },
+    {
+      "agent_id": "a9-adjudicator",
+      "name": "Gemini 3.1 Flash-Lite Critic",
+      "provider": "vertex",
+      "model": "gemini-3.1-flash-lite",
+      "role": "Batched Corroboration & Mathematical Audit Critic"
+    }
+  ],
+  "running": false
+}

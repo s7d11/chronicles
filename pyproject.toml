@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["bench*", "swarm_lab*"]
+include = ["bench*", "swarm_lab*", "proof_lab*", "village_lab*", "conflict_lab*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
