@@ -213,6 +213,16 @@ rules_version = '2';
 //   - brier_skill_score: number (required)
 //   - updated_at: timestamp or string (optional, <= 64 chars if string)
 //
+// Collection: vol2_exchanges
+// Document ID: {docId} matching ^[a-zA-Z0-9_-]{2,80}$
+// Fields (public autonomous agent mathematical debate transcript; zero PII):
+//   - exchange_id: string (required, matches {docId}, 2..80 chars)
+//   - sweep_id: string (optional, <= 128 chars)
+//   - updated_at: timestamp or string (optional, <= 64 chars if string)
+//   - topic: string (optional, <= 320 chars)
+//   - open_hyp_ids: list (optional, <= 24 items)
+//   - turns: list (optional, <= 24 items)
+//
 // Write Authority:
 //   - Cloud Run Jobs write via GCP ADC (roles/datastore.user) over the
 //     server REST API, which bypasses client Security Rules.
@@ -389,7 +399,7 @@ service cloud.firestore {
           'walk_forward_folds', 'global_auroc', 'global_pr_auc',
           'global_brier', 'global_bss', 'source_counts', 'perspective_counts',
           'actor_counts', 'tactic_counts', 'corridor_edges', 'active_agents',
-          'running'
+          'agent_exchanges', 'running'
         ]) &&
         data.sweep_id is string && data.sweep_id.size() > 0 && data.sweep_id.size() <= 128 &&
         isValidTimestampOrString(data.updated_at) &&
@@ -409,6 +419,7 @@ service cloud.firestore {
         (!('tactic_counts' in data) || (data.tactic_counts is map && data.tactic_counts.keys().size() <= 32)) &&
         (!('corridor_edges' in data) || isValidList(data.corridor_edges, 500)) &&
         (!('active_agents' in data) || isValidList(data.active_agents, 64)) &&
+        (!('agent_exchanges' in data) || isValidList(data.agent_exchanges, 24)) &&
         (!('running' in data) || data.running is bool);
     }
 
@@ -488,13 +499,18 @@ service cloud.firestore {
           'hyp_id', 'cluster_id', 'cercle_id', 'family', 'title',
           'symbolic_formula', 'null_hypothesis', 'alternative_hypothesis',
           'parameters', 'test_statistic_name', 'test_statistic_value',
-          'p_value', 'log_likelihood_ratio', 'verdict', 'alpha',
-          'n_observations', 'derivation_steps', 'analyst_narrative', 'updated_at'
+          'p_value', 'q_value', 'log_likelihood_ratio', 'verdict', 'alpha',
+          'n_observations', 'derivation_steps', 'kl_bins', 'origin',
+          'proposed_by', 'challenged_by', 'adjudicated_by',
+          'analyst_narrative', 'updated_at'
         ]) &&
         data.hyp_id == hypId &&
         data.cluster_id is string && data.cluster_id.size() >= 2 && data.cluster_id.size() <= 80 &&
         data.cercle_id is string && data.cercle_id.size() >= 2 && data.cercle_id.size() <= 64 &&
-        data.family in ['H_hawkes', 'H_dispersion', 'H_markov', 'H_seasonal', 'H_beta'] &&
+        data.family in [
+          'H_hawkes', 'H_dispersion', 'H_markov', 'H_seasonal', 'H_beta',
+          'H_kl_divergence', 'H_transfer_entropy', 'H_changepoint', 'H_pareto_tail', 'H_open'
+        ] &&
         data.title is string && data.title.size() > 0 && data.title.size() <= 256 &&
         data.symbolic_formula is string && data.symbolic_formula.size() > 0 && data.symbolic_formula.size() <= 1024 &&
         data.null_hypothesis is string && data.null_hypothesis.size() > 0 && data.null_hypothesis.size() <= 1024 &&
@@ -503,11 +519,17 @@ service cloud.firestore {
         data.test_statistic_name is string && data.test_statistic_name.size() > 0 && data.test_statistic_name.size() <= 120 &&
         data.test_statistic_value is number &&
         data.p_value is number && data.p_value >= 0 && data.p_value <= 1 &&
+        (!('q_value' in data) || data.q_value == null || (data.q_value is number && data.q_value >= 0 && data.q_value <= 1)) &&
         (!('log_likelihood_ratio' in data) || data.log_likelihood_ratio is number) &&
         data.verdict in ['PROVEN', 'SUPPORTED', 'INCONCLUSIVE', 'FALSIFIED'] &&
         (!('alpha' in data) || (data.alpha is number && data.alpha >= 0 && data.alpha <= 1)) &&
         (!('n_observations' in data) || (data.n_observations is int && data.n_observations >= 0)) &&
         (!('derivation_steps' in data) || isValidList(data.derivation_steps, 64)) &&
+        (!('kl_bins' in data) || isValidList(data.kl_bins, 24)) &&
+        (!('origin' in data) || data.origin in ['deterministic', 'agent_open']) &&
+        (!('proposed_by' in data) || (data.proposed_by is string && data.proposed_by.size() <= 120)) &&
+        (!('challenged_by' in data) || (data.challenged_by is string && data.challenged_by.size() <= 120)) &&
+        (!('adjudicated_by' in data) || (data.adjudicated_by is string && data.adjudicated_by.size() <= 120)) &&
         (!('analyst_narrative' in data) || (data.analyst_narrative is string && data.analyst_narrative.size() <= 4096)) &&
         (!('updated_at' in data) || isValidTimestampOrString(data.updated_at));
     }
@@ -525,7 +547,9 @@ service cloud.firestore {
           'beta_alpha0', 'beta_beta0', 'beta_active_weeks', 'beta_total_weeks',
           'beta_posterior_mean', 'beta_ci_low', 'beta_ci_high', 'dispersion_ratio',
           'dry_season_rate', 'rainy_season_rate', 'dominant_actor',
-          'markov_next_tactics', 'risk_7d_prob', 'risk_30d_prob',
+          'markov_next_tactics', 'kl_actor_nats', 'kl_actor_q_bh',
+          'kl_tactic_nats', 'kl_tactic_q_bh', 'te_inflow_bits', 'te_inflow_q_bh',
+          'changepoint_date', 'kl_bins', 'risk_7d_prob', 'risk_30d_prob',
           'expected_30d_count', 'walk_forward_auroc', 'walk_forward_brier',
           'brier_skill_score', 'updated_at'
         ]) &&
@@ -554,6 +578,14 @@ service cloud.firestore {
         (!('rainy_season_rate' in data) || data.rainy_season_rate is number) &&
         (!('dominant_actor' in data) || (data.dominant_actor is string && data.dominant_actor.size() <= 160)) &&
         (!('markov_next_tactics' in data) || (data.markov_next_tactics is map && data.markov_next_tactics.keys().size() <= 32)) &&
+        (!('kl_actor_nats' in data) || (data.kl_actor_nats is number && data.kl_actor_nats >= 0)) &&
+        (!('kl_actor_q_bh' in data) || (data.kl_actor_q_bh is number && data.kl_actor_q_bh >= 0 && data.kl_actor_q_bh <= 1)) &&
+        (!('kl_tactic_nats' in data) || (data.kl_tactic_nats is number && data.kl_tactic_nats >= 0)) &&
+        (!('kl_tactic_q_bh' in data) || (data.kl_tactic_q_bh is number && data.kl_tactic_q_bh >= 0 && data.kl_tactic_q_bh <= 1)) &&
+        (!('te_inflow_bits' in data) || (data.te_inflow_bits is number && data.te_inflow_bits >= 0)) &&
+        (!('te_inflow_q_bh' in data) || (data.te_inflow_q_bh is number && data.te_inflow_q_bh >= 0 && data.te_inflow_q_bh <= 1)) &&
+        (!('changepoint_date' in data) || (data.changepoint_date is string && data.changepoint_date.size() <= 32)) &&
+        (!('kl_bins' in data) || isValidList(data.kl_bins, 24)) &&
         (!('risk_7d_prob' in data) || (data.risk_7d_prob is number && data.risk_7d_prob >= 0 && data.risk_7d_prob <= 1)) &&
         (!('risk_30d_prob' in data) || (data.risk_30d_prob is number && data.risk_30d_prob >= 0 && data.risk_30d_prob <= 1)) &&
         (!('expected_30d_count' in data) || (data.expected_30d_count is number && data.expected_30d_count >= 0)) &&
@@ -594,6 +626,19 @@ service cloud.firestore {
         data.walk_forward_brier is number && data.walk_forward_brier >= 0 && data.walk_forward_brier <= 1 &&
         data.brier_skill_score is number &&
         (!('updated_at' in data) || isValidTimestampOrString(data.updated_at));
+    }
+
+    function isValidVol2Exchange(data, docId) {
+      return data.keys().hasAll(['exchange_id']) &&
+        data.keys().hasOnly([
+          'exchange_id', 'sweep_id', 'updated_at', 'topic', 'open_hyp_ids', 'turns'
+        ]) &&
+        data.exchange_id == docId &&
+        (!('sweep_id' in data) || (data.sweep_id is string && data.sweep_id.size() <= 128)) &&
+        (!('updated_at' in data) || isValidTimestampOrString(data.updated_at)) &&
+        (!('topic' in data) || (data.topic is string && data.topic.size() <= 320)) &&
+        (!('open_hyp_ids' in data) || isValidList(data.open_hyp_ids, 24)) &&
+        (!('turns' in data) || isValidList(data.turns, 24));
     }
 
     // ===============================================================
