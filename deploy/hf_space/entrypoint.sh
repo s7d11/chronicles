@@ -46,7 +46,7 @@ python3 -m proof_lab.cli publish --runs-dir "${ED3_RUNS_DIR}" --out-dir "${SITE_
 python3 -m village_lab.cli publish --runs-dir "${ED4_RUNS_DIR}" --out-dir "${SITE_DATA_DIR}"
 
 if [[ "${JOB_MODE:-}" == "ed4" ]]; then
-  echo "[entrypoint] Launching Edition 4 Unattended Cloud Run Job..."
+  echo "[entrypoint] Launching Edition 4 Unattended Cloud Run Job (task=${CLOUD_RUN_TASK_INDEX:-0}/${CLOUD_RUN_TASK_COUNT:-1}, langs=${ED4_JOB_LANGS:-all})..."
   exec python3 -m village_lab.cli run-job \
     --runs-dir "${ED4_RUNS_DIR}" \
     --out-dir "${SITE_DATA_DIR}" \

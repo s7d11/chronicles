@@ -142,6 +142,18 @@ async def call_adaption(
     del json_mode  # Adaption endpoints put JSON cleanly in content; response_format can empty content on some models
     last_err: Optional[str] = None
     timeout = httpx.Timeout(connect=20.0, read=120.0, write=30.0, pool=20.0)
+    try:
+        parallel_tasks = max(
+            1,
+            int(os.environ.get("ED4_MAX_PARALLEL_TASKS") or os.environ.get("CLOUD_RUN_TASK_COUNT") or "1"),
+        )
+    except ValueError:
+        parallel_tasks = 1
+    default_interval = max(1.35, 1.35 * parallel_tasks)
+    try:
+        pace_interval = max(0.0, float(os.environ.get("ED4_ADAPTION_MIN_INTERVAL", default_interval)))
+    except ValueError:
+        pace_interval = default_interval
 
     for attempt in range(4):
         payload: Dict[str, Any] = {
@@ -150,7 +162,7 @@ async def call_adaption(
             "max_tokens": max_tokens,
             "temperature": temperature,
         }
-        await _pace_adaption_request(min_interval_s=1.35)
+        await _pace_adaption_request(min_interval_s=pace_interval)
         t0 = time.perf_counter()
         try:
             resp = await client.post(
@@ -259,6 +271,7 @@ async def call_gemini_argon(
     project_id: Optional[str] = None,
     max_tokens: int = 1600,
     temperature: float = 0.1,
+    thinking_budget: Optional[int] = 1024,
 ) -> Tuple[str, float, Optional[str]]:
     """Call Gemini critic (default Gemini 3.5 Flash) via GEMINI_API_KEY or Vertex AI."""
     global _VERTEX_TOKEN, _VERTEX_TOKEN_TS
@@ -272,15 +285,7 @@ async def call_gemini_argon(
         for m in messages
         if m.get("role") != "system"
     ]
-    payload: Dict[str, Any] = {
-        "contents": contents,
-        "generationConfig": {
-            "maxOutputTokens": max_tokens,
-            "temperature": temperature,
-        },
-    }
-    if system_texts:
-        payload["systemInstruction"] = {"parts": [{"text": "\n\n".join(system_texts)}]}
+    use_thinking_cfg = thinking_budget is not None and thinking_budget > 0 and max_tokens >= 4096
 
     timeout = httpx.Timeout(connect=20.0, read=90.0, write=30.0, pool=20.0)
     gemini_key = os.environ.get("GEMINI_API_KEY") or ""
@@ -288,6 +293,18 @@ async def call_gemini_argon(
     last_err: Optional[str] = None
 
     for attempt in range(3):
+        gen_cfg: Dict[str, Any] = {
+            "maxOutputTokens": max_tokens,
+            "temperature": temperature,
+        }
+        if use_thinking_cfg:
+            gen_cfg["thinkingConfig"] = {"thinkingBudget": int(thinking_budget)}
+        payload: Dict[str, Any] = {
+            "contents": contents,
+            "generationConfig": gen_cfg,
+        }
+        if system_texts:
+            payload["systemInstruction"] = {"parts": [{"text": "\n\n".join(system_texts)}]}
         t0 = time.perf_counter()
         try:
             if gemini_key:
@@ -308,6 +325,10 @@ async def call_gemini_argon(
             elapsed = time.perf_counter() - t0
             if resp.status_code == 200:
                 return _extract_gemini_text(resp.json()), elapsed, None
+            if resp.status_code == 400 and use_thinking_cfg and "thinking" in resp.text.lower():
+                use_thinking_cfg = False
+                last_err = f"Argon HTTP 400 (disabling thinkingConfig): {resp.text[:160]}"
+                continue
             if resp.status_code == 401 and not gemini_key:
                 _VERTEX_TOKEN = None
                 _VERTEX_TOKEN_TS = 0.0

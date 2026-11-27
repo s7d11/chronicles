@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -23,14 +24,26 @@ from bench.env import load_env
 from deploy.cloud_run.deploy_cloud_run import DOCKER_SRC_DIR, _copy_clean_tree, _ensure_admin_token
 
 
+def _resolve_gcloud() -> str:
+    found = shutil.which("gcloud")
+    if found:
+        return found
+    candidate = Path.home() / "google-cloud-sdk" / "bin" / "gcloud"
+    if candidate.is_file():
+        return str(candidate)
+    return "gcloud"
+
+
 def deploy_job(
     *,
     project: str = "mlgramv1",
     region: str = "us-east4",
     job_name: str = "sebeni-ed4-job",
-    langs: str = "bam",
+    langs: str = "all",
     turns_per_lang: int = 40,
     checkpoint_every: int = 5,
+    tasks: int = 13,
+    parallelism: int = 5,
     critic_model: str = "gemini-3.5-flash",
     firestore_db: str = "chronicles-live",
     execute: bool = False,
@@ -44,9 +57,12 @@ def deploy_job(
         raise RuntimeError("Missing HF_KEY, ADOPTION_KEY, or NVIDIA_KEY in environment/.env")
 
     admin_tok = _ensure_admin_token(REPO_ROOT / ".env")
+    gcloud_bin = _resolve_gcloud()
     gcloud_env = {k: v for k, v in os.environ.items() if k != "GOOGLE_APPLICATION_CREDENTIALS"}
     gcloud_env["CLOUDSDK_CORE_PROJECT"] = project
     gcloud_env["CLOUDSDK_BILLING_QUOTA_PROJECT"] = project
+    task_count = max(1, int(tasks))
+    max_parallel = max(1, min(task_count, int(parallelism)))
 
     with tempfile.TemporaryDirectory() as tmp:
         stage = Path(tmp) / "ctx"
@@ -79,6 +95,7 @@ def deploy_job(
             "ED4_JOB_LANGS": langs,
             "ED4_JOB_TURNS": str(int(turns_per_lang)),
             "ED4_CHECKPOINT_EVERY": str(int(checkpoint_every)),
+            "ED4_MAX_PARALLEL_TASKS": str(max_parallel),
         }
         if gemini_key:
             env_vars["GEMINI_API_KEY"] = gemini_key
@@ -92,12 +109,13 @@ def deploy_job(
 
         print(
             f"[cloud-run-job] Deploying {job_name} to {project} ({region}) | "
-            f"critic={critic_model}, db={firestore_db}, langs={langs}, turns={turns_per_lang}",
+            f"critic={critic_model}, db={firestore_db}, langs={langs}, turns={turns_per_lang}, "
+            f"tasks={task_count}, parallelism={max_parallel}",
             flush=True,
         )
         subprocess.run(
             [
-                "gcloud",
+                gcloud_bin,
                 "run",
                 "jobs",
                 "deploy",
@@ -112,6 +130,10 @@ def deploy_job(
                 "2",
                 "--memory",
                 "2Gi",
+                "--tasks",
+                str(task_count),
+                "--parallelism",
+                str(max_parallel),
                 "--task-timeout",
                 "24h",
                 "--max-retries",
@@ -128,7 +150,7 @@ def deploy_job(
         print(f"[cloud-run-job] Triggering async execution of {job_name}...", flush=True)
         subprocess.run(
             [
-                "gcloud",
+                gcloud_bin,
                 "run",
                 "jobs",
                 "execute",
@@ -150,9 +172,11 @@ def main() -> None:
     parser.add_argument("--project", default="mlgramv1")
     parser.add_argument("--region", default="us-east4")
     parser.add_argument("--job", default="sebeni-ed4-job")
-    parser.add_argument("--langs", default="bam", help="Comma-separated MALI13 codes or 'all'")
+    parser.add_argument("--langs", default="all", help="Comma-separated MALI13 codes, 'uncovered', or 'all'")
     parser.add_argument("--turns", type=int, default=40, help="Turns per language")
     parser.add_argument("--checkpoint-every", type=int, default=5)
+    parser.add_argument("--tasks", type=int, default=13, help="Number of Cloud Run Job tasks")
+    parser.add_argument("--parallelism", type=int, default=5, help="Max concurrent Cloud Run Job tasks")
     parser.add_argument("--critic-model", default="gemini-3.5-flash")
     parser.add_argument("--firestore-db", default="chronicles-live")
     parser.add_argument("--execute", action="store_true", help="Immediately launch an async execution")
@@ -164,6 +188,8 @@ def main() -> None:
         langs=args.langs,
         turns_per_lang=args.turns,
         checkpoint_every=args.checkpoint_every,
+        tasks=args.tasks,
+        parallelism=args.parallelism,
         critic_model=args.critic_model,
         firestore_db=args.firestore_db,
         execute=args.execute,

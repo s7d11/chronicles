@@ -44,6 +44,18 @@ def _to_fs_fields(mapping: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     return {str(k): _to_fs_value(v) for k, v in mapping.items()}
 
 
+def _serialize_bounded_json_list(items: List[Dict[str, Any]], max_chars: int) -> str:
+    """Serialize the newest suffix of `items` that fits within `max_chars` as valid JSON."""
+    if not items or max_chars < 2:
+        return "[]"
+    # Keep newest items (tail of chronological list), trimming oldest first to avoid mid-JSON truncation.
+    for start in range(len(items)):
+        encoded = json.dumps(items[start:], ensure_ascii=False)
+        if len(encoded) <= max_chars:
+            return encoded
+    return "[]"
+
+
 class FirestoreLivePublisher:
     """Best-effort REST publisher pushing Edition 4 events & state to Cloud Firestore."""
 
@@ -118,7 +130,14 @@ class FirestoreLivePublisher:
         self._token_ts = now
         return tok
 
-    def _patch_doc(self, doc_path: str, data: Dict[str, Any]) -> bool:
+    def _patch_doc(
+        self,
+        doc_path: str,
+        data: Dict[str, Any],
+        *,
+        params: Optional[Dict[str, str]] = None,
+        ignore_already_exists: bool = False,
+    ) -> bool:
         url = f"{self.base_url}/{doc_path.lstrip('/')}"
         payload = {"fields": _to_fs_fields(data)}
         for attempt in range(2):
@@ -131,10 +150,13 @@ class FirestoreLivePublisher:
                         "x-goog-user-project": self.project_id,
                         "Content-Type": "application/json",
                     },
+                    params=params,
                     json=payload,
                 )
                 if resp.status_code in (200, 201):
                     return True
+                if ignore_already_exists and resp.status_code in (409, 412):
+                    return False
                 if resp.status_code == 401 and attempt == 0:
                     self._token = None
                     continue
@@ -195,18 +217,17 @@ class FirestoreLivePublisher:
             pass
         return 0
 
-    def publish_state_sync(
-        self,
+    @staticmethod
+    def _build_state_fields(
         state: LanguageVillageState,
         *,
         running: bool,
         job_execution: str = "",
-    ) -> bool:
-        doc_path = f"ed4_languages/{state.lang}"
+    ) -> Dict[str, Any]:
         exchanges = [x.model_dump() for x in state.recent_exchanges[-18:]]
-        decisions = [d.model_dump() for d in state.recent_decisions[-30:]]
+        decisions = [d.model_dump() for d in state.recent_decisions[-20:]]
         agents = [a.model_dump() for a in state.active_agents[:64]]
-        data = {
+        return {
             "lang": state.lang,
             "lang_name": state.lang_name,
             "target_entries": int(state.target_entries),
@@ -225,10 +246,37 @@ class FirestoreLivePublisher:
             "critic_model": state.critic_model,
             "running": bool(running),
             "job_execution": job_execution[:128],
-            "active_agents_json": json.dumps(agents, ensure_ascii=False),
-            "recent_exchanges_json": json.dumps(exchanges, ensure_ascii=False)[:32000],
-            "recent_decisions_json": json.dumps(decisions, ensure_ascii=False)[:48000],
+            "active_agents_json": _serialize_bounded_json_list(agents, 32000),
+            "recent_exchanges_json": _serialize_bounded_json_list(exchanges, 32000),
+            "recent_decisions_json": _serialize_bounded_json_list(decisions, 48000),
         }
+
+    def seed_baseline_if_missing(
+        self,
+        state: LanguageVillageState,
+        *,
+        running: bool = False,
+        job_execution: str = "",
+    ) -> bool:
+        """Create `ed4_languages/<lang>` atomically only if it does not already exist."""
+        doc_path = f"ed4_languages/{state.lang}"
+        data = self._build_state_fields(state, running=running, job_execution=job_execution)
+        return self._patch_doc(
+            doc_path,
+            data,
+            params={"currentDocument.exists": "false"},
+            ignore_already_exists=True,
+        )
+
+    def publish_state_sync(
+        self,
+        state: LanguageVillageState,
+        *,
+        running: bool,
+        job_execution: str = "",
+    ) -> bool:
+        doc_path = f"ed4_languages/{state.lang}"
+        data = self._build_state_fields(state, running=running, job_execution=job_execution)
         return self._patch_doc(doc_path, data)
 
     def close(self) -> None:

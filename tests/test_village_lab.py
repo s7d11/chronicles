@@ -6,14 +6,27 @@ import asyncio
 import json
 from pathlib import Path
 
-from village_lab import ALL_ADAPTION_MODELS, BASE_VILLAGERS, COUNCIL_SEATS, CRITIC_SPEC, ORCHESTRATOR_SPEC
+from village_lab import ALL_ADAPTION_MODELS, ALL_LANGS, BASE_VILLAGERS, COUNCIL_SEATS, CRITIC_SPEC, ORCHESTRATOR_SPEC
+from village_lab.cli import _parse_job_langs, _seed_all_languages_to_firestore, _shard_langs_for_task
 from village_lab.corpus_miner import CorpusOOVMiner, _is_plausible_bam_line
-from village_lab.firestore_sync import FirestoreLivePublisher, _to_fs_fields, _to_fs_value
-from village_lab.hf_sync import build_ed4_hf_viewer_bundle, publish_ed4_site_data
+from village_lab.firestore_sync import (
+    FirestoreLivePublisher,
+    _serialize_bounded_json_list,
+    _to_fs_fields,
+    _to_fs_value,
+)
+from village_lab.hf_sync import build_ed4_hf_viewer_bundle, publish_ed4_site_data, push_ed4_state_to_hf
 from village_lab.orthography import check_standardization, classify_lemma_vs_rule, normalize_bambara_dnafla
-from village_lab.schema import CriticVerdict, serialize_mdf_entry
+from village_lab.schema import (
+    CouncilDecision,
+    CriticVerdict,
+    DabaXCheck,
+    LanguageVillageState,
+    OrthographyCheck,
+    serialize_mdf_entry,
+)
 from village_lab.shadow_verify import verify_shadow_candidate
-from village_lab.world_engine import LanguageVillageEngine, compute_zone_path
+from village_lab.world_engine import ARGON_BATCH_MAX, ARGON_BATCH_MIN, LanguageVillageEngine, compute_zone_path
 
 
 def test_cast_matches_approved_models() -> None:
@@ -158,4 +171,97 @@ def test_corpus_oov_miner_on_bam_txt(tmp_path: Path) -> None:
         assert cand.freq >= 2
         assert cand.source_file == "bam.txt"
         assert cand.example_sentence
+
+
+def test_argon_batch_bounds_and_firestore_bounded_json() -> None:
+    assert ARGON_BATCH_MIN == 10
+    assert ARGON_BATCH_MAX == 15
+
+    # Build 20 oversized decisions (>60KB total) and confirm bounded JSON stays valid & keeps newest
+    decisions = []
+    for i in range(20):
+        decisions.append(
+            CouncilDecision(
+                turn_id=i + 1,
+                lang="bam",
+                candidate_raw=f"kuma{i}",
+                standardized_lx=f"kuma{i}",
+                final_action="REJECT",
+                orthography_check=OrthographyCheck(raw_form=f"kuma{i}", standardized_form=f"kuma{i}", is_standard=True),
+                dabax_check=DabaXCheck(),
+                summary_reason="x" * 3500,
+            )
+        )
+    st = LanguageVillageState(lang="bam", lang_name="Bambara", recent_decisions=decisions)
+    fields = FirestoreLivePublisher._build_state_fields(st, running=True, job_execution="exec-1")
+    raw_json = fields["recent_decisions_json"]
+    assert len(raw_json) <= 48000
+    parsed = json.loads(raw_json)
+    assert isinstance(parsed, list) and 1 <= len(parsed) < 20
+    # Tail (newest turn_id=20) must be preserved
+    assert parsed[-1]["turn_id"] == 20
+    assert _serialize_bounded_json_list([{"big": "a" * 500}], 100) == "[]"
+
+
+def test_firestore_seed_if_missing_and_13_lang_cli_sharding(tmp_path: Path, monkeypatch) -> None:
+    assert _parse_job_langs("all") == list(ALL_LANGS)
+    assert _parse_job_langs("uncovered") == [l for l in ALL_LANGS if l != "bam"]
+    assert _shard_langs_for_task(list(ALL_LANGS), 0, 13) == ["bam"]
+    assert _shard_langs_for_task(list(ALL_LANGS), 1, 13) == ["bmq"]
+    assert _shard_langs_for_task(list(ALL_LANGS), 12, 13) == ["taq"]
+
+    pub = FirestoreLivePublisher(project_id="mlgramv1", database_id="chronicles-live")
+    monkeypatch.setattr(pub, "_get_token", lambda force_refresh=False: "fake-tok")
+
+    calls = []
+
+    class _FakeResp:
+        def __init__(self, status_code: int, text: str = "{}") -> None:
+            self.status_code = status_code
+            self.text = text
+
+    def _fake_patch(url, headers=None, params=None, json=None):
+        calls.append((url, params, json))
+        if url.endswith("/ed4_languages/bam"):
+            return _FakeResp(409, "ALREADY_EXISTS")
+        return _FakeResp(200, "{}")
+
+    monkeypatch.setattr(pub._client, "patch", _fake_patch)
+    seeded = _seed_all_languages_to_firestore(pub, tmp_path / "runs", "exec-seed")
+    # 12 non-bam created (200) + 1 bam already exists (409)
+    assert seeded == 12
+    assert len(calls) == 13
+    assert all(c[1] == {"currentDocument.exists": "false"} for c in calls)
+    seeded_langs = {c[0].rsplit("/", 1)[-1] for c in calls}
+    assert seeded_langs == set(ALL_LANGS)
+    pub.close()
+
+
+def test_push_ed4_state_to_hf_lang_only_avoids_shared_bundle(tmp_path: Path, monkeypatch) -> None:
+    import huggingface_hub
+
+    runs_dir = tmp_path / "runs"
+    out_dir = tmp_path / "site_data"
+    ldir = runs_dir / "bmq"
+    ldir.mkdir(parents=True)
+    for fname in ("state.json", "augmented.dict", "events.jsonl"):
+        (ldir / fname).write_text("{}", encoding="utf-8")
+
+    uploads = []
+
+    class _FakeHfApi:
+        def __init__(self, token: str = "") -> None:
+            self.token = token
+
+        def create_repo(self, **kwargs) -> None:
+            pass
+
+        def upload_folder(self, **kwargs) -> None:
+            uploads.append(kwargs)
+
+    monkeypatch.setattr(huggingface_hub, "HfApi", _FakeHfApi)
+    push_ed4_state_to_hf("s7d11/chronicles-edition4-state", runs_dir, "bmq", out_dir, "hf-tok", lang_only=True)
+    assert len(uploads) == 1
+    assert uploads[0]["path_in_repo"] == "edition4/bmq"
+    assert not (out_dir / "edition4.json").exists()
 

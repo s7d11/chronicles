@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import random
 import shutil
 import tempfile
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -350,19 +352,52 @@ def restore_ed4_state_from_hf(state_repo: str, runs_dir: Path, token: Optional[s
     return [l for l in ALL_LANGS if (runs_dir / normalize_lang_code(l) / "state.json").is_file()]
 
 
+def _upload_folder_with_retry(
+    api: Any,
+    *,
+    repo_id: str,
+    folder_path: str,
+    commit_message: str,
+    path_in_repo: Optional[str] = None,
+    attempts: int = 4,
+) -> None:
+    """Upload a staged folder to HF Hub with jittered retry on concurrent commit conflicts."""
+    last_exc: Optional[Exception] = None
+    for attempt in range(attempts):
+        try:
+            kwargs: Dict[str, Any] = {
+                "repo_id": repo_id,
+                "repo_type": "dataset",
+                "folder_path": folder_path,
+                "commit_message": commit_message,
+            }
+            if path_in_repo:
+                kwargs["path_in_repo"] = path_in_repo
+            api.upload_folder(**kwargs)
+            return
+        except Exception as exc:
+            last_exc = exc
+            if attempt + 1 >= attempts:
+                break
+            time.sleep(min(15.0, (2.0 ** attempt) + random.uniform(0.3, 1.8)))
+    assert last_exc is not None
+    raise last_exc
+
+
 def push_ed4_state_to_hf(
     state_repo: str,
     runs_dir: Path,
     lang: str,
     site_data_dir: Path,
     token: str,
+    *,
+    lang_only: bool = False,
 ) -> None:
     if not state_repo or not token:
         return
     from huggingface_hub import HfApi
 
     canon = normalize_lang_code(lang)
-    summary = publish_ed4_site_data(runs_dir, site_data_dir)
     api = HfApi(token=token)
     api.create_repo(repo_id=state_repo, repo_type="dataset", private=False, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
@@ -374,15 +409,57 @@ def push_ed4_state_to_hf(
             fp = ldir / fname
             if fp.is_file():
                 shutil.copy2(fp, ed4_lang_dst / fname)
+        if lang_only:
+            _upload_folder_with_retry(
+                api,
+                repo_id=state_repo,
+                folder_path=str(ed4_lang_dst),
+                path_in_repo=f"edition4/{canon}",
+                commit_message=f"Checkpoint Edition 4 language ({canon})",
+            )
+            return
+
+        summary = publish_ed4_site_data(runs_dir, site_data_dir)
         for sfname in ("edition4.json", "edition4_events.json"):
             sf = Path(site_data_dir) / sfname
             if sf.is_file():
                 (stage / "site_data").mkdir(parents=True, exist_ok=True)
                 shutil.copy2(sf, stage / "site_data" / sfname)
         build_ed4_hf_viewer_bundle(runs_dir, stage, summary)
-        api.upload_folder(
+        _upload_folder_with_retry(
+            api,
             repo_id=state_repo,
-            repo_type="dataset",
             folder_path=str(stage),
             commit_message=f"Update Edition 4 Living Lexicon Village ({canon})",
         )
+
+
+def push_ed4_bundle_to_hf(
+    state_repo: str,
+    runs_dir: Path,
+    site_data_dir: Path,
+    token: str,
+) -> Dict[str, Any]:
+    """Publish unified site_data/*, viewer_data/*, and README.md from a complete runs_dir."""
+    summary = publish_ed4_site_data(runs_dir, site_data_dir)
+    if not state_repo or not token:
+        return summary
+    from huggingface_hub import HfApi
+
+    api = HfApi(token=token)
+    api.create_repo(repo_id=state_repo, repo_type="dataset", private=False, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        stage = Path(tmp)
+        for sfname in ("edition4.json", "edition4_events.json"):
+            sf = Path(site_data_dir) / sfname
+            if sf.is_file():
+                (stage / "site_data").mkdir(parents=True, exist_ok=True)
+                shutil.copy2(sf, stage / "site_data" / sfname)
+        build_ed4_hf_viewer_bundle(runs_dir, stage, summary)
+        _upload_folder_with_retry(
+            api,
+            repo_id=state_repo,
+            folder_path=str(stage),
+            commit_message="Update Edition 4 unified site_data and viewer_data bundle",
+        )
+    return summary

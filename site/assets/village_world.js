@@ -738,9 +738,10 @@ class LivingVillageWorld {
         const cls = [
           "vw-lang-pill",
           l === this.selectedLang ? "active" : "",
-          turns > 0 ? "has-epochs" : "",
+          (turns > 0 || info.running) ? "has-epochs" : "",
         ].filter(Boolean).join(" ");
-        return `<button type="button" class="${cls}" data-lang="${l}">${l.toUpperCase()}${added ? ` (+${added})` : ""}</button>`;
+        const badge = added ? ` (+${added})` : turns > 0 ? ` (T${turns})` : "";
+        return `<button type="button" class="${cls}" data-lang="${l}">${l.toUpperCase()}${badge}</button>`;
       }).join("");
     this.$langRibbon.querySelectorAll(".vw-lang-pill").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -748,6 +749,18 @@ class LivingVillageWorld {
         if (lang) this.selectLanguage(lang);
       });
     });
+  }
+
+  _clearTransientSceneFx() {
+    if (!this.scene) return;
+    while (this.projectiles.length > 0) {
+      const p = this.projectiles.pop();
+      if (p && p.mesh) this.scene.remove(p.mesh);
+    }
+    while (this.pulseRings.length > 0) {
+      const pr = this.pulseRings.pop();
+      if (pr && pr.mesh) this.scene.remove(pr.mesh);
+    }
   }
 
   _renderProgressTable() {
@@ -777,22 +790,30 @@ class LivingVillageWorld {
 
   selectLanguage(lang) {
     this.selectedLang = lang;
+    this._clearTransientSceneFx();
     this._renderLangRibbon();
-    this.liveEvents = this.eventsByLang[lang] || [];
+    this.liveEvents = (this.eventsByLang[lang] || []).slice().sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
     const rawSt = (this.ed4Summary && this.ed4Summary.languages && this.ed4Summary.languages[lang]) || {};
-    this.liveState = { ...rawSt, active_agents: this._normalizeLiveAgents(rawSt.active_agents || [], rawSt, this.liveEvents) };
+    this.liveState = { ...rawSt, lang, active_agents: this._normalizeLiveAgents(rawSt.active_agents || [], rawSt, this.liveEvents) };
     this._syncAgentsFromState(this.liveState);
     this.liveExchanges = (this.liveState.recent_exchanges || []).slice();
     const evDecisions = this._rebuildDecisionsFromEvents(this.liveEvents);
-    this.liveDecisions = evDecisions.length ? evDecisions : (this.liveState.recent_decisions || []).slice();
+    this.liveDecisions = evDecisions.length ? evDecisions : this._normalizeDecisionsList(this.liveState.recent_decisions || []);
     this._updateTelemetryBar(this.liveState);
     this.$scrub.max = String(Math.max(0, this.liveEvents.length));
     this.seekTo(this.liveEvents.length > 0 ? Math.min(2, this.liveEvents.length) : 0);
     if (this.sse) {
       this._connectLiveSse();
     } else if (this.followLive) {
+      this.$modeStatus.textContent = `Syncing Firestore (${lang.toUpperCase()})...`;
       if (this.fsRestTimer) this._startFirestoreRestSync(lang);
       else if (this.fsDb) this._subscribeFirestoreLang(lang);
+      else this._startFirestoreRestSync(lang);
+    } else {
+      const turns = Number(this.liveState.total_turns || 0);
+      this.$modeStatus.textContent = this.liveEvents.length
+        ? `Static Replay (${lang.toUpperCase()}) · Turn ${turns}`
+        : `Static Baseline (${lang.toUpperCase()}) · Turn ${turns}`;
     }
   }
 
@@ -833,6 +854,9 @@ class LivingVillageWorld {
         }
       });
     }
+    if (!agents.some((a) => a.agent_id === this.selectedAgentId)) {
+      this.selectedAgentId = (agents[0] && agents[0].agent_id) || "mande";
+    }
   }
 
   _updateTelemetryBar(st) {
@@ -864,6 +888,13 @@ class LivingVillageWorld {
       for (let i = Math.max(0, this.cursor - 6); i < this.cursor; i++) {
         this._applyEventVisual(this.liveEvents[i], i === this.cursor - 1);
       }
+    } else {
+      const langLabel = (this.liveState && this.liveState.lang_name) || this.selectedLang;
+      const msg = this.liveEvents.length
+        ? "Replay positioned at event 0 — press Play or scrub timeline."
+        : "Baseline dictionary seeded — awaiting first Cloud Run village turn.";
+      this.lastBubble = `<strong>${esc(langLabel)} (${esc(this.selectedLang.toUpperCase())})</strong><br/><span>${esc(msg)}</span>`;
+      this.$bubble.innerHTML = this.lastBubble;
     }
     this._renderSideTab();
   }
@@ -947,22 +978,45 @@ class LivingVillageWorld {
     }
   }
 
+  _normalizeDecisionsList(decisions) {
+    const list = (decisions || []).filter(Boolean).map((d, idx) => ({
+      ...d,
+      turn_id: Number(d.turn_id ?? 0),
+      _ord: idx,
+    }));
+    list.sort((a, b) => (a.turn_id - b.turn_id) || (a._ord - b._ord));
+    return list.slice(-40).map(({ _ord, ...rest }) => rest);
+  }
+
   _rebuildDecisionsFromEvents(events) {
     const out = [];
     const seen = new Set();
-    const ordered = (events || []).slice().sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
+    const ordered = (events || []).slice().sort(
+      (a, b) => (Number(a.turn_id || 0) - Number(b.turn_id || 0)) || (Number(a.seq || 0) - Number(b.seq || 0))
+    );
     for (const ev of ordered) {
       if (ev.kind !== "lexicon_commit" && ev.kind !== "gram_commit" && ev.kind !== "council_reject") {
         continue;
       }
       const m = ev.meta || {};
-      if (!m.candidate_raw) continue;
-      const key = `${ev.seq || ""}:${m.turn_id || ev.turn_id}:${m.candidate_raw}`;
+      const label = m.candidate_raw || m.standardized_lx || m.gram_rule || "";
+      if (!label) continue;
+      const turnId = Number(m.turn_id ?? ev.turn_id ?? 0);
+      const key = `${ev.seq || ""}:${turnId}:${label}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      out.push({ ...m, turn_id: Number(m.turn_id ?? ev.turn_id ?? 0) });
+      out.push({ ...m, turn_id: turnId });
     }
     return out.slice(-40);
+  }
+
+  _agentsChanged(nextAgents) {
+    if (!nextAgents || !nextAgents.length) return false;
+    if (nextAgents.length !== this.agentNodes.size) return true;
+    for (const ag of nextAgents) {
+      if (!ag || !this.agentNodes.has(ag.agent_id)) return true;
+    }
+    return false;
   }
 
   _normalizeLiveAgents(agents, st = {}, events = []) {
@@ -988,7 +1042,8 @@ class LivingVillageWorld {
       clearTimeout(this.fsWatchdogTimer);
       this.fsWatchdogTimer = null;
     }
-    parsed.active_agents = this._normalizeLiveAgents(parsed.active_agents || [], parsed, this.liveEvents);
+    const langEvents = lang === this.selectedLang ? this.liveEvents : (this.eventsByLang[lang] || []);
+    parsed.active_agents = this._normalizeLiveAgents(parsed.active_agents || [], parsed, langEvents);
     if (parsed.active_agents.some((a) => a.model_id === "gemini-3.5-flash")) {
       parsed.critic_model = "gemini-3.5-flash";
     }
@@ -997,9 +1052,10 @@ class LivingVillageWorld {
       this._renderLangRibbon();
       this._renderProgressTable();
     }
-    const prevCount = this.agentNodes.size;
+    if (this.selectedLang !== lang || !this.followLive) return;
+
     this.liveState = parsed;
-    if (prevCount === 0 || (parsed.active_agents && parsed.active_agents.length > prevCount)) {
+    if (this.agentNodes.size === 0 || this._agentsChanged(parsed.active_agents)) {
       this._syncAgentsFromState(this.liveState);
     }
     if (parsed.recent_exchanges && parsed.recent_exchanges.length) {
@@ -1009,12 +1065,15 @@ class LivingVillageWorld {
     if (evDecisions.length) {
       this.liveDecisions = evDecisions;
     } else if (parsed.recent_decisions && parsed.recent_decisions.length) {
-      this.liveDecisions = parsed.recent_decisions;
+      this.liveDecisions = this._normalizeDecisionsList(parsed.recent_decisions);
     }
     this._updateTelemetryBar(this.liveState);
+    const turns = Number(parsed.total_turns || 0);
     this.$modeStatus.textContent = parsed.running
-      ? `Live Job Active · Turn ${parsed.total_turns || 0} (${lang.toUpperCase()})`
-      : `${modeLabel} · Turn ${parsed.total_turns || 0} (${lang.toUpperCase()})`;
+      ? `Live Job Active · Turn ${turns} (${lang.toUpperCase()})`
+      : turns > 0
+        ? `${modeLabel} · Turn ${turns} (${lang.toUpperCase()})`
+        : `${modeLabel} · Baseline Ready (${lang.toUpperCase()})`;
     this._renderSideTab();
   }
 
@@ -1025,9 +1084,10 @@ class LivingVillageWorld {
       clearTimeout(this.fsWatchdogTimer);
       this.fsWatchdogTimer = null;
     }
+    const existing = lang === this.selectedLang ? this.liveEvents : (this.eventsByLang[lang] || []);
     const bySeq = new Map();
-    for (const e of this.liveEvents) {
-      if (e && e.lang === lang) bySeq.set(Number(e.seq || 0), e);
+    for (const e of existing) {
+      if (e && (e.lang || lang) === lang) bySeq.set(Number(e.seq || 0), e);
     }
     const newlyAdded = [];
     for (const e of incoming) {
@@ -1037,8 +1097,11 @@ class LivingVillageWorld {
       }
       bySeq.set(seqNum, e);
     }
-    this.liveEvents = Array.from(bySeq.values()).sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
-    this.eventsByLang[lang] = this.liveEvents;
+    const merged = Array.from(bySeq.values()).sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
+    this.eventsByLang[lang] = merged;
+    if (this.selectedLang !== lang) return;
+
+    this.liveEvents = merged;
     const rebuilt = this._rebuildDecisionsFromEvents(this.liveEvents);
     if (rebuilt.length) {
       this.liveDecisions = rebuilt;
@@ -1052,7 +1115,13 @@ class LivingVillageWorld {
     } else if (newlyAdded.length) {
       newlyAdded.sort((a, b) => Number(a.seq || 0) - Number(b.seq || 0));
       for (const ev of newlyAdded.slice(-6)) {
-        this._ingestLiveTelemetry(ev);
+        if (ev.kind === "agent_spawn" && ev.meta && ev.meta.agent_id && this.liveState) {
+          const list = this.liveState.active_agents || [];
+          if (!list.some((a) => a.agent_id === ev.meta.agent_id)) {
+            list.push(ev.meta);
+            this.liveState.active_agents = list;
+          }
+        }
         if (this.followLive) this._applyEventVisual(ev, true);
       }
       if (this.followLive) {
@@ -1169,6 +1238,9 @@ class LivingVillageWorld {
           const parsed = this._parseFirestoreLangDoc(lang, decodeFsFields(docJson.fields));
           this._applyFirestoreLangState(lang, parsed, "Firestore REST Sync");
         }
+      } else if (!this.liveEvents.length) {
+        const turns = Number((this.liveState && this.liveState.total_turns) || 0);
+        this.$modeStatus.textContent = `Static Baseline (${lang.toUpperCase()}) · Turn ${turns}`;
       }
     } catch (err) {
       console.warn("Firestore REST sync warning:", err);
@@ -1235,13 +1307,23 @@ class LivingVillageWorld {
     const docUnsub = onSnapshot(
       doc(this.fsDb, "ed4_languages", lang),
       (snap) => {
-        if (!snap.exists()) return;
+        if (this.selectedLang !== lang || !this.followLive) return;
+        if (!snap.exists()) {
+          if (!this.liveEvents.length) {
+            const turns = Number((this.liveState && this.liveState.total_turns) || 0);
+            this.$modeStatus.textContent = `Static Baseline (${lang.toUpperCase()}) · Turn ${turns}`;
+          }
+          return;
+        }
         const parsed = this._parseFirestoreLangDoc(lang, snap.data() || {});
         this._applyFirestoreLangState(lang, parsed, "Realtime Synced");
       },
       (err) => {
         console.warn("Firestore lang listener error, falling back to REST:", err);
-        this._startFirestoreRestSync(lang);
+        if (this.selectedLang === lang && this.followLive) {
+          this._unsubLangFirestore();
+          this._startFirestoreRestSync(lang);
+        }
       }
     );
 
@@ -1250,6 +1332,7 @@ class LivingVillageWorld {
     const evUnsub = onSnapshot(
       evQ,
       (snap) => {
+        if (this.selectedLang !== lang || !this.followLive) return;
         if (snap.empty) {
           firstBatch = false;
           return;
@@ -1268,7 +1351,10 @@ class LivingVillageWorld {
       },
       (err) => {
         console.warn("Firestore events listener error, falling back to REST:", err);
-        this._startFirestoreRestSync(lang);
+        if (this.selectedLang === lang && this.followLive) {
+          this._unsubLangFirestore();
+          this._startFirestoreRestSync(lang);
+        }
       }
     );
 

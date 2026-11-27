@@ -110,8 +110,8 @@ def _default_agents() -> List[VillageAgent]:
     return agents
 
 
-ARGON_BATCH_MIN = 15
-ARGON_BATCH_MAX = 25
+ARGON_BATCH_MIN = 10
+ARGON_BATCH_MAX = 15
 
 
 class LanguageVillageEngine:
@@ -821,7 +821,7 @@ class LanguageVillageEngine:
                     client,
                     [{"role": "user", "content": argon_prompt}],
                     model_id=CRITIC_SPEC.model_id,
-                    max_tokens=3200,
+                    max_tokens=16384,
                 )
                 parsed_a = extract_json_object(raw_a) if not err_a else None
                 raw_reviews = (parsed_a or {}).get("reviews") if isinstance(parsed_a, dict) else None
