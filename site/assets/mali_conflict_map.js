@@ -353,10 +353,35 @@
 
     if (typeof window.L !== "undefined") {
       map = window.L.map(mapDiv, { zoomControl: true, scrollWheelZoom: true }).setView([17.15, -3.4], 5.6);
-      window.L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        attribution: "&copy; OpenStreetMap &copy; CARTO | Sebeni Chronicle",
-        maxZoom: 14,
-      }).addTo(map);
+
+      const esriGray = window.L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+        { attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ", maxZoom: 14 }
+      );
+      const esriRef = window.L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 14, pane: "overlayPane" }
+      );
+      const esriTopo = window.L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+        { attribution: "Tiles &copy; Esri &mdash; Esri, Garmin, FAO, USGS", maxZoom: 14 }
+      );
+      const esriStreet = window.L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+        { attribution: "Tiles &copy; Esri &mdash; Source: Esri, HERE, Garmin, USGS", maxZoom: 14 }
+      );
+
+      const newsprintBase = window.L.layerGroup([esriGray, esriRef]).addTo(map);
+      window.L.control.layers(
+        {
+          "Newsprint Light (Esri)": newsprintBase,
+          "Topographic Relief (Esri)": esriTopo,
+          "Roads & Axes (Esri Street)": esriStreet,
+        },
+        null,
+        { position: "topright", collapsed: true }
+      ).addTo(map);
+
       layerGroup = window.L.layerGroup().addTo(map);
     }
 
