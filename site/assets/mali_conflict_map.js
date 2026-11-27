@@ -238,6 +238,9 @@
       simAlpha0: 1.0,
       simBeta0: 12.0,
       liveConnected: false,
+      livePollingTimer: null,
+      replayLimit: null,
+      replayTimer: null,
       unsubs: [],
       allDates: [],
       cutoffIso: "2026-12-31",
@@ -777,8 +780,17 @@
           ${parH ? `<div class="vol2-proof-card" style="margin-top:8px"><strong>National Heavy-Tail Law:</strong> ${esc(parH.analyst_narrative)} <span class="vol2-verdict ${esc(parH.verdict)}" style="margin-left:6px">${esc(parH.verdict)}</span></div>` : ""}
         `;
       } else if (state.activeTab === "exchange") {
+        const turnsAll =
+          (state.exchangeRecord && Array.isArray(state.exchangeRecord.turns) && state.exchangeRecord.turns) ||
+          (state.meta && Array.isArray(state.meta.agent_exchanges) && state.meta.agent_exchanges) ||
+          [];
+        const shownTurns = state.replayLimit != null ? turnsAll.slice(0, state.replayLimit) : turnsAll;
         const openHyps = state.hypotheses.filter((h) => h.origin === "agent_open");
-        const turnsHtml = turns
+        const isSweepRunning = Boolean(state.meta && state.meta.running);
+        const statusPill = state.liveConnected
+          ? `<span class="vol2-verdict ${isSweepRunning ? "FALSIFIED" : "PROVEN"}">${isSweepRunning ? "STREAMING LIVE TURN-BY-TURN" : "FIRESTORE LIVE SYNCED"}</span>`
+          : `<span class="vol2-verdict INCONCLUSIVE">STATIC SNAPSHOT</span>`;
+        const turnsHtml = shownTurns
           .map((t) => {
             const refs = Object.entries(t.math_refs || {})
               .map(([k, v]) => `<span class="vol2-badge">${esc(k)}=${esc(v)}</span>`)
@@ -804,12 +816,20 @@
         const openCards = openHyps.map(renderProofCard).join("");
         tabBody = `
           <div class="vol2-proof-card">
-            <strong>Autonomous Agent Proof Observatory &amp; Peer Debate</strong>
-            <div style="font-size:0.77rem;opacity:0.84;margin-top:3px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+              <strong>Autonomous Agent Proof Observatory &amp; Peer Debate</strong>
+              ${statusPill}
+            </div>
+            <div style="font-size:0.77rem;opacity:0.84;margin-top:4px">
               ${esc((state.exchangeRecord && state.exchangeRecord.topic) || "Multi-agent deduction, estimator bias challenge & BH-FDR adjudication.")}
+              <br/><span>Sweep: <code>${esc((state.exchangeRecord && state.exchangeRecord.sweep_id) || (state.meta && state.meta.sweep_id) || "snapshot")}</code> &bull; Updated: <strong>${esc((state.exchangeRecord && state.exchangeRecord.updated_at) || (state.meta && state.meta.updated_at) || "—")}</strong></span>
+            </div>
+            <div class="vol2-toolbar-group" style="margin-top:8px">
+              ${!state.liveConnected ? `<button class="vol2-btn vol2-btn-live" id="vol2ExLiveBtn">Connect Firestore Real-Time Stream</button>` : `<button class="vol2-btn" id="vol2ExRefreshBtn">Pull Latest Firestore Turns Now</button>`}
+              <button class="vol2-btn" id="vol2ExReplayBtn">${state.replayTimer ? "Pause Animated Replay" : "Animate Step-by-Step Replay"}</button>
             </div>
           </div>
-          <div class="vol2-exchange-feed">${turnsHtml || '<div class="vol2-proof-card">No agent exchange turns recorded yet.</div>'}</div>
+          <div class="vol2-exchange-feed">${turnsHtml || `<div class="vol2-proof-card">${isSweepRunning ? "Cloud Run sweep active — waiting for Turn 1 (Explorer) to stream via Firestore..." : "No agent exchange turns recorded yet."}</div>`}</div>
           ${openCards ? `<h4 style="margin:12px 0 6px;font-size:0.86rem;text-transform:uppercase;letter-spacing:0.04em">Deduced Open Hypotheses (${openHyps.length})</h4>${openCards}` : ""}
         `;
       } else if (state.activeTab === "simulate") {
@@ -930,6 +950,47 @@
           renderWorkbench();
         });
       }
+      const exLiveBtn = wb.querySelector("#vol2ExLiveBtn");
+      if (exLiveBtn) {
+        exLiveBtn.addEventListener("click", () => connectFirestoreLive());
+      }
+      const exRefBtn = wb.querySelector("#vol2ExRefreshBtn");
+      if (exRefBtn) {
+        exRefBtn.addEventListener("click", () => {
+          if (state.liveRefreshFn) state.liveRefreshFn();
+        });
+      }
+      const exRepBtn = wb.querySelector("#vol2ExReplayBtn");
+      if (exRepBtn) {
+        exRepBtn.addEventListener("click", () => {
+          if (state.replayTimer) {
+            clearInterval(state.replayTimer);
+            state.replayTimer = null;
+            state.replayLimit = null;
+            renderWorkbench();
+            return;
+          }
+          const currentTurns =
+            (state.exchangeRecord && Array.isArray(state.exchangeRecord.turns) && state.exchangeRecord.turns) ||
+            (state.meta && Array.isArray(state.meta.agent_exchanges) && state.meta.agent_exchanges) ||
+            [];
+          const total = currentTurns.length;
+          if (!total) return;
+          state.replayLimit = 1;
+          renderWorkbench();
+          state.replayTimer = setInterval(() => {
+            if (state.replayLimit == null || state.replayLimit >= total) {
+              clearInterval(state.replayTimer);
+              state.replayTimer = null;
+              state.replayLimit = null;
+              renderWorkbench();
+              return;
+            }
+            state.replayLimit += 1;
+            renderWorkbench();
+          }, 1400);
+        });
+      }
     }
 
     async function connectFirestoreLive() {
@@ -939,14 +1000,47 @@
           try { fn(); } catch (_) {}
         }
         state.unsubs = [];
+        if (state.livePollingTimer) {
+          clearInterval(state.livePollingTimer);
+          state.livePollingTimer = null;
+        }
         state.liveConnected = false;
         btn.classList.remove("connected");
         btn.textContent = "Connect Firestore Live";
         renderKpis();
+        renderWorkbench();
         return;
       }
 
       btn.textContent = "Connecting…";
+      const fetchLiveExchangeRest = async () => {
+        try {
+          const r = await fetch(`${FS_REST_BASE}/vol2_exchanges/latest`, { cache: "no-store" });
+          if (r.ok) {
+            const j = await r.json();
+            if (j && j.fields) {
+              state.exchangeRecord = decodeFsFields(j.fields);
+              return;
+            }
+          }
+        } catch (_) {}
+        const allEx = await queryFsCollection("vol2_exchanges", 10).catch(() => []);
+        if (allEx.length) {
+          allEx.sort((a, b) => String(b.updated_at || "").localeCompare(String(a.updated_at || "")));
+          state.exchangeRecord = allEx[0];
+        }
+      };
+
+      const fetchMetaRest = async () => {
+        try {
+          const r = await fetch(`${FS_REST_BASE}/vol2_meta/overview`, { cache: "no-store" });
+          if (r.ok) {
+            const j = await r.json();
+            if (j && j.fields) state.meta = decodeFsFields(j.fields);
+          }
+        } catch (_) {}
+      };
+
       try {
         const [appMod, fsMod] = await Promise.all([
           import("https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js"),
@@ -958,55 +1052,84 @@
         const db = fsMod.getFirestore(app, FIREBASE_WEB_CONFIG.databaseId);
 
         const refreshAllRestFallback = async () => {
-          const [cl, hy, prf, prd, inc, ex] = await Promise.all([
+          const [cl, hy, prf, prd, inc] = await Promise.all([
             queryFsCollection("vol2_clusters", 50),
             queryFsCollection("vol2_hypotheses", 250),
             queryFsCollection("vol2_proofs", 50),
             queryFsCollection("vol2_predictions", 50),
             queryFsCollection("vol2_incidents", 200),
-            queryFsCollection("vol2_exchanges", 5).catch(() => []),
+            fetchLiveExchangeRest(),
           ]);
           if (cl.length) state.clusters = cl;
           if (hy.length) state.hypotheses = hy;
           if (prf.length) state.proofs = prf;
           if (prd.length) state.predictions = prd;
           if (inc.length) state.incidents = inc;
-          if (ex && ex.length) {
-            state.exchangeRecord = ex[0];
-          } else if (state.meta && Array.isArray(state.meta.agent_exchanges) && state.meta.agent_exchanges.length) {
-            state.exchangeRecord = { turns: state.meta.agent_exchanges, open_hyp_ids: [] };
+          if ((!state.exchangeRecord || !Array.isArray(state.exchangeRecord.turns)) && state.meta && Array.isArray(state.meta.agent_exchanges)) {
+            state.exchangeRecord = { turns: state.meta.agent_exchanges, open_hyp_ids: [], sweep_id: state.meta.sweep_id, updated_at: state.meta.updated_at };
           }
           recomputeDatesAndSelection();
           renderKpis();
           renderMap();
           renderWorkbench();
         };
+        state.liveRefreshFn = refreshAllRestFallback;
 
+        let lastSweepId = "";
         const unsubMeta = fsMod.onSnapshot(
           fsMod.doc(db, "vol2_meta", "overview"),
           (snap) => {
             if (snap.exists()) {
-              state.meta = snap.data();
+              const d = snap.data();
+              state.meta = d;
               renderKpis();
-              refreshAllRestFallback().catch(() => {});
+              if (d && d.sweep_id && d.sweep_id !== lastSweepId && !d.running) {
+                lastSweepId = d.sweep_id;
+                refreshAllRestFallback().catch(() => {});
+              } else {
+                renderWorkbench();
+              }
             }
           },
           () => {}
         );
-        state.unsubs.push(unsubMeta);
+        const unsubEx = fsMod.onSnapshot(
+          fsMod.doc(db, "vol2_exchanges", "latest"),
+          (snap) => {
+            if (snap.exists()) {
+              state.exchangeRecord = snap.data();
+              renderWorkbench();
+            }
+          },
+          () => {}
+        );
+        state.unsubs.push(unsubMeta, unsubEx);
+        // Periodic REST sync every 6s while connected guarantees real-time updates even if Enterprise WebChannel throttles
+        state.livePollingTimer = setInterval(async () => {
+          if (!state.liveConnected) return;
+          await Promise.all([fetchMetaRest(), fetchLiveExchangeRest()]);
+          renderKpis();
+          renderWorkbench();
+        }, 6000);
+
         state.liveConnected = true;
         btn.classList.add("connected");
         btn.textContent = "Live Connected (Disconnect)";
         await refreshAllRestFallback();
       } catch (_err) {
-        // Fallback: REST runQuery one-shot hydrate if Web SDK blocked
         try {
-          const metaDocs = await queryFsCollection("vol2_meta", 1);
-          if (metaDocs.length) state.meta = metaDocs[0];
+          await Promise.all([fetchMetaRest(), fetchLiveExchangeRest()]);
           state.liveConnected = true;
           btn.classList.add("connected");
-          btn.textContent = "Live Synced (REST)";
+          btn.textContent = "Live Polling (REST)";
+          state.livePollingTimer = setInterval(async () => {
+            if (!state.liveConnected) return;
+            await Promise.all([fetchMetaRest(), fetchLiveExchangeRest()]);
+            renderKpis();
+            renderWorkbench();
+          }, 6000);
           renderKpis();
+          renderWorkbench();
         } catch (err2) {
           btn.textContent = `Live Unavailable (${err2.message.slice(0, 18)})`;
         }

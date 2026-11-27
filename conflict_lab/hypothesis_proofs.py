@@ -2014,6 +2014,7 @@ async def run_autonomous_proof_debate(
     sweep_id: str = "",
     cutoff_date: Optional[str] = None,
     use_llm: bool = True,
+    on_turn: Optional[Any] = None,
 ) -> Tuple[List[HypothesisProof], AgentExchangeRecord]:
     """Run an autonomous 3-stage inter-agent proof debate and return validated open hypotheses + exchange transcript."""
     now_iso = _utc_now_iso()
@@ -2163,21 +2164,23 @@ async def run_autonomous_proof_debate(
         },
     ]
 
-    if use_llm and client is not None:
-        # Batched single-pass or 3-turn isolated LLM enrichment that preserves exact computed metrics
-        prior_notes: List[str] = []
-        for idx, tspec in enumerate(turns_spec):
-            if idx == 2:
-                # Keep Turn 3 crisp & deterministic or let Explorer synthesize quickly only if needed
-                continue
-            role = tspec["role_badge"]
+    turns: List[AgentExchangeTurn] = []
+    prior_notes: List[str] = []
+    topic_str = "Autonomous Open Hypothesis Debate: Empirical-Bayes KL, Year-Stratified TE & Changepoints"
+    open_ids = [h.hyp_id for h in open_proofs]
+
+    for idx, tspec in enumerate(turns_spec, start=1):
+        role = tspec["role_badge"]
+        sp = tspec["spec"]
+        msg_text = tspec["default_msg"]
+        if use_llm and client is not None:
             prompt_payload = {
                 "role": role,
                 "dossier": dossier,
                 "prior_turns": prior_notes,
                 "instruction": (
-                    f"You are {tspec['spec'].name} ({role}) debating Mali conflict mathematical proofs. "
-                    "Write ONE concise technical turn (<=55 words) citing ONLY exact numbers from dossier. "
+                    f"You are {sp.name} ({role}) debating Mali conflict mathematical proofs. "
+                    "Respond to prior_turns (if any) and write ONE concise technical turn (<=60 words) citing ONLY exact numbers from dossier. "
                     'Return strictly JSON: {"message": "..."}'
                 ),
             }
@@ -2185,44 +2188,56 @@ async def run_autonomous_proof_debate(
                 raw, _, err = await asyncio.wait_for(
                     invoke_vol2_agent(
                         client,
-                        tspec["spec"],
+                        sp,
                         [{"role": "user", "content": json.dumps(prompt_payload)}],
                         max_tokens=900,
-                        temperature=0.15,
+                        temperature=0.18,
                     ),
                     timeout=25.0,
                 )
                 parsed = extract_json_object(raw) if (not err and raw) else None
                 if parsed and isinstance(parsed.get("message"), str) and len(parsed["message"].strip()) >= 16:
-                    tspec["default_msg"] = parsed["message"].strip()[:520]
-                    prior_notes.append(f"[{role}] {tspec['default_msg']}")
+                    msg_text = parsed["message"].strip()[:520]
             except Exception:
                 pass
-
-    turns: List[AgentExchangeTurn] = []
-    for idx, tspec in enumerate(turns_spec, start=1):
-        sp = tspec["spec"]
+        prior_notes.append(f"[{role}] {msg_text}")
+        turn_now = _utc_now_iso()
         turns.append(
             AgentExchangeTurn(
                 turn_index=idx,
-                timestamp=now_iso,
+                timestamp=turn_now,
                 agent_id=sp.agent_id,
                 agent_name=sp.name,
                 model_id=sp.model_id,
-                role_badge=tspec["role_badge"],
+                role_badge=role,
                 target_hyp_id=tspec["target_hyp_id"],
-                message=tspec["default_msg"],
+                message=msg_text,
                 math_refs=tspec["math_refs"],
                 verdict_after=tspec["verdict_after"],
             )
         )
+        if on_turn is not None:
+            try:
+                partial = AgentExchangeRecord(
+                    exchange_id=f"{sweep_id or 'vol2'}_exchange",
+                    sweep_id=sweep_id or "vol2_sweep",
+                    updated_at=turn_now,
+                    topic=topic_str,
+                    open_hyp_ids=open_ids,
+                    turns=list(turns),
+                )
+                maybe_coro = on_turn(partial)
+                if asyncio.iscoroutine(maybe_coro):
+                    await maybe_coro
+            except Exception:
+                pass
 
     exchange_record = AgentExchangeRecord(
         exchange_id=f"{sweep_id or 'vol2'}_exchange",
         sweep_id=sweep_id or "vol2_sweep",
-        updated_at=now_iso,
-        topic="Autonomous Open Hypothesis Debate: Empirical-Bayes KL, Year-Stratified TE & Changepoints",
-        open_hyp_ids=[h.hyp_id for h in open_proofs],
+        updated_at=_utc_now_iso(),
+        topic=topic_str,
+        open_hyp_ids=open_ids,
         turns=turns,
     )
     return open_proofs, exchange_record

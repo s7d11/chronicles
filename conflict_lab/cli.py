@@ -60,6 +60,33 @@ async def run_sweep_pipeline(
         {"agent_id": s.agent_id, "name": s.name, "provider": s.provider, "model": s.model_id, "role": s.role}
         for s in AGENT_CAST
     ]
+    fs_pub = Vol2FirestorePublisher.from_env() if push_firestore else None
+    if fs_pub is not None:
+        from .firestore_sync import clamp_exchange_doc
+        from .schema import AgentExchangeRecord as _ExRec
+
+        fs_pub.patch_doc(
+            "vol2_meta/overview",
+            {
+                "sweep_id": sweep_id,
+                "updated_at": now_iso,
+                "running": True,
+                "active_agents": agent_roster[:16],
+            },
+        )
+        fs_pub.patch_doc(
+            "vol2_exchanges/latest",
+            clamp_exchange_doc(
+                _ExRec(
+                    exchange_id=f"{sweep_id}_exchange",
+                    sweep_id=sweep_id,
+                    updated_at=now_iso,
+                    topic="Gathering live Mali OSINT across 6 perspectives & preparing proof debate...",
+                    open_hyp_ids=[],
+                    turns=[],
+                )
+            ),
+        )
 
     async with httpx.AsyncClient(timeout=35.0, follow_redirects=True) as client:
         if from_incidents:
@@ -104,6 +131,23 @@ async def run_sweep_pipeline(
             proofs = await synthesize_llm_hypothesis_notes(client, proofs, max_to_enrich=8, use_llm=True)
 
         print("[vol2] Running autonomous Explorer -> Theorist -> Arbiter proof debate...", flush=True)
+
+        def _stream_turn_to_firestore(partial_ex: Any) -> None:
+            if fs_pub is not None:
+                from .firestore_sync import clamp_exchange_doc
+
+                ex_doc = clamp_exchange_doc(partial_ex)
+                fs_pub.patch_doc("vol2_exchanges/latest", ex_doc)
+                fs_pub.patch_doc(
+                    "vol2_meta/overview",
+                    {
+                        "sweep_id": sweep_id,
+                        "updated_at": partial_ex.updated_at,
+                        "running": True,
+                        "agent_exchanges": list(ex_doc.get("turns") or [])[:24],
+                    },
+                )
+
         open_proofs, exchange_record = await run_autonomous_proof_debate(
             client if use_llm else None,
             incidents,
@@ -111,6 +155,7 @@ async def run_sweep_pipeline(
             proofs,
             sweep_id=sweep_id,
             use_llm=use_llm,
+            on_turn=_stream_turn_to_firestore if fs_pub is not None else None,
         )
         proofs.extend(open_proofs)
 
