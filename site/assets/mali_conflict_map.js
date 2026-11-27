@@ -296,6 +296,7 @@
 
           <div class="vol2-workbench-col" id="vol2Workbench"></div>
         </div>
+        <section class="vol2-exchange-dock" id="vol2ExchangeDock"></section>
       </div>
     `;
 
@@ -779,59 +780,6 @@
           ${jsdH ? renderKlDistributionSvg((jsdH.kl_bins || []).slice(0, 8), "National Regime Shift (Early vs Late)", "Mali", jsdH.test_statistic_value, jsdH.q_value) : ""}
           ${parH ? `<div class="vol2-proof-card" style="margin-top:8px"><strong>National Heavy-Tail Law:</strong> ${esc(parH.analyst_narrative)} <span class="vol2-verdict ${esc(parH.verdict)}" style="margin-left:6px">${esc(parH.verdict)}</span></div>` : ""}
         `;
-      } else if (state.activeTab === "exchange") {
-        const turnsAll =
-          (state.exchangeRecord && Array.isArray(state.exchangeRecord.turns) && state.exchangeRecord.turns) ||
-          (state.meta && Array.isArray(state.meta.agent_exchanges) && state.meta.agent_exchanges) ||
-          [];
-        const shownTurns = state.replayLimit != null ? turnsAll.slice(0, state.replayLimit) : turnsAll;
-        const openHyps = state.hypotheses.filter((h) => h.origin === "agent_open");
-        const isSweepRunning = Boolean(state.meta && state.meta.running);
-        const statusPill = state.liveConnected
-          ? `<span class="vol2-verdict ${isSweepRunning ? "FALSIFIED" : "PROVEN"}">${isSweepRunning ? "STREAMING LIVE TURN-BY-TURN" : "FIRESTORE LIVE SYNCED"}</span>`
-          : `<span class="vol2-verdict INCONCLUSIVE">STATIC SNAPSHOT</span>`;
-        const turnsHtml = shownTurns
-          .map((t) => {
-            const refs = Object.entries(t.math_refs || {})
-              .map(([k, v]) => `<span class="vol2-badge">${esc(k)}=${esc(v)}</span>`)
-              .join("");
-            const roleCls = String(t.role_badge || "Explorer").toLowerCase();
-            return `
-              <div class="vol2-exchange-turn vol2-role-${esc(roleCls)}">
-                <div class="vol2-exchange-head">
-                  <div>
-                    <span class="vol2-role-pill ${esc(roleCls)}">${esc(t.role_badge || "Agent")}</span>
-                    <strong>#${t.turn_index || "?"} ${esc(t.agent_name || t.agent_id)}</strong>
-                  </div>
-                  <span class="vol2-model-tag">${esc(t.model_id || "")}</span>
-                </div>
-                <div class="vol2-exchange-msg">${esc(t.message)}</div>
-                <div class="vol2-exchange-foot">
-                  <div>${refs}</div>
-                  ${t.verdict_after ? `<span class="vol2-verdict ${esc(t.verdict_after)}">${esc(t.verdict_after)}</span>` : ""}
-                </div>
-              </div>`;
-          })
-          .join("");
-        const openCards = openHyps.map(renderProofCard).join("");
-        tabBody = `
-          <div class="vol2-proof-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-              <strong>Autonomous Agent Proof Observatory &amp; Peer Debate</strong>
-              ${statusPill}
-            </div>
-            <div style="font-size:0.77rem;opacity:0.84;margin-top:4px">
-              ${esc((state.exchangeRecord && state.exchangeRecord.topic) || "Multi-agent deduction, estimator bias challenge & BH-FDR adjudication.")}
-              <br/><span>Sweep: <code>${esc((state.exchangeRecord && state.exchangeRecord.sweep_id) || (state.meta && state.meta.sweep_id) || "snapshot")}</code> &bull; Updated: <strong>${esc((state.exchangeRecord && state.exchangeRecord.updated_at) || (state.meta && state.meta.updated_at) || "—")}</strong></span>
-            </div>
-            <div class="vol2-toolbar-group" style="margin-top:8px">
-              ${!state.liveConnected ? `<button class="vol2-btn vol2-btn-live" id="vol2ExLiveBtn">Connect Firestore Real-Time Stream</button>` : `<button class="vol2-btn" id="vol2ExRefreshBtn">Pull Latest Firestore Turns Now</button>`}
-              <button class="vol2-btn" id="vol2ExReplayBtn">${state.replayTimer ? "Pause Animated Replay" : "Animate Step-by-Step Replay"}</button>
-            </div>
-          </div>
-          <div class="vol2-exchange-feed">${turnsHtml || `<div class="vol2-proof-card">${isSweepRunning ? "Cloud Run sweep active — waiting for Turn 1 (Explorer) to stream via Firestore..." : "No agent exchange turns recorded yet."}</div>`}</div>
-          ${openCards ? `<h4 style="margin:12px 0 6px;font-size:0.86rem;text-transform:uppercase;letter-spacing:0.04em">Deduced Open Hypotheses (${openHyps.length})</h4>${openCards}` : ""}
-        `;
       } else if (state.activeTab === "simulate") {
         const eventDates = cercleEvents.map((e) => e.date_start);
         const hw = evaluateHawkesInteractive(eventDates, state.cutoffIso, state.simBeta);
@@ -900,7 +848,6 @@
         <div class="vol2-tabs">
           <button class="vol2-tab-btn ${state.activeTab === "proofs" ? "active" : ""}" data-tab="proofs">Mathematical Proofs (${clHypotheses.length})</button>
           <button class="vol2-tab-btn ${state.activeTab === "kl" ? "active" : ""}" data-tab="kl">Relative Entropy (KL)</button>
-          <button class="vol2-tab-btn ${state.activeTab === "exchange" ? "active" : ""}" data-tab="exchange">Agent Proof Exchange (${turns.length})</button>
           <button class="vol2-tab-btn ${state.activeTab === "simulate" ? "active" : ""}" data-tab="simulate">Live Interactive Lab</button>
           <button class="vol2-tab-btn ${state.activeTab === "incidents" ? "active" : ""}" data-tab="incidents">Underlying Data (${cercleEvents.length})</button>
         </div>
@@ -950,24 +897,90 @@
           renderWorkbench();
         });
       }
-      const exLiveBtn = wb.querySelector("#vol2ExLiveBtn");
+    }
+
+    function renderExchangeDock() {
+      const dock = rootEl.querySelector("#vol2ExchangeDock");
+      if (!dock) return;
+      const turnsAll =
+        (state.exchangeRecord && Array.isArray(state.exchangeRecord.turns) && state.exchangeRecord.turns) ||
+        (state.meta && Array.isArray(state.meta.agent_exchanges) && state.meta.agent_exchanges) ||
+        [];
+      const shownTurns = state.replayLimit != null ? turnsAll.slice(0, state.replayLimit) : turnsAll;
+      const openHyps = state.hypotheses.filter((h) => h.origin === "agent_open");
+      const isSweepRunning = Boolean(state.meta && state.meta.running);
+      const statusPill = state.liveConnected
+        ? `<span class="vol2-verdict ${isSweepRunning ? "FALSIFIED" : "PROVEN"}">${isSweepRunning ? "STREAMING LIVE TURN-BY-TURN" : "FIRESTORE LIVE SYNCED"}</span>`
+        : `<span class="vol2-verdict INCONCLUSIVE">STATIC SNAPSHOT</span>`;
+
+      const turnsHtml = shownTurns
+        .map((t, idx) => {
+          const refs = Object.entries(t.math_refs || {})
+            .map(([k, v]) => `<span class="vol2-badge">${esc(k)}=${esc(v)}</span>`)
+            .join("");
+          const roleCls = String(t.role_badge || "Explorer").toLowerCase();
+          const prevTurn = idx > 0 ? shownTurns[idx - 1] : null;
+          const prevV = prevTurn && prevTurn.verdict_after ? `${prevTurn.verdict_after} \u2192 ` : "";
+          const targetTxt = t.target_hyp_id ? `Target: <code>${esc(t.target_hyp_id)}</code> &bull; ` : "";
+          const timeTxt = t.timestamp ? String(t.timestamp).replace("T", " ").slice(0, 19) + "Z" : "";
+          return `
+            <div class="vol2-exchange-turn vol2-role-${esc(roleCls)}">
+              <div class="vol2-exchange-head">
+                <div>
+                  <span class="vol2-role-pill ${esc(roleCls)}">${esc(t.role_badge || "Agent")}</span>
+                  <strong>Turn #${t.turn_index || idx + 1} &bull; ${esc(t.agent_name || t.agent_id)}</strong>
+                  <span class="vol2-turn-verdict-arrow">${targetTxt}${esc(timeTxt)}</span>
+                </div>
+                <span class="vol2-model-tag">${esc(t.model_id || "")}</span>
+              </div>
+              <div class="vol2-exchange-msg">${esc(t.message)}</div>
+              <div class="vol2-exchange-foot">
+                <div>${refs}</div>
+                ${t.verdict_after ? `<span class="vol2-verdict ${esc(t.verdict_after)}">${esc(prevV + t.verdict_after)}</span>` : ""}
+              </div>
+            </div>`;
+        })
+        .join("");
+
+      const openCards = openHyps.map(renderProofCard).join("");
+      dock.innerHTML = `
+        <div class="vol2-dock-head">
+          <div>
+            <strong>Always-Visible Agent Proof Exchange &amp; Live Verdict Log (${shownTurns.length}/${turnsAll.length} turns)</strong>
+            <div style="font-size:0.76rem;opacity:0.84;margin-top:2px">
+              ${esc((state.exchangeRecord && state.exchangeRecord.topic) || "Multi-agent deduction, estimator bias challenge & BH-FDR adjudication.")}
+              &bull; Sweep: <code>${esc((state.exchangeRecord && state.exchangeRecord.sweep_id) || (state.meta && state.meta.sweep_id) || "snapshot")}</code>
+              &bull; Updated: <strong>${esc((state.exchangeRecord && state.exchangeRecord.updated_at) || (state.meta && state.meta.updated_at) || "—")}</strong>
+            </div>
+          </div>
+          <div class="vol2-toolbar-group">
+            ${statusPill}
+            ${!state.liveConnected ? `<button class="vol2-btn vol2-btn-live" id="vol2ExLiveBtn">Connect Firestore Live Stream</button>` : `<button class="vol2-btn" id="vol2ExRefreshBtn">Pull Latest Turns Now</button>`}
+            <button class="vol2-btn" id="vol2ExReplayBtn">${state.replayTimer ? "Pause Animated Replay" : "Animate Step-by-Step Replay"}</button>
+          </div>
+        </div>
+        <div class="vol2-exchange-feed">${turnsHtml || `<div class="vol2-proof-card">${isSweepRunning ? "Cloud Run sweep active — waiting for Turn 1 (Explorer) to stream via Firestore..." : "No agent exchange turns recorded yet."}</div>`}</div>
+        ${openCards ? `<h4 style="margin:14px 0 4px;font-size:0.84rem;text-transform:uppercase;letter-spacing:0.04em">Deduced Open Hypotheses Resolved by Exchange (${openHyps.length})</h4><div class="vol2-open-grid">${openCards}</div>` : ""}
+      `;
+
+      const exLiveBtn = dock.querySelector("#vol2ExLiveBtn");
       if (exLiveBtn) {
         exLiveBtn.addEventListener("click", () => connectFirestoreLive());
       }
-      const exRefBtn = wb.querySelector("#vol2ExRefreshBtn");
+      const exRefBtn = dock.querySelector("#vol2ExRefreshBtn");
       if (exRefBtn) {
         exRefBtn.addEventListener("click", () => {
           if (state.liveRefreshFn) state.liveRefreshFn();
         });
       }
-      const exRepBtn = wb.querySelector("#vol2ExReplayBtn");
+      const exRepBtn = dock.querySelector("#vol2ExReplayBtn");
       if (exRepBtn) {
         exRepBtn.addEventListener("click", () => {
           if (state.replayTimer) {
             clearInterval(state.replayTimer);
             state.replayTimer = null;
             state.replayLimit = null;
-            renderWorkbench();
+            renderExchangeDock();
             return;
           }
           const currentTurns =
@@ -977,17 +990,17 @@
           const total = currentTurns.length;
           if (!total) return;
           state.replayLimit = 1;
-          renderWorkbench();
+          renderExchangeDock();
           state.replayTimer = setInterval(() => {
             if (state.replayLimit == null || state.replayLimit >= total) {
               clearInterval(state.replayTimer);
               state.replayTimer = null;
               state.replayLimit = null;
-              renderWorkbench();
+              renderExchangeDock();
               return;
             }
             state.replayLimit += 1;
-            renderWorkbench();
+            renderExchangeDock();
           }, 1400);
         });
       }
@@ -1009,6 +1022,7 @@
         btn.textContent = "Connect Firestore Live";
         renderKpis();
         renderWorkbench();
+        renderExchangeDock();
         return;
       }
 
@@ -1072,6 +1086,7 @@
           renderKpis();
           renderMap();
           renderWorkbench();
+          renderExchangeDock();
         };
         state.liveRefreshFn = refreshAllRestFallback;
 
@@ -1088,6 +1103,7 @@
                 refreshAllRestFallback().catch(() => {});
               } else {
                 renderWorkbench();
+                renderExchangeDock();
               }
             }
           },
@@ -1098,7 +1114,7 @@
           (snap) => {
             if (snap.exists()) {
               state.exchangeRecord = snap.data();
-              renderWorkbench();
+              renderExchangeDock();
             }
           },
           () => {}
@@ -1109,7 +1125,7 @@
           if (!state.liveConnected) return;
           await Promise.all([fetchMetaRest(), fetchLiveExchangeRest()]);
           renderKpis();
-          renderWorkbench();
+          renderExchangeDock();
         }, 6000);
 
         state.liveConnected = true;
@@ -1126,10 +1142,11 @@
             if (!state.liveConnected) return;
             await Promise.all([fetchMetaRest(), fetchLiveExchangeRest()]);
             renderKpis();
-            renderWorkbench();
+            renderExchangeDock();
           }, 6000);
           renderKpis();
           renderWorkbench();
+          renderExchangeDock();
         } catch (err2) {
           btn.textContent = `Live Unavailable (${err2.message.slice(0, 18)})`;
         }
@@ -1167,6 +1184,7 @@
     renderKpis();
     renderMap();
     renderWorkbench();
+    renderExchangeDock();
 
     if (new URLSearchParams(window.location.search).get("live") === "1") {
       connectFirestoreLive();
