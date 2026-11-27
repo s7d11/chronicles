@@ -1,6 +1,33 @@
 [
   {
-    "incident_id": "inc_eae013d483b288",
+    "incident_id": "inc_4a085827be7145",
+    "date_start": "YYYY-MM-DD",
+    "date_end": "YYYY-MM-DD",
+    "precision_level": "region_centroid",
+    "admin1": "Mopti",
+    "admin2": "Mopti",
+    "cercle_id": "mopti",
+    "locality": "...",
+    "lat": 14.4843,
+    "lon": -4.183,
+    "actor_primary": "...",
+    "actor_secondary": "",
+    "tactic": "ambush",
+    "fatalities_best": 0,
+    "source_count": 1,
+    "sources": [
+      "https://news.google.com/rss/articles/CBMi0AFBVV95cUxQNVAtdUVORW94OTdUMFpDWGhYT0FjWWI4ZW5ZX0hNTTZwQWZjcjQ5WDVldHJialRVNURzWDhTNWJpUjBxbkF0cGZZQmtiTk15YThPY1BtTXcwQkt6bGE0UndmNE1WeHR1U0dwWUkyOVQ0QTRVOE5YZkE5VGNhaTVQYjJ2d1dQNmV3RmR5MlVvQk1ORDdaZGdaQWdWUlBPVnN3SjZXXzVhNm43Nm5zQ1RCU2RzN25RaExYLTRBZzlUd0p4NlRJQnczdG5nMGo3TlRs?oc=5"
+    ],
+    "perspectives": [
+      "sahel_press"
+    ],
+    "corroboration_tier": "single_source",
+    "headline": "Mali: Alger dénonce l'«alliance» des indépendantistes du FLA avec les «terroristes» du Jnim - RFI",
+    "summary": "...",
+    "adjudicator_note": "short rationale"
+  },
+  {
+    "incident_id": "inc_ea396cc9397050",
     "date_start": "2026-11-25",
     "date_end": "2026-11-27",
     "precision_level": "exact_locality",
@@ -14,31 +41,29 @@
     "actor_secondary": "",
     "tactic": "blockade_siege",
     "fatalities_best": 0,
-    "source_count": 9,
+    "source_count": 8,
     "sources": [
-      "https://news.google.com/rss/articles/CBMic0FVX3lxTE9ZWFlyMVNIWmpVdUJscldjN183TUE4WVMxbXZQanNjRGJfRVVIY0V6UmxIV0l3THQ5eGRNUjlxZFFLak5mWEs5VzRaWDRnUWI3Zk4zVi1BMTFfN3QyVWhobkFNNExFVDZIX1d4cEhDWl93eEHSAXNBVV95cUxOUlcxSDB1Y3kyaVF2cm02VVM2X2kxd2xDMDg4RnI1VzJXUGhzSzBTVDRjanUtQXgtUkc2NVEwbnFfV1NhRVZ6dV8waGc4Y292RGtTMXQ3eGNDbmxldTJpTTRnbUNpUkxnaFF0MjVzaHZJdkg4?oc=5",
       "https://news.google.com/rss/articles/CBMi2AFBVV95cUxNWjlsU0ZJRVQxNVVNMUVWakwyVXhFdmwzOWRXV0U4eklzZnBEd2ozZWhwbnlKbUg2dHhfUDA1M0REQ1NKRWFFQThEU203SjU2Y3FHcFZOZ1VuZXNRdWpDZzVFaFBHQUg4dzI1U2dZeU9HN01UYV9ydU1mczBZX0ZGNjB4SzFBVGFmSGZ4WlpnSXhuRV8yU2pNUFBpR2cxc3ZQQ1lBRkdjTHNLdzhvLTlDNEdOalpjM1lPWS1vWkNBN09qVm5SU2I3YjdQcC0ySk1YZ0lZVXRHSlI?oc=5",
-      "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPX3Nya2VLNzVDc1djRTVRVmIwdElLVHBoSF81dzVhWFhSN0pVY290MHZpSW5tQXZ6bElEMDVGS3Y2b1JmRFl1Yk1MMllCOGFjTTdRa0taNWVjOWNsT3ZtQXpobkRzOEdXN2ZNQlBjSnVHN1E3SGJkUHVrR1FPaHlXUXMyOTROS3pWRlRfYS1OcjEtSzB2bC1IRWw4QmctMlNiTlYtanhvZHB4RGZha1EwY0FwLW45Nndzb3ZwOUZyMGZBYURtT05hMURLdVNnTnVRc3lEdFpn?oc=5",
+      "https://news.google.com/rss/articles/CBMic0FVX3lxTE5SVzFIMHVjeTJpUXZybTZVUzZfaTF3bEMwODhGcjVXMldQaHNLMFNUNGNqdS1BeC1SRzY1UTBucV9XU2FFVnp1XzBoZzhjb3ZEa1MxdDd4Y0NubGV1MmlNNGdtQ2lSTGdoUXQyNXNodkl2SDjSAXNBVV95cUxOUlcxSDB1Y3kyaVF2cm02VVM2X2kxd2xDMDg4RnI1VzJXUGhzSzBTVDRjanUtQXgtUkc2NVEwbnFfV1NhRVZ6dV8waGc4Y292RGtTMXQ3eGNDbmxldTJpTTRnbUNpUkxnaFF0MjVzaHZJdkg4?oc=5",
       "https://news.google.com/rss/articles/CBMi3AFBVV95cUxOdjJNQ19ZV3lKS3pDYzhIU0ZzMk1LV1d1ZGE1LThqZ1R1ZDFYV3BxWVQ5dm80bVp3cGtYWFdDMnNnSnVJZUlBZmw3R3FxVXhmWWswekMwU0ZJajFUT3lWdk1lRTRLeFVienpScU5PQ0RsZkxVVlJpNW5DV1Myand5aEZDaHYwSk1aRDZMYi1qaFRRZzZLTEVZT20wVnVaS0I5MHlOMjJ6TlptQjhMRXlJeVI5MHpvclhQa3JxYWE2T2s1N1NoUTl6OVFsUDNPVlJIcktXWEM2VzExWGFX?oc=5",
-      "https://news.google.com/rss/articles/CBMiogFBVV95cUxNZWRUMWY1UlhaeUFsa3k5ZmMwV1hsdXAzYUkxYW9XTGxrdEg2UW41MFFRNVZHV2ZDSjFDbHptZldRVTdlXzYwUzJNa0xjdUpVTFhnUDJHZkNJazRyZFNSRDBRSExSVi03dE1zQmVLTktxZDV1cS1ucGJDc0VmSDY0bWh1dFVQaDhfekJncDBDNXhpMkJZc1RwSEpwY2laWi1oOHc?oc=5",
       "https://news.google.com/rss/articles/CBMixgFBVV95cUxNTklJUE1MMVUxZUhUN0FicmhZRjdzY2tUX19DRFJuQ2FRX2wxcFlRRnFBdnh4cjdzTTZNYnFwQXNtVW9WVlE5ZC01X2VBOWZWelpKQUp5bXRSaHlmQ1A4VS1NU1U4UFVWNS1iNEFfeVFyd1VnYlNmT1RPdUxpbkQtNFJkb2NZRWp5T0VwOUlIYVpGOElMQU52UzZzM1QtMXNnc2kzanN3ZEhKbzVSR05MTDMyM3hiVWFLSVhDdFk4NVhkZGhSOFE?oc=5",
       "https://news.google.com/rss/articles/CBMitwFBVV95cUxNSkZLNG4tS25COF9BQllqOGg2WU81UURJUTZ0NkJzS1NWQ3REdXowai1URDl6emdrREhhU0JZZi1IMGdMRXpRcGFCXzcxS3EwVGxodTlOUlM5TDhCVndhU1pwZng3VGt0cXYxQTJsNnNKUDJpU0RwUmNfQTBUbzZtSnlwMW1NUWhwbzZNc1dLVU44eWZoOE1qdE1IRGhadERPY1MzTXdnNHlLNnVCWndvenBCU1JvX0U?oc=5",
       "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNRHhXUWwzRlRNUGJaMy1kNlh2d1RBU1NoQmpBWUNURmlXWmlic1ZGRS01ZGIwblpfa09CRmpGNTltdnhNTVl3bEZ5Vi1SamNNektHZjR1WFF5SjJ0Vktac0NTa0FiZTBJdk1KWk5nZkJFMXlUNkViaWJoYXNCUEdValljbmpjQ2xVdUcyS2wtbFdpd2syZk5BcWxCUkhLYXVfVGFrVnMtY1FnejBPdkVlMkJyY2puWDl4aHRQV3kxdkkxaDA?oc=5",
+      "https://news.google.com/rss/articles/CBMikwJBVV95cUxPVzZ0X3Q4QWJNMEh0My02QjUyVGllWnV3ZkhtOEJSbE1qZ1RnMHUtN3VnVnB4VVk4dEM5MWVpVDBMTkYtMG5PSmtmSzBoTHVWT2lIbHpWeWR2MHgtcEpyazFJaFFjSXF1djFiX0pjejRNYW9MM292RXRLVVhBU3lmeFFLaENpRm5vTTBEU0pWOHhLOWxIRktRRkNsTWRaLXE5VS1ORGhNdDV0c1RnTnRGZy10bTJfVHhhbHNyOVprZDRPN2pmMlpOMGNMVGpQU3Z5ZWx0alJ0dHNMbUJmMm9INjJjeGFFd01SUXhXYjlxVjFQa0ZzNWM2RVk3ekNvLXRnWVpXZGRaSTdKb0I0YTMzeVpWbw?oc=5",
       "https://news.google.com/rss/articles/CBMiswFBVV95cUxPNUJGSGRjWlY4Q3JURl9zbms2QUNPRThFazdyNVhXM0I5bDNNNUtsMjhXemM3czVJQTE3S0RycXNoVVNkSEM3bm53WndNNC14ZF9fdXlXQWxlMDFoTDYtUXdIQ09VVlNOY1hQLUw4bVZYelhYaHNHMFRuc3pKYzVicFJBRWRoSG5BRlRkT2dHeUd4N2lOS3FQQm9kQVpncFk0UmFZdzdxUG9BbFRsUzJRM1JEbw?oc=5"
     ],
     "perspectives": [
-      "sahel_press",
       "public_x_post"
     ],
     "corroboration_tier": "high",
-    "headline": "Mali : le Jnim somme les habitants de Tonka de partir, en réaction à la présence de l'armée - DW.com",
-    "summary": "JNIM orders the inhabitants of Tonka to leave in reaction to the army's presence.",
-    "adjudicator_note": "short rationale"
+    "headline": "Mali: à Tonka, dans la région de Tombouctou, le Jnim somme les habitants de partir avant vendredi - tv5monde",
+    "summary": "JNIM demanded that residents of Tonka in the Tombouctou region leave before Friday.",
+    "adjudicator_note": ""
   },
   {
     "incident_id": "inc_e50c098ad9734b",
     "date_start": "2026-11-23",
-    "date_end": "2026-11-25",
+    "date_end": "2026-11-24",
     "precision_level": "region_centroid",
     "admin1": "Mopti",
     "admin2": "Mopti",
@@ -49,12 +74,12 @@
     "actor_primary": "FAMa / Allied Security Forces",
     "actor_secondary": "",
     "tactic": "raid_assault",
-    "fatalities_best": 10,
+    "fatalities_best": 0,
     "source_count": 3,
     "sources": [
       "https://reliefweb.int/report/mali/msf-mali-attacks-msf-strongly-condemns-deadly-attacks-against-civilians-and-health-facility",
-      "https://reliefweb.int/report/mali/wfp-mali-country-brief-november-2026",
-      "https://news.google.com/rss/articles/CBMijwFBVV95cUxQTFM3TlRBWG4wYjJLMzFvdmtXVkVXZTVSaEJsYlBpbHBnckpFQURBdEp0M1pIdnZhbnJwTGNocVIzcG5ORXdxVkd2NWxvbG1palQxRm1VVDY5QU1HSGxOREFpQS0xanJITjdHaUI2WUVmQVN4OGVzSE4tZkt1TEdqcWJkUk50SVFac21Od1Z1VQ?oc=5"
+      "https://news.google.com/rss/articles/CBMi5AFBVV95cUxNSndBYm9lNG9aVXhZWjJyTkNkZi1JYVVMYUItWlhQZzVmU0YzMjRtd3BKbmNqX281akF5Y3NaUmo5OVNRcWJHRDFzQlBybVQ0dU5rc25mRmZQMFBRbG1hUW9HaUV1SlVfaXo0ZHRIWlByTzRKSGJSTXpqTlpvWmNLYWw4UnpqX2dqRUJES1FtRE5MNlpxNHBfUkVlWWtmcnRuMGdEM29YTGloMU1kazByaFZaa0NzVkVtRkNmRExGSElBdW5KcENTSXZDYkFHVUh3TktheEJoVEFOQW1LS1ZvR185aGE?oc=5",
+      "https://reliefweb.int/report/mali/wfp-mali-country-brief-november-2026"
     ],
     "perspectives": [
       "multilateral_un",
@@ -63,33 +88,6 @@
     "corroboration_tier": "high",
     "headline": "MSF Mali attacks: MSF strongly condemns deadly attacks against civilians and a health facility",
     "summary": "Country: Mali Source: Médecins Sans Frontières This Saturday, 21 November, in Mali, attacks targeted the village of Arabebe near Niafounké, in the north of the country, as well as Niono, in the Ségou region, in the centre of the country. Two people lost their lives, including a h",
-    "adjudicator_note": ""
-  },
-  {
-    "incident_id": "inc_cbde4745bcd241",
-    "date_start": "2026-11-22",
-    "date_end": "2026-11-22",
-    "precision_level": "exact_locality",
-    "admin1": "Ségou",
-    "admin2": "Ségou",
-    "cercle_id": "segou",
-    "locality": "Ségou",
-    "lat": 13.4317,
-    "lon": -6.2157,
-    "actor_primary": "JNIM / Katiba Coalition",
-    "actor_secondary": "",
-    "tactic": "ambush",
-    "fatalities_best": 0,
-    "source_count": 1,
-    "sources": [
-      "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQUjVqMW5tUVB1ZmNMYWt6ZHdVclIzVkRYUVlha1BMRWp6ZkR1cEJqM1BPY1R5OGtBSFhaVk0zdXJIaHFleWdMM1Z2SDl0SEJYcVhoejNnRVhZc3VMS0pJS19IM2J5WVZsNUk3dlNyanA2ajhHdEFKaFFkdnNGbjFRRmVFZnlES21ScEVpLXRXdklSYy03U0NQbmRTQlVGT2pzUUdmVUdHWnVKVWdCdlAxNnFMUE1aZjhkY0pRM01NcExJNU83UHJDUG43eWV5YWExZTllU1p0TXpVVGZSUmxF?oc=5"
-    ],
-    "perspectives": [
-      "sahel_press"
-    ],
-    "corroboration_tier": "single_source",
-    "headline": "Mali: des jihadistes du JNIM attaquent l’armée et ses supplétifs dans la région de Ségou - RFI",
-    "summary": "JNIM jihadists attacked the army and its auxiliaries in the Ségou region of Mali.",
     "adjudicator_note": ""
   },
   {
@@ -175,60 +173,6 @@
     "adjudicator_note": ""
   },
   {
-    "incident_id": "inc_0c7504d544f7bf",
-    "date_start": "2026-10-20",
-    "date_end": "2026-10-20",
-    "precision_level": "exact_locality",
-    "admin1": "Ménaka",
-    "admin2": "Ménaka",
-    "cercle_id": "menaka",
-    "locality": "Ménaka",
-    "lat": 15.9182,
-    "lon": 2.4022,
-    "actor_primary": "armed_men",
-    "actor_secondary": "",
-    "tactic": "other",
-    "fatalities_best": 40,
-    "source_count": 1,
-    "sources": [
-      "https://news.google.com/rss/articles/CBMikwJBVV95cUxPSVVjeHFsSzBWLVBYbW1uTnBCRDdCRjhnazk2ZUtMdXdpY3VPekdack5MU2VzUG9pYVhEcHVNUUhDc0dvQXFlcUdHQkdkUFM4SnRrNkxrUEI5eUV1cFVlamluY2d4N09zSHV0eGdMeXI5YnhxWWNaQmpES1V1SV83VGxBMUlHUlJWRUlnMm5lNXhFRmdYMkpHR2xSTjBlN3ZfZHhrMG4wMUxTWU1DNnZVZUtZOExURV9oRGZ4Ql9jTHlZbUpoMWJnQ01EbUYxRW4xaVBlRUpsLUtMeW1ScUY3NmZEUzVGTzNTTVYtNGZQWG5EOHFYX0d5bDV4MmZzcDlwenJETm5hakIxMmc1Q2VzVlRIbw?oc=5"
-    ],
-    "perspectives": [
-      "sahel_press"
-    ],
-    "corroboration_tier": "single_source",
-    "headline": "Au Mali, plus de 40 civils tués par des hommes armés dans la région de Ménaka, selon des sources locales - Le Monde.fr",
-    "summary": "More than 40 civilians were killed by armed men in the Ménaka region of Mali according to local sources.",
-    "adjudicator_note": ""
-  },
-  {
-    "incident_id": "inc_cac4f80570080b",
-    "date_start": "2026-10-06",
-    "date_end": "2026-10-06",
-    "precision_level": "exact_locality",
-    "admin1": "Kidal",
-    "admin2": "Kidal",
-    "cercle_id": "kidal",
-    "locality": "Kidal",
-    "lat": 18.4411,
-    "lon": 1.4078,
-    "actor_primary": "Army",
-    "actor_secondary": "",
-    "tactic": "other",
-    "fatalities_best": 0,
-    "source_count": 1,
-    "sources": [
-      "https://news.google.com/rss/articles/CBMijAJBVV95cUxOMVNSTUNKWWYtdURYcHB5MXczUDF3LVpTN3c3ZHFQOHlRSDlrd1JRWjhURHNpOXlBSVRyTGRlTkJjY1hLWXE2SlNtd3lBNFRObEZ2VHF0NFBKZEQxOVVLRUZXampveEhJa0RWc0E2bmp3d1UtaWZNY2RwNE9KZ1JmMjExNzNjZ25hZldCT3pUaVhoem1uNFBsSlg2ZlNPODg0Rm1GUzN4UEg5aUlIekx6OUpqMy1RTE1pU2tXaU8tTXJ6N25CYnhWMmxUMl85UWRYQ2x3WG56RmVDcl93QXZwN2w1WXAxbXgxWjI3MVh4NVNYU1dTd2ZfTG53SGQzaXNKdzJKbDdKWjZMOXhQ?oc=5"
-    ],
-    "perspectives": [
-      "public_x_post"
-    ],
-    "corroboration_tier": "single_source",
-    "headline": "Au Mali, l’armée signe une rare victoire après la prise de la ville stratégique de Kidal, désertée par les rebelles - Le Monde.fr",
-    "summary": "The army achieves a rare victory after capturing the strategic city of Kidal, which was deserted by rebels.",
-    "adjudicator_note": ""
-  },
-  {
     "incident_id": "inc_3b4c04c4d2e07e",
     "date_start": "2026-07-04",
     "date_end": "2026-07-04",
@@ -253,6 +197,33 @@
     "corroboration_tier": "single_source",
     "headline": "Attaques au Mali : l'Union africaine exprime sa solidarité au Mali - BBC",
     "summary": "Attaques au Mali : l'Union africaine exprime sa solidarité au Mali &nbsp;&nbsp; BBC",
+    "adjudicator_note": ""
+  },
+  {
+    "incident_id": "inc_da6d89408f23bf",
+    "date_start": "2026-06-05",
+    "date_end": "2026-06-05",
+    "precision_level": "region_centroid",
+    "admin1": "Mopti",
+    "admin2": "Mopti",
+    "cercle_id": "mopti",
+    "locality": "Recrutement & Concours | Forces Armées Maliennes - fama.mil.ml",
+    "lat": 14.4843,
+    "lon": -4.183,
+    "actor_primary": "FAMa / Allied Security Forces",
+    "actor_secondary": "",
+    "tactic": "other",
+    "fatalities_best": 0,
+    "source_count": 1,
+    "sources": [
+      "https://news.google.com/rss/articles/CBMiRkFVX3lxTE9sZVJfSXduTXpaS3lyY1dvSXhMV29WYjNuSXNBUVBUZEs3enBmUjZSQUJQNkJfSlRLSXJjZ2xsLU5jc1dwbmc?oc=5"
+    ],
+    "perspectives": [
+      "official_fama_dirpa"
+    ],
+    "corroboration_tier": "single_source",
+    "headline": "Recrutement & Concours | Forces Armées Maliennes - fama.mil.ml",
+    "summary": "Recrutement & Concours | Forces Armées Maliennes &nbsp;&nbsp; fama.mil.ml",
     "adjudicator_note": ""
   },
   {
@@ -12160,6 +12131,33 @@
     "corroboration_tier": "medium",
     "headline": "FAMa Actu;WAGNER PMC OPERATIONS WITH THE MALIAN ARMY IN AZAWAD",
     "summary": "UCDP GED \"FAMA,2023-10-27,FAMa Actu\";\"El Coyote,2023-12-01,WAGNER PMC OPERATIONS WITH THE MALIAN ARMY IN AZAWAD\" | Actors: JNIM vs Government of Mali",
+    "adjudicator_note": ""
+  },
+  {
+    "incident_id": "inc_527a0a26cf9800",
+    "date_start": "2023-10-25",
+    "date_end": "2023-10-27",
+    "precision_level": "cercle_centroid",
+    "admin1": "Ménaka",
+    "admin2": "Ménaka",
+    "cercle_id": "menaka",
+    "locality": "Ménaka region",
+    "lat": 15.9182,
+    "lon": 2.4022,
+    "actor_primary": "ISGS / Islamic State Sahel",
+    "actor_secondary": "",
+    "tactic": "raid_assault",
+    "fatalities_best": 4,
+    "source_count": 1,
+    "sources": [
+      "https://data.humdata.org/dataset/9a029524-81e0-407c-a2d6-8042a37c1dec/resource/9abe8813-5136-4d8b-babd-8d7a9a22dbad/download/conflict_data_mli.csv"
+    ],
+    "perspectives": [
+      "independent_event_db"
+    ],
+    "corroboration_tier": "medium",
+    "headline": "📍#Ménaka",
+    "summary": "UCDP GED \"@abdalaag2022,2023-10-25,📍#Ménaka \" | Actors: Civilians vs IS",
     "adjudicator_note": ""
   }
 ]

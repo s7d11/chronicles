@@ -1,7 +1,7 @@
 {
-  "exchange_id": "vol2_20261127_183939Z_exchange",
-  "sweep_id": "vol2_20261127_183939Z",
-  "updated_at": "2026-11-27T18:40:00Z",
+  "exchange_id": "vol2_20261127_185603Z_exchange",
+  "sweep_id": "vol2_20261127_185603Z",
+  "updated_at": "2026-11-27T18:58:32Z",
   "topic": "Autonomous Open Hypothesis Debate: Empirical-Bayes KL, Year-Stratified TE & Changepoints",
   "open_hyp_ids": [
     "open_mali__liptako_vs_central_kl",
@@ -11,24 +11,24 @@
   "turns": [
     {
       "turn_index": 1,
-      "timestamp": "2026-11-27T18:40:00Z",
+      "timestamp": "2026-11-27T18:58:32Z",
       "agent_id": "a0-coordinator",
       "agent_name": "Bamako Watch Coordinator",
       "model_id": "mistralai/mistral-large-4-1t-a52b",
       "role_badge": "Explorer",
       "target_hyp_id": "open_mali__liptako_vs_central_kl",
-      "message": "Empirical sweep over 1056 verified incidents (excluding 8 region_centroid records from cercle KL/TE): Actor KL peaks at menaka (D_KL=1.48228, q=0.00076471), ansongo (D_KL=0.96558, q=0.00076471), kidal (D_KL=0.55828, q=0.00076471); Tactic KL led by abeibara (D_KL=0.2325, indirect_fire), gourma-rharous (D_KL=0.17286, indirect_fire); Regime JSD=0.08783 nats; Pareto tail alpha=1.9754 (Vuong Z=-4.0542). Proposing 3 cross-theater open hypotheses for estimator scrutiny.",
+      "message": "Empirical sweep over 1055 verified incidents (excluding 10 region_centroid records from cercle KL/TE): Actor KL peaks at menaka (D_KL=1.48393, q=0.00092857), ansongo (D_KL=0.96266, q=0.00092857), kidal (D_KL=0.53641, q=0.00092857); Tactic KL led by abeibara (D_KL=0.24538, indirect_fire), gourma-rharous (D_KL=0.18408, indirect_fire); Regime JSD=0.08783 nats; Pareto tail alpha=1.9779 (Vuong Z=-4.0825). Proposing 3 cross-theater open hypotheses for estimator scrutiny.",
       "math_refs": {
-        "n_incidents": 1056,
-        "filtered_centroid": 8,
-        "top_actor_kl": 1.48228,
+        "n_incidents": 1055,
+        "filtered_centroid": 10,
+        "top_actor_kl": 1.48393,
         "regime_jsd_nats": 0.08783
       },
       "verdict_after": "PROPOSED"
     },
     {
       "turn_index": 2,
-      "timestamp": "2026-11-27T18:40:00Z",
+      "timestamp": "2026-11-27T18:58:32Z",
       "agent_id": "a8-math-theorist",
       "agent_name": "Cluster Hypothesis & Proof Analyst",
       "model_id": "stepfun-ai/step-5-preview",
@@ -39,19 +39,19 @@
         "alpha0_rule": "K_eff",
         "te_mm_top": 0.052802,
         "te_q_bh": 0.027,
-        "pareto_vuong_z": -4.0542
+        "pareto_vuong_z": -4.0825
       },
       "verdict_after": "CHALLENGED"
     },
     {
       "turn_index": 3,
-      "timestamp": "2026-11-27T18:40:00Z",
+      "timestamp": "2026-11-27T18:58:32Z",
       "agent_id": "a0-coordinator",
       "agent_name": "Bamako Watch Coordinator",
       "model_id": "mistralai/mistral-large-4-1t-a52b",
       "role_badge": "Explorer",
       "target_hyp_id": "open_mali__asymmetric_corridor_spillover",
-      "message": "Refined all open hypotheses against >45d gap segmentation and strict t<=T_cut bounds: open_mali__liptako_vs_central_kl=3.4799 (p=0.0005); open_mali__northern_standoff_shift=7.7493 (p=0.022489); open_mali__asymmetric_corridor_spillover=0.052802 (p=0.001). Ready for final empirical adjudication.",
+      "message": "Refined all open hypotheses against >45d gap segmentation and strict t<=T_cut bounds: open_mali__liptako_vs_central_kl=3.48759 (p=0.0005); open_mali__northern_standoff_shift=7.7493 (p=0.022489); open_mali__asymmetric_corridor_spillover=0.052802 (p=0.001). Ready for final empirical adjudication.",
       "math_refs": {
         "open_tested": 3,
         "proven_open": 3
@@ -60,13 +60,13 @@
     },
     {
       "turn_index": 4,
-      "timestamp": "2026-11-27T18:40:00Z",
+      "timestamp": "2026-11-27T18:58:32Z",
       "agent_id": "a9-adjudicator",
       "agent_name": "Gemini 3.1 Flash-Lite Critic",
       "model_id": "gemini-3.1-flash-lite",
       "role_badge": "Arbiter",
       "target_hyp_id": "open_mali__liptako_vs_central_kl",
-      "message": "Final adjudication under alpha=0.05 (BH-FDR & exact permutation nulls): open_mali__liptako_vs_central_kl -> PROVEN (stat=3.4799, q=0.0005); open_mali__northern_standoff_shift -> SUPPORTED (stat=7.7493, q=0.022489); open_mali__asymmetric_corridor_spillover -> SUPPORTED (stat=0.052802, q=0.027)",
+      "message": "Final adjudication under alpha=0.05 (BH-FDR & exact permutation nulls): open_mali__liptako_vs_central_kl -> PROVEN (stat=3.48759, q=0.0005); open_mali__northern_standoff_shift -> SUPPORTED (stat=7.7493, q=0.022489); open_mali__asymmetric_corridor_spillover -> SUPPORTED (stat=0.052802, q=0.027)",
       "math_refs": {
         "total_proofs": 198,
         "open_proven_or_supported": 3

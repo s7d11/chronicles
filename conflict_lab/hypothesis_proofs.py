@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import math
@@ -859,12 +860,21 @@ async def synthesize_llm_hypothesis_notes(
         {"role": "user", "content": json.dumps(payload)},
     ]
 
-    raw, _, err = await invoke_vol2_agent(client, spec, messages, max_tokens=1600, temperature=0.1)
-    if err or not raw:
-        # Fallback to cheap batched Gemini Flash-Lite critic if primary unavailable
-        raw, _, _ = await invoke_vol2_agent(
-            client, CRITIC_SPEC, messages, max_tokens=1600, temperature=0.1
+    try:
+        raw, _, err = await asyncio.wait_for(
+            invoke_vol2_agent(client, spec, messages, max_tokens=1400, temperature=0.1),
+            timeout=25.0,
         )
+    except Exception:
+        raw, err = "", "timeout"
+    if err or not raw:
+        try:
+            raw, _, _ = await asyncio.wait_for(
+                invoke_vol2_agent(client, CRITIC_SPEC, messages, max_tokens=1400, temperature=0.1),
+                timeout=20.0,
+            )
+        except Exception:
+            raw = ""
     parsed = extract_json_object(raw) if raw else None
     note_map: Dict[str, str] = {}
     if parsed and isinstance(parsed.get("notes"), list):
@@ -2172,12 +2182,15 @@ async def run_autonomous_proof_debate(
                 ),
             }
             try:
-                raw, _, err = await invoke_vol2_agent(
-                    client,
-                    tspec["spec"],
-                    [{"role": "user", "content": json.dumps(prompt_payload)}],
-                    max_tokens=320,
-                    temperature=0.15,
+                raw, _, err = await asyncio.wait_for(
+                    invoke_vol2_agent(
+                        client,
+                        tspec["spec"],
+                        [{"role": "user", "content": json.dumps(prompt_payload)}],
+                        max_tokens=900,
+                        temperature=0.15,
+                    ),
+                    timeout=25.0,
                 )
                 parsed = extract_json_object(raw) if (not err and raw) else None
                 if parsed and isinstance(parsed.get("message"), str) and len(parsed["message"].strip()) >= 16:

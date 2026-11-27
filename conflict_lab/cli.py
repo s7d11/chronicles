@@ -100,8 +100,10 @@ async def run_sweep_pipeline(
         model_out = run_walk_forward_and_predictions(incidents, clusters, cluster_members)
         proofs = model_out["proofs"]
         if use_llm and proofs:
+            print("[vol2] Synthesizing hypothesis mechanism narratives...", flush=True)
             proofs = await synthesize_llm_hypothesis_notes(client, proofs, max_to_enrich=8, use_llm=True)
 
+        print("[vol2] Running autonomous Explorer -> Theorist -> Arbiter proof debate...", flush=True)
         open_proofs, exchange_record = await run_autonomous_proof_debate(
             client if use_llm else None,
             incidents,
