@@ -71,6 +71,7 @@ rules_version = '2';
 //   - tactic_counts: map (optional, <= 32 keys)
 //   - corridor_edges: list (optional, <= 500 items)
 //   - active_agents: list (optional, <= 64 items)
+//   - agent_exchanges: list (optional, <= 24 items)
 //   - running: bool (optional)
 //
 // Collection: vol2_incidents
@@ -124,7 +125,7 @@ rules_version = '2';
 //   - hyp_id: string (required, matches {hypId}, 2..80 chars)
 //   - cluster_id: string (required, 2..80 chars)
 //   - cercle_id: string (required, 2..64 chars)
-//   - family: string (required, in ['H_hawkes', 'H_dispersion', 'H_markov', 'H_seasonal', 'H_beta'])
+//   - family: string (required, in ['H_hawkes', 'H_dispersion', 'H_markov', 'H_seasonal', 'H_beta', 'H_kl_divergence', 'H_transfer_entropy', 'H_changepoint', 'H_pareto_tail', 'H_open'])
 //   - title: string (required, 1..256 chars)
 //   - symbolic_formula: string (required, 1..1024 chars)
 //   - null_hypothesis: string (required, 1..1024 chars)
@@ -133,11 +134,17 @@ rules_version = '2';
 //   - test_statistic_name: string (required, 1..120 chars)
 //   - test_statistic_value: number (required)
 //   - p_value: number (required, 0..1)
+//   - q_value: number (optional, 0..1)
 //   - log_likelihood_ratio: number (optional)
 //   - verdict: string (required, in ['PROVEN', 'SUPPORTED', 'INCONCLUSIVE', 'FALSIFIED'])
 //   - alpha: number (optional, 0..1)
 //   - n_observations: int (optional, >= 0)
 //   - derivation_steps: list (optional, <= 64 items)
+//   - kl_bins: list (optional, <= 24 items)
+//   - origin: string (optional, in ['deterministic', 'agent_open'])
+//   - proposed_by: string (optional, <= 120 chars)
+//   - challenged_by: string (optional, <= 120 chars)
+//   - adjudicated_by: string (optional, <= 120 chars)
 //   - analyst_narrative: string (optional, <= 4096 chars)
 //   - updated_at: timestamp or string (optional, <= 64 chars if string)
 //
@@ -169,6 +176,14 @@ rules_version = '2';
 //   - rainy_season_rate: number (optional)
 //   - dominant_actor: string (optional, <= 160 chars)
 //   - markov_next_tactics: map (optional, <= 32 keys)
+//   - kl_actor_nats: number (optional, >= 0)
+//   - kl_actor_q_bh: number (optional, 0..1)
+//   - kl_tactic_nats: number (optional, >= 0)
+//   - kl_tactic_q_bh: number (optional, 0..1)
+//   - te_inflow_bits: number (optional, >= 0)
+//   - te_inflow_q_bh: number (optional, 0..1)
+//   - changepoint_date: string (optional, <= 32 chars)
+//   - kl_bins: list (optional, <= 24 items)
 //   - risk_7d_prob: number (optional, 0..1)
 //   - risk_30d_prob: number (optional, 0..1)
 //   - expected_30d_count: number (optional, >= 0)
@@ -642,6 +657,12 @@ service cloud.firestore {
 
     match /vol2_predictions/{cercleId} {
       allow get: if cercleId.matches('^[a-z0-9_-]{2,64}$');
+      allow list: if true;
+      allow create, update, delete: if false;
+    }
+
+    match /vol2_exchanges/{docId} {
+      allow get: if docId.matches('^[a-zA-Z0-9_-]{2,80}$');
       allow list: if true;
       allow create, update, delete: if false;
     }

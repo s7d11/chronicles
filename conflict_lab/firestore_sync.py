@@ -12,6 +12,7 @@ import httpx
 
 from . import DEFAULT_FIRESTORE_DB, DEFAULT_FIRESTORE_PROJECT
 from .schema import (
+    AgentExchangeRecord,
     AttackCluster,
     CercleMathProofState,
     CerclePrediction,
@@ -80,6 +81,26 @@ def clamp_hypothesis_doc(h: HypothesisProof) -> Dict[str, Any]:
     d["alternative_hypothesis"] = (d.get("alternative_hypothesis") or "")[:980]
     d["analyst_narrative"] = (d.get("analyst_narrative") or "")[:3800]
     d["derivation_steps"] = [str(s)[:400] for s in (d.get("derivation_steps") or [])[:16]]
+    d["proposed_by"] = (d.get("proposed_by") or "")[:120]
+    d["challenged_by"] = (d.get("challenged_by") or "")[:120]
+    d["adjudicated_by"] = (d.get("adjudicated_by") or "")[:120]
+    clamped_bins: List[Dict[str, Any]] = []
+    for item in (d.get("kl_bins") or [])[:24]:
+        if isinstance(item, dict):
+            clamped_bins.append(
+                {
+                    "dimension": str(item.get("dimension") or "")[:32],
+                    "bin": str(item.get("bin") or "")[:64],
+                    "count_c": int(item.get("count_c") or 0),
+                    "count_loo": int(item.get("count_loo") or 0),
+                    "p_mle": float(item.get("p_mle") or 0.0),
+                    "p_eb": float(item.get("p_eb") or 0.0),
+                    "q_loo": float(item.get("q_loo") or 0.0),
+                    "kl_contrib": float(item.get("kl_contrib") or 0.0),
+                    "log2_lift": float(item.get("log2_lift") or 0.0),
+                }
+            )
+    d["kl_bins"] = clamped_bins
     params = d.get("parameters") or {}
     # Keep parameters flat and bounded <= 32 keys
     bounded_params: Dict[str, Any] = {}
@@ -88,6 +109,35 @@ def clamp_hypothesis_doc(h: HypothesisProof) -> Dict[str, Any]:
             continue
         bounded_params[str(k)] = v
     d["parameters"] = bounded_params
+    return d
+
+
+def clamp_exchange_doc(ex: AgentExchangeRecord) -> Dict[str, Any]:
+    d = ex.model_dump()
+    d["exchange_id"] = sanitize_doc_id(d.get("exchange_id") or "latest", max_len=78)
+    d["topic"] = (d.get("topic") or "")[:320]
+    d["open_hyp_ids"] = [str(x)[:80] for x in (d.get("open_hyp_ids") or [])[:24]]
+    clamped_turns: List[Dict[str, Any]] = []
+    for t in (d.get("turns") or [])[:24]:
+        if not isinstance(t, dict):
+            continue
+        refs = t.get("math_refs") or {}
+        bounded_refs = {str(k)[:48]: v for k, v in list(refs.items())[:16] if not isinstance(v, (dict, list))}
+        clamped_turns.append(
+            {
+                "turn_index": int(t.get("turn_index") or 0),
+                "timestamp": str(t.get("timestamp") or "")[:40],
+                "agent_id": str(t.get("agent_id") or "")[:64],
+                "agent_name": str(t.get("agent_name") or "")[:120],
+                "model_id": str(t.get("model_id") or "")[:120],
+                "role_badge": str(t.get("role_badge") or "Explorer")[:24],
+                "target_hyp_id": str(t.get("target_hyp_id") or "")[:80],
+                "message": str(t.get("message") or "")[:1800],
+                "math_refs": bounded_refs,
+                "verdict_after": str(t.get("verdict_after") or "")[:24],
+            }
+        )
+    d["turns"] = clamped_turns
     return d
 
 
@@ -208,17 +258,19 @@ class Vol2FirestorePublisher:
         hypotheses: Sequence[HypothesisProof],
         proofs: Sequence[CercleMathProofState],
         predictions: Sequence[CerclePrediction],
+        exchanges: Optional[AgentExchangeRecord] = None,
         max_incidents_live: int = 120,
     ) -> Dict[str, int]:
         """Push Volume II observatory telemetry to Firestore collections using bounded thread pool."""
         from concurrent.futures import ThreadPoolExecutor
 
-        counts = {"meta": 0, "incidents": 0, "clusters": 0, "hypotheses": 0, "proofs": 0, "predictions": 0}
+        counts = {"meta": 0, "incidents": 0, "clusters": 0, "hypotheses": 0, "proofs": 0, "predictions": 0, "exchanges": 0}
         self._get_token()
 
         meta_dict = meta.model_dump()
         meta_dict["corridor_edges"] = list(meta_dict.get("corridor_edges") or [])[:40]
         meta_dict["active_agents"] = list(meta_dict.get("active_agents") or [])[:16]
+        meta_dict["agent_exchanges"] = list(meta_dict.get("agent_exchanges") or [])[:24]
         if self.patch_doc("vol2_meta/overview", meta_dict):
             counts["meta"] = 1
 
@@ -230,15 +282,19 @@ class Vol2FirestorePublisher:
         for cl in clusters[:30]:
             cd = clamp_cluster_doc(cl)
             tasks.append(("clusters", f"vol2_clusters/{cd['cluster_id']}", cd))
-        for h in hypotheses[:90]:
+        for h in hypotheses[:220]:
             hd = clamp_hypothesis_doc(h)
             tasks.append(("hypotheses", f"vol2_hypotheses/{hd['hyp_id']}", hd))
         for st in proofs:
             sd = st.model_dump()
             sd["event_timestamps_days"] = list(sd.get("event_timestamps_days") or [])[-365:]
+            sd["kl_bins"] = list(sd.get("kl_bins") or [])[:24]
             tasks.append(("proofs", f"vol2_proofs/{sanitize_doc_id(st.cercle_id, max_len=64)}", sd))
         for pr in predictions:
             tasks.append(("predictions", f"vol2_predictions/{sanitize_doc_id(pr.cercle_id, max_len=64)}", pr.model_dump()))
+        if exchanges is not None:
+            ex_doc = clamp_exchange_doc(exchanges)
+            tasks.append(("exchanges", "vol2_exchanges/latest", ex_doc))
 
         with ThreadPoolExecutor(max_workers=8) as pool:
             results = list(pool.map(lambda item: (item[0], self.patch_doc(item[1], item[2])), tasks))

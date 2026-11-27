@@ -13,6 +13,7 @@ from .hypothesis_proofs import (
     _parse_iso_date,
     build_weekly_series,
     compute_beta_binomial_hazard,
+    derive_information_theoretic_proofs,
     derive_proofs_for_cluster,
     eval_markov_transitions,
     eval_overdispersion,
@@ -41,8 +42,8 @@ def _utc_now_iso() -> str:
 def build_attack_clusters(
     incidents: Sequence[VerifiedIncident],
     *,
-    spatial_eps_km: float = 65.0,
-    temporal_eps_days: int = 120,
+    spatial_eps_km: float = 45.0,
+    temporal_eps_days: int = 45,
     min_cluster_size: int = 2,
     max_clusters: int = 18,
 ) -> Tuple[List[AttackCluster], Dict[str, List[VerifiedIncident]]]:
@@ -400,13 +401,15 @@ def run_walk_forward_and_predictions(
     min_ord = min_d.toordinal()
     max_ord = max_d.toordinal()
     total_span = max(28, max_ord - min_ord)
+    cutoff_iso = max_d.isoformat()
+    causal_ordered = [inc for inc in ordered if _parse_iso_date(inc.date_start) <= max_d]
 
     by_cercle: Dict[str, List[VerifiedIncident]] = defaultdict(list)
-    for inc in ordered:
+    for inc in causal_ordered:
         by_cercle[inc.cercle_id].append(inc)
 
     # Compute national weekly baseline active fraction
-    _, nat_bin = build_weekly_series([inc.date_start for inc in ordered], min_d, max_d)
+    _, nat_bin = build_weekly_series([inc.date_start for inc in causal_ordered], min_d, max_d)
     cercle_active_fracs = []
     for c in CERCLE_GAZETTEER:
         evs = by_cercle.get(c.cercle_id, [])
@@ -465,14 +468,19 @@ def run_walk_forward_and_predictions(
     global_prauc = compute_pr_auc(all_labels, all_probs)
     global_brier, global_bss = compute_brier_and_bss(all_labels, all_probs)
 
-    # Derive cluster-level mathematical proofs
+    # Derive cluster-level mathematical proofs (strictly bounded <= max_d)
     all_proofs: List[HypothesisProof] = []
     for cl in clusters:
-        members = cluster_members.get(cl.cluster_id, [])
+        members = [m for m in cluster_members.get(cl.cluster_id, []) if _parse_iso_date(m.date_start) <= max_d]
         if members:
             all_proofs.extend(
                 derive_proofs_for_cluster(cl, members, min_d, max_d, national_weekly_prob)
             )
+
+    info_proofs, cercle_info_metrics = derive_information_theoretic_proofs(
+        causal_ordered, clusters, cutoff_date=cutoff_iso
+    )
+    all_proofs.extend(info_proofs)
 
     # Final at-horizon (t <= max_ord) cercle states & predictions
     final_emp = {
@@ -504,6 +512,7 @@ def run_walk_forward_and_predictions(
         c_brier, c_bss = compute_brier_and_bss(c_lbls, c_prbs)
 
         t_days = [round(float(_parse_iso_date(e.date_start).toordinal() - min_ord), 2) for e in evs]
+        info_st = cercle_info_metrics.get(cid, {})
 
         cercle_states.append(
             CercleMathProofState(
@@ -532,6 +541,14 @@ def run_walk_forward_and_predictions(
                 rainy_season_rate=harm["rainy_rate_per_30d"],
                 dominant_actor=dom_actor,
                 markov_next_tactics=next_tactic_probs,
+                kl_actor_nats=float(info_st.get("kl_actor_nats", 0.0)),
+                kl_actor_q_bh=float(info_st.get("kl_actor_q_bh", 1.0)),
+                kl_tactic_nats=float(info_st.get("kl_tactic_nats", 0.0)),
+                kl_tactic_q_bh=float(info_st.get("kl_tactic_q_bh", 1.0)),
+                te_inflow_bits=float(info_st.get("te_inflow_bits", 0.0)),
+                te_inflow_q_bh=float(info_st.get("te_inflow_q_bh", 1.0)),
+                changepoint_date=str(info_st.get("changepoint_date", "")),
+                kl_bins=list(info_st.get("kl_bins", [])),
                 risk_7d_prob=scored["p7"],
                 risk_30d_prob=scored["p30"],
                 expected_30d_count=scored["expected_30d"],

@@ -226,10 +226,12 @@
       hypotheses: [],
       proofs: [],
       predictions: [],
+      exchangeRecord: null,
       selectedClusterId: null,
       selectedCercleId: null,
       activeLayer: "clusters", // clusters | risk | incidents
-      activeTab: "proofs", // proofs | simulate | incidents
+      activeTab: "proofs", // proofs | kl | exchange | simulate | incidents
+      klDim: "actor", // actor | tactic
       perspectiveFilter: "all",
       cutoffIdx: 100,
       simBeta: 0.12,
@@ -264,7 +266,7 @@
 
         <div class="vol2-kpi-strip" id="vol2KpiStrip">
           <div class="vol2-kpi"><div class="k-lbl">Verified Incidents</div><div class="k-val">—</div><div class="k-sub">Loading dataset…</div></div>
-          <div class="vol2-kpi"><div class="k-lbl">Clusters &amp; Hypotheses</div><div class="k-val">—</div><div class="k-sub">5 test families</div></div>
+          <div class="vol2-kpi"><div class="k-lbl">Clusters &amp; Hypotheses</div><div class="k-val">—</div><div class="k-sub">9 proof families + Open</div></div>
           <div class="vol2-kpi"><div class="k-lbl">Walk-Forward AUROC</div><div class="k-val">—</div><div class="k-sub">Strict t &le; T_cut</div></div>
           <div class="vol2-kpi"><div class="k-lbl">Brier / Skill (BSS)</div><div class="k-val">—</div><div class="k-sub">Calibration</div></div>
           <div class="vol2-kpi"><div class="k-lbl">Data Mode</div><div class="k-val" id="vol2ModeLbl">Static Replay</div><div class="k-sub" id="vol2UpdatedLbl">—</div></div>
@@ -296,18 +298,22 @@
 
     // Load initial static JSON replay
     async function loadStaticReplay() {
-      const fetchJson = async (f) => {
+      const fetchJson = async (f, optional = false) => {
         const r = await fetch(`${prefix}/${f}`, { cache: "no-store" });
-        if (!r.ok) throw new Error(`${f} HTTP ${r.status}`);
+        if (!r.ok) {
+          if (optional) return null;
+          throw new Error(`${f} HTTP ${r.status}`);
+        }
         return r.json();
       };
-      const [meta, incidents, clusters, hypotheses, proofs, predictions] = await Promise.all([
+      const [meta, incidents, clusters, hypotheses, proofs, predictions, exchanges] = await Promise.all([
         fetchJson("vol2_meta.json"),
         fetchJson("vol2_incidents.json"),
         fetchJson("vol2_clusters.json"),
         fetchJson("vol2_hypotheses.json"),
         fetchJson("vol2_proofs.json"),
         fetchJson("vol2_predictions.json"),
+        fetchJson("vol2_exchanges.json", true),
       ]);
       state.meta = meta;
       state.incidents = incidents || [];
@@ -315,6 +321,7 @@
       state.hypotheses = hypotheses || [];
       state.proofs = proofs || [];
       state.predictions = predictions || [];
+      state.exchangeRecord = exchanges || (meta && meta.agent_exchanges ? { turns: meta.agent_exchanges, open_hyp_ids: [] } : null);
     }
 
     try {
@@ -394,8 +401,9 @@
         kpis[0].querySelector(".k-sub").textContent = `From ${Number(m.total_raw_records || state.incidents.length).toLocaleString()} raw across ${perspCount} perspectives`;
       }
       if (kpis[1]) {
+        const openCnt = state.hypotheses.filter((h) => h.origin === "agent_open").length;
         kpis[1].querySelector(".k-val").textContent = `${state.clusters.length} / ${state.hypotheses.length}`;
-        kpis[1].querySelector(".k-sub").textContent = `${m.proven_or_supported_count || 0} PROVEN or SUPPORTED (a=0.05)`;
+        kpis[1].querySelector(".k-sub").textContent = `${m.proven_or_supported_count || 0} PROVEN/SUPPORTED (${openCnt} open)`;
       }
       if (kpis[2]) {
         kpis[2].querySelector(".k-val").textContent = (m.global_auroc != null ? m.global_auroc.toFixed(3) : "—");
@@ -603,6 +611,90 @@
         </div>`;
     }
 
+    function renderKlDistributionSvg(bins, dimLabel, cercleName, klNats, qBh) {
+      if (!bins || bins.length === 0) {
+        return `<div class="vol2-svg-wrap"><div class="vol2-svg-title">Relative Entropy D<sub>KL</sub>(P<sub>c</sub> || Q<sub>-c</sub>) &bull; ${esc(dimLabel)}</div><div style="font-size:12px;opacity:.72">Insufficient located incidents (n<sub>c</sub> &ge; 8) in ${esc(cercleName)} for LOO KL estimation.</div></div>`;
+      }
+      const rowH = 34;
+      const W = 520;
+      const H = 38 + bins.length * rowH;
+      const leftPad = 152;
+      const barMaxW = 175;
+      const contribOrigin = 398;
+      const contribMaxW = 78;
+      const maxProb = Math.max(0.25, ...bins.flatMap((b) => [b.p_eb || 0, b.q_loo || 0]));
+      const maxAbsContrib = Math.max(0.05, ...bins.map((b) => Math.abs(b.kl_contrib || 0)));
+
+      const rowsSvg = bins
+        .map((b, idx) => {
+          const y = 30 + idx * rowH;
+          const pW = ((b.p_eb || 0) / maxProb) * barMaxW;
+          const qW = ((b.q_loo || 0) / maxProb) * barMaxW;
+          const cVal = Number(b.kl_contrib || 0);
+          const cW = (Math.abs(cVal) / maxAbsContrib) * contribMaxW;
+          const cX = cVal >= 0 ? contribOrigin : contribOrigin - cW;
+          const cCol = cVal >= 0 ? "#8b1e1e" : "#475569";
+          const label = String(b.bin || "").slice(0, 24);
+          return `
+            <g>
+              <text x="4" y="${y + 11}" font-size="10.5" font-weight="600" fill="currentColor">${esc(label)}</text>
+              <text x="4" y="${y + 23}" font-size="9" opacity="0.72" fill="currentColor">n=${b.count_c || 0} vs ${b.count_loo || 0} LOO | lift=${Number(b.log2_lift || 0).toFixed(2)}b</text>
+              <rect x="${leftPad}" y="${y + 2}" width="${pW.toFixed(1)}" height="9" fill="#8b1e1e" rx="1.5" />
+              <text x="${(leftPad + pW + 4).toFixed(1)}" y="${y + 10}" font-size="9" fill="#8b1e1e" font-weight="700">${((b.p_eb || 0) * 100).toFixed(1)}%</text>
+              <rect x="${leftPad}" y="${y + 14}" width="${qW.toFixed(1)}" height="8" fill="#2b6cb0" opacity="0.82" rx="1.5" />
+              <text x="${(leftPad + qW + 4).toFixed(1)}" y="${y + 21}" font-size="9" fill="#2b6cb0">${((b.q_loo || 0) * 100).toFixed(1)}%</text>
+              <rect x="${cX.toFixed(1)}" y="${y + 6}" width="${Math.max(1.5, cW).toFixed(1)}" height="12" fill="${cCol}" opacity="0.86" rx="1.5" />
+              <text x="${contribOrigin + contribMaxW + 6}" y="${y + 15}" font-size="9" fill="${cCol}" font-weight="600">${cVal >= 0 ? "+" : ""}${cVal.toFixed(3)}</text>
+            </g>`;
+        })
+        .join("");
+
+      return `
+        <div class="vol2-svg-wrap">
+          <div class="vol2-svg-title" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
+            <span>Relative Entropy D<sub>KL</sub><sup>EB</sup>(P<sub>${esc(cercleName)}</sub> || Q<sub>-c</sub>) &bull; ${esc(dimLabel)}</span>
+            <span>D<sub>KL</sub>=${Number(klNats || 0).toFixed(4)} nats | q<sub>BH</sub>=${Number(qBh != null ? qBh : 1).toFixed(4)}</span>
+          </div>
+          <div class="vol2-kl-legend">
+            <span><span class="vol2-swatch" style="background:#8b1e1e"></span>Local Cercle p&#770;<sup>EB</sup> (&alpha;<sub>0</sub>=K)</span>
+            <span><span class="vol2-swatch" style="background:#2b6cb0"></span>LOO National q&#770;<sub>-c</sub></span>
+            <span><span class="vol2-swatch" style="background:#475569"></span>Pointwise p&#770; ln(p&#770;/q&#770;)</span>
+          </div>
+          <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+            <text x="${leftPad}" y="16" font-size="9.5" font-weight="700" opacity="0.72" fill="currentColor">Distribution Share (p&#770; vs q&#770;)</text>
+            <text x="${contribOrigin - 28}" y="16" font-size="9.5" font-weight="700" opacity="0.72" fill="currentColor">KL Contrib (nats)</text>
+            <line x1="${contribOrigin}" y1="22" x2="${contribOrigin}" y2="${H - 6}" stroke="#9ca3af" stroke-dasharray="3 2" stroke-width="1" />
+            ${rowsSvg}
+          </svg>
+        </div>`;
+    }
+
+    function renderProofCard(h) {
+      const qTxt = h.q_value != null ? ` &bull; <strong>q<sub>BH</sub> =</strong> ${h.q_value}` : "";
+      const openBadge = h.origin === "agent_open" ? `<span class="vol2-badge vol2-badge-open">AGENT OPEN</span>` : "";
+      const provLine =
+        h.proposed_by || h.challenged_by || h.adjudicated_by
+          ? `<div style="font-size:0.71rem;opacity:0.78;margin-top:4px">Provenance: ${esc(h.proposed_by || "Explorer")} &rarr; ${esc(h.challenged_by || "Theorist")} &rarr; ${esc(h.adjudicated_by || "Arbiter")}</div>`
+          : "";
+      return `
+        <div class="vol2-proof-card">
+          <div class="vol2-proof-head">
+            <div>${openBadge}<strong>${esc(h.title)}</strong></div>
+            <span class="vol2-verdict ${esc(h.verdict)}">${esc(h.verdict)}</span>
+          </div>
+          <div class="vol2-formula">${esc(h.symbolic_formula)}</div>
+          <div style="font-size:0.76rem;margin-bottom:5px">
+            <strong>${esc(h.test_statistic_name)}:</strong> ${h.test_statistic_value} &bull;
+            <strong>p =</strong> ${h.p_value}${qTxt} &bull; <strong>n =</strong> ${h.n_observations}
+          </div>
+          <ul style="margin:4px 0 6px 16px;padding:0;font-size:0.76rem">
+            ${(h.derivation_steps || []).map((s) => `<li>${esc(s)}</li>`).join("")}
+          </ul>
+          <div style="font-size:0.77rem;font-style:italic">${esc(h.analyst_narrative)}</div>
+          ${provLine}
+        </div>`;
+    }
+
     function renderWorkbench() {
       const wb = rootEl.querySelector("#vol2Workbench");
       const cl = state.clusters.find((c) => c.cluster_id === state.selectedClusterId) || state.clusters[0];
@@ -615,9 +707,26 @@
         .filter((i) => state.perspectiveFilter === "all" || (i.perspectives || []).includes(state.perspectiveFilter))
         .sort((a, b) => (a.date_start < b.date_start ? 1 : -1));
 
-      const clHypotheses = state.hypotheses.filter(
-        (h) => (cl && h.cluster_id === cl.cluster_id) || h.cercle_id === cercleId
-      );
+      const clHypotheses = state.hypotheses
+        .filter(
+          (h) =>
+            (cl && h.cluster_id === cl.cluster_id) ||
+            h.cercle_id === cercleId ||
+            h.origin === "agent_open" ||
+            h.cercle_id === "mali_national"
+        )
+        .sort((a, b) => {
+          const score = (x) =>
+            (x.cercle_id === cercleId ? 4 : 0) +
+            (x.origin === "agent_open" ? 2 : 0) +
+            (x.verdict === "PROVEN" || x.verdict === "SUPPORTED" ? 1 : 0);
+          return score(b) - score(a);
+        });
+
+      const turns =
+        (state.exchangeRecord && Array.isArray(state.exchangeRecord.turns) && state.exchangeRecord.turns) ||
+        (state.meta && Array.isArray(state.meta.agent_exchanges) && state.meta.agent_exchanges) ||
+        [];
 
       const title = cl && cl.dominant_cercle_id === cercleId
         ? `${cl.label} (${pred ? pred.admin1 : cl.admin1})`
@@ -626,24 +735,83 @@
       let tabBody = "";
 
       if (state.activeTab === "proofs") {
-        const cards = clHypotheses.slice(0, 5).map((h) => `
-          <div class="vol2-proof-card">
-            <div class="vol2-proof-head">
-              <strong>${esc(h.title)}</strong>
-              <span class="vol2-verdict ${esc(h.verdict)}">${esc(h.verdict)}</span>
+        const cards = clHypotheses.slice(0, 14).map(renderProofCard).join("");
+        tabBody = cards || `<div class="vol2-proof-card">Select a hotspot cluster on the map to inspect statistical proofs.</div>`;
+      } else if (state.activeTab === "kl") {
+        const topKlCercles = [...state.proofs]
+          .filter((p) => (p.kl_actor_nats || 0) > 0 || (p.kl_tactic_nats || 0) > 0)
+          .sort((a, b) => (b.kl_actor_nats + b.kl_tactic_nats) - (a.kl_actor_nats + a.kl_tactic_nats))
+          .slice(0, 8);
+        const pillsHtml = topKlCercles
+          .map((p) => {
+            const active = p.cercle_id === cercleId ? "active" : "";
+            return `<button class="vol2-pill-btn ${active}" data-kl-cercle="${esc(p.cercle_id)}">${esc(p.cercle_name)} (${p.kl_actor_nats.toFixed(2)})</button>`;
+          })
+          .join("");
+        const bins = ((proofState && proofState.kl_bins) || []).filter((b) => b.dimension === state.klDim);
+        const klVal = state.klDim === "actor" ? (proofState ? proofState.kl_actor_nats : 0) : (proofState ? proofState.kl_tactic_nats : 0);
+        const klQ = state.klDim === "actor" ? (proofState ? proofState.kl_actor_q_bh : 1) : (proofState ? proofState.kl_tactic_q_bh : 1);
+        const jsdH = state.hypotheses.find((h) => h.hyp_id === "national_mali__H_kl_regime_jsd");
+        const parH = state.hypotheses.find((h) => h.hyp_id === "national_mali__H_pareto_tail");
+        const cpDate = proofState && proofState.changepoint_date ? proofState.changepoint_date : "None (BH<=0.05)";
+
+        tabBody = `
+          <div class="vol2-kl-controls">
+            <div class="vol2-toolbar-group">
+              <button class="vol2-btn ${state.klDim === "actor" ? "active" : ""}" data-kl-dim="actor">Actor Profile (K=5)</button>
+              <button class="vol2-btn ${state.klDim === "tactic" ? "active" : ""}" data-kl-dim="tactic">Tactic Profile (K&le;8)</button>
             </div>
-            <div class="vol2-formula">${esc(h.symbolic_formula)}</div>
-            <div style="font-size:0.76rem;margin-bottom:5px">
-              <strong>${esc(h.test_statistic_name)}:</strong> ${h.test_statistic_value} &bull;
-              <strong>p =</strong> ${h.p_value} &bull; <strong>n =</strong> ${h.n_observations}
-            </div>
-            <ul style="margin:4px 0 6px 16px;padding:0;font-size:0.76rem">
-              ${(h.derivation_steps || []).map((s) => `<li>${esc(s)}</li>`).join("")}
-            </ul>
-            <div style="font-size:0.77rem;font-style:italic">${esc(h.analyst_narrative)}</div>
+            <div class="vol2-kl-pills">${pillsHtml}</div>
           </div>
-        `).join("");
-        tabBody = cards || `<div class="vol2-proof-card">Select a hotspot cluster on the map to inspect its 5 statistical proofs.</div>`;
+          ${renderKlDistributionSvg(bins, state.klDim === "actor" ? "Actor" : "Tactic", pred ? pred.cercle_name : cercleId, klVal, klQ)}
+          <div class="vol2-proof-card" style="margin-top:10px">
+            <strong>Cercle Information-Theoretic Telemetry (${esc(pred ? pred.cercle_name : cercleId)}):</strong><br/>
+            <span style="font-size:0.78rem">
+              Actor D<sub>KL</sub><sup>EB</sup>: <strong>${proofState ? proofState.kl_actor_nats.toFixed(4) : "0.0000"}</strong> nats (q<sub>BH</sub>=${proofState ? proofState.kl_actor_q_bh.toFixed(4) : "1.0000"}) &bull;
+              Tactic D<sub>KL</sub><sup>EB</sup>: <strong>${proofState ? proofState.kl_tactic_nats.toFixed(4) : "0.0000"}</strong> nats (q<sub>BH</sub>=${proofState ? proofState.kl_tactic_q_bh.toFixed(4) : "1.0000"})<br/>
+              Neighborhood-Inflow TE<sub>MM</sub>: <strong>${proofState ? proofState.te_inflow_bits.toFixed(4) : "0.0000"}</strong> bits (q<sub>BH</sub>=${proofState ? proofState.te_inflow_q_bh.toFixed(4) : "1.0000"}) &bull;
+              Changepoint: <strong>${esc(cpDate)}</strong>
+            </span>
+          </div>
+          ${jsdH ? renderKlDistributionSvg((jsdH.kl_bins || []).slice(0, 8), "National Regime Shift (Early vs Late)", "Mali", jsdH.test_statistic_value, jsdH.q_value) : ""}
+          ${parH ? `<div class="vol2-proof-card" style="margin-top:8px"><strong>National Heavy-Tail Law:</strong> ${esc(parH.analyst_narrative)} <span class="vol2-verdict ${esc(parH.verdict)}" style="margin-left:6px">${esc(parH.verdict)}</span></div>` : ""}
+        `;
+      } else if (state.activeTab === "exchange") {
+        const openHyps = state.hypotheses.filter((h) => h.origin === "agent_open");
+        const turnsHtml = turns
+          .map((t) => {
+            const refs = Object.entries(t.math_refs || {})
+              .map(([k, v]) => `<span class="vol2-badge">${esc(k)}=${esc(v)}</span>`)
+              .join("");
+            const roleCls = String(t.role_badge || "Explorer").toLowerCase();
+            return `
+              <div class="vol2-exchange-turn vol2-role-${esc(roleCls)}">
+                <div class="vol2-exchange-head">
+                  <div>
+                    <span class="vol2-role-pill ${esc(roleCls)}">${esc(t.role_badge || "Agent")}</span>
+                    <strong>#${t.turn_index || "?"} ${esc(t.agent_name || t.agent_id)}</strong>
+                  </div>
+                  <span class="vol2-model-tag">${esc(t.model_id || "")}</span>
+                </div>
+                <div class="vol2-exchange-msg">${esc(t.message)}</div>
+                <div class="vol2-exchange-foot">
+                  <div>${refs}</div>
+                  ${t.verdict_after ? `<span class="vol2-verdict ${esc(t.verdict_after)}">${esc(t.verdict_after)}</span>` : ""}
+                </div>
+              </div>`;
+          })
+          .join("");
+        const openCards = openHyps.map(renderProofCard).join("");
+        tabBody = `
+          <div class="vol2-proof-card">
+            <strong>Autonomous Agent Proof Observatory &amp; Peer Debate</strong>
+            <div style="font-size:0.77rem;opacity:0.84;margin-top:3px">
+              ${esc((state.exchangeRecord && state.exchangeRecord.topic) || "Multi-agent deduction, estimator bias challenge & BH-FDR adjudication.")}
+            </div>
+          </div>
+          <div class="vol2-exchange-feed">${turnsHtml || '<div class="vol2-proof-card">No agent exchange turns recorded yet.</div>'}</div>
+          ${openCards ? `<h4 style="margin:12px 0 6px;font-size:0.86rem;text-transform:uppercase;letter-spacing:0.04em">Deduced Open Hypotheses (${openHyps.length})</h4>${openCards}` : ""}
+        `;
       } else if (state.activeTab === "simulate") {
         const eventDates = cercleEvents.map((e) => e.date_start);
         const hw = evaluateHawkesInteractive(eventDates, state.cutoffIso, state.simBeta);
@@ -711,7 +879,9 @@
         </div>
         <div class="vol2-tabs">
           <button class="vol2-tab-btn ${state.activeTab === "proofs" ? "active" : ""}" data-tab="proofs">Mathematical Proofs (${clHypotheses.length})</button>
-          <button class="vol2-tab-btn ${state.activeTab === "simulate" ? "active" : ""}" data-tab="simulate">Live Interactive Proof Lab</button>
+          <button class="vol2-tab-btn ${state.activeTab === "kl" ? "active" : ""}" data-tab="kl">Relative Entropy (KL)</button>
+          <button class="vol2-tab-btn ${state.activeTab === "exchange" ? "active" : ""}" data-tab="exchange">Agent Proof Exchange (${turns.length})</button>
+          <button class="vol2-tab-btn ${state.activeTab === "simulate" ? "active" : ""}" data-tab="simulate">Live Interactive Lab</button>
           <button class="vol2-tab-btn ${state.activeTab === "incidents" ? "active" : ""}" data-tab="incidents">Underlying Data (${cercleEvents.length})</button>
         </div>
         ${tabBody}
@@ -721,6 +891,21 @@
         btn.addEventListener("click", () => {
           state.activeTab = btn.dataset.tab;
           renderWorkbench();
+        });
+      });
+
+      wb.querySelectorAll("[data-kl-dim]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.klDim = btn.dataset.klDim;
+          renderWorkbench();
+        });
+      });
+
+      wb.querySelectorAll("[data-kl-cercle]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const cid = btn.dataset.klCercle;
+          const matchingCl = state.clusters.find((c) => c.dominant_cercle_id === cid);
+          selectTarget(matchingCl ? matchingCl.cluster_id : state.selectedClusterId, cid);
         });
       });
 
@@ -773,18 +958,24 @@
         const db = fsMod.getFirestore(app, FIREBASE_WEB_CONFIG.databaseId);
 
         const refreshAllRestFallback = async () => {
-          const [cl, hy, prf, prd, inc] = await Promise.all([
+          const [cl, hy, prf, prd, inc, ex] = await Promise.all([
             queryFsCollection("vol2_clusters", 50),
-            queryFsCollection("vol2_hypotheses", 120),
+            queryFsCollection("vol2_hypotheses", 250),
             queryFsCollection("vol2_proofs", 50),
             queryFsCollection("vol2_predictions", 50),
             queryFsCollection("vol2_incidents", 200),
+            queryFsCollection("vol2_exchanges", 5).catch(() => []),
           ]);
           if (cl.length) state.clusters = cl;
           if (hy.length) state.hypotheses = hy;
           if (prf.length) state.proofs = prf;
           if (prd.length) state.predictions = prd;
           if (inc.length) state.incidents = inc;
+          if (ex && ex.length) {
+            state.exchangeRecord = ex[0];
+          } else if (state.meta && Array.isArray(state.meta.agent_exchanges) && state.meta.agent_exchanges.length) {
+            state.exchangeRecord = { turns: state.meta.agent_exchanges, open_hyp_ids: [] };
+          }
           recomputeDatesAndSelection();
           renderKpis();
           renderMap();

@@ -2,23 +2,41 @@
 
 from __future__ import annotations
 
+import asyncio
+import json
+import random
 from datetime import date, timedelta
+from pathlib import Path
 
 import pytest
 
 from conflict_lab import AGENT_CAST
-from conflict_lab.firestore_sync import clamp_cluster_doc, clamp_hypothesis_doc, clamp_incident_doc
+from conflict_lab.firestore_sync import (
+    clamp_cluster_doc,
+    clamp_exchange_doc,
+    clamp_hypothesis_doc,
+    clamp_incident_doc,
+)
 from conflict_lab.gazetteer import normalize_actor_name, resolve_mali_location
 from conflict_lab.georesolve_dedup import deduplicate_and_georesolve
+from conflict_lab.hf_sync import export_static_site_bundle
 from conflict_lab.hypothesis_proofs import (
+    benjamini_hochberg,
     betainc,
     beta_ppf,
     chi2_sf,
     compute_beta_binomial_hazard,
+    derive_information_theoretic_proofs,
+    eval_changepoint_poisson,
+    eval_kl_divergence_loo,
     eval_markov_transitions,
     eval_overdispersion,
+    eval_pareto_tail,
     eval_seasonal_harmattan,
+    eval_transfer_entropy_binary,
+    extract_dense_segment,
     fit_hawkes_process,
+    run_autonomous_proof_debate,
 )
 from conflict_lab.pattern_model import (
     build_attack_clusters,
@@ -26,7 +44,7 @@ from conflict_lab.pattern_model import (
     run_walk_forward_and_predictions,
 )
 from conflict_lab.providers import ALLOWED_OPENROUTER_FREE_MODELS, assert_openrouter_free_model
-from conflict_lab.schema import RawOsintRecord, VerifiedIncident
+from conflict_lab.schema import AgentExchangeRecord, ObservatoryMeta, RawOsintRecord, VerifiedIncident
 
 
 def test_model_isolation_and_openrouter_free_guardrail():
@@ -205,3 +223,194 @@ def test_walk_forward_causality_zero_future_leakage():
         assert clamp_hypothesis_doc(res2["proofs"][0])["hyp_id"] == res2["proofs"][0].hyp_id
     edges = build_corridor_edges(future_events)
     assert isinstance(edges, list)
+
+
+def test_information_theoretic_proofs_and_data_hygiene():
+    # 1. Empirical-Bayes LOO KL divergence + BH-FDR
+    c_cnt = {"ISGS / Islamic State Sahel": 40, "JNIM / Katiba Coalition": 5, "FAMa / Allied Security Forces": 5}
+    nat_cnt = {"ISGS / Islamic State Sahel": 60, "JNIM / Katiba Coalition": 300, "FAMa / Allied Security Forces": 140}
+    kl = eval_kl_divergence_loo(
+        c_cnt,
+        nat_cnt,
+        ["ISGS / Islamic State Sahel", "JNIM / Katiba Coalition", "FAMa / Allied Security Forces"],
+        dimension="actor",
+        n_perm=400,
+    )
+    assert kl["kl_eb"] > 0.4
+    assert kl["p_value"] < 0.01
+    assert len(kl["bins"]) == 3
+    assert abs(sum(b["p_eb"] for b in kl["bins"]) - 1.0) < 1e-3
+    assert benjamini_hochberg([0.001, 0.04, 0.5]) == [0.003, 0.06, 0.5]
+
+    # 2. Year-stratified Neighborhood-Inflow Transfer Entropy (Y_{t+1} = X_t on irregular X)
+    rng_te = random.Random(19)
+    x_seq = [1 if rng_te.random() < 0.4 else 0 for _ in range(80)]
+    y_seq = [0] + x_seq[:-1]
+    yrs = [2023] * 40 + [2024] * 40
+    te = eval_transfer_entropy_binary(x_seq, y_seq, yrs, n_perm=300)
+    assert te["te_mm_bits"] > 0.2
+    assert te["onset_lift"] > 0.5
+    assert te["p_value"] < 0.01
+
+    # 3. Exact Poisson Changepoint
+    counts = [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0] + [4, 5, 3, 6, 4, 5, 3, 4, 5, 6, 4, 5]
+    wk_dates = [(date(2023, 1, 2) + timedelta(days=7 * i)).isoformat() for i in range(len(counts))]
+    cp = eval_changepoint_poisson(counts, wk_dates, min_seg=10, n_perm=300)
+    assert cp["sup_2dll"] > 15.0
+    assert cp["p_value"] < 0.01
+    assert cp["rate_after_wk"] > cp["rate_before_wk"]
+
+    # 4. Pareto Heavy-Tail vs Truncated Lognormal
+    rng = random.Random(7)
+    pareto_vals = [int(4.5 * ((1.0 - rng.random()) ** (-1.0 / 1.1))) for _ in range(180)] + [1, 2, 3] * 60
+    par = eval_pareto_tail(pareto_vals, x_min=5, x0=4.5)
+    assert par["n_tail"] >= 150
+    assert 1.5 < par["alpha_mle"] < 3.0
+    assert isinstance(par["vuong_z"], float)
+
+    # 5. Unlocated region_centroid filter + >45d gap isolation
+    evs: list[VerifiedIncident] = []
+    for k in range(20):
+        d = (date(2024, 1, 1) + timedelta(days=k * 3)).isoformat()
+        evs.append(
+            VerifiedIncident(
+                incident_id=f"loc_{k}",
+                date_start=d,
+                date_end=d,
+                precision_level="exact_locality",
+                admin1="Ménaka",
+                admin2="Ménaka",
+                cercle_id="menaka",
+                lat=15.9,
+                lon=2.4,
+                actor_primary="ISGS / Islamic State Sahel",
+                tactic="raid_assault",
+                fatalities_best=6 if k % 2 == 0 else 2,
+            )
+        )
+        evs.append(
+            VerifiedIncident(
+                incident_id=f"cen_{k}",
+                date_start=d,
+                date_end=d,
+                precision_level="cercle_centroid",
+                admin1="Bandiagara",
+                admin2="Bandiagara",
+                cercle_id="bandiagara",
+                lat=14.35,
+                lon=-3.61,
+                actor_primary="JNIM / Katiba Coalition",
+                tactic="ambush",
+                fatalities_best=1,
+            )
+        )
+    # 10 unlocated 2026 region_centroid events falling back to mopti after a >45d gap
+    for k in range(10):
+        d = (date(2026, 6, 1) + timedelta(days=k)).isoformat()
+        evs.append(
+            VerifiedIncident(
+                incident_id=f"unloc_{k}",
+                date_start=d,
+                date_end=d,
+                precision_level="region_centroid",
+                admin1="Mopti",
+                admin2="Mopti",
+                cercle_id="mopti",
+                lat=14.48,
+                lon=-4.18,
+                actor_primary="Unattributed Armed Group",
+                tactic="other",
+                fatalities_best=1,
+            )
+        )
+
+    dense = extract_dense_segment(evs, gap_days=45)
+    assert len(dense) == 40
+    assert all(e.cercle_id != "mopti" for e in dense)
+
+    clusters, _ = build_attack_clusters(evs)
+    info_proofs, cercle_metrics = derive_information_theoretic_proofs(
+        evs, clusters, n_perm_kl=200, n_perm_te=200, n_perm_cp=200
+    )
+    assert "mopti" not in cercle_metrics
+    assert any(h.family == "H_kl_divergence" and h.cercle_id == "menaka" and h.q_value is not None for h in info_proofs)
+    assert any(h.hyp_id == "national_mali__H_kl_regime_jsd" for h in info_proofs)
+
+
+def test_autonomous_proof_debate_and_bundle_export(tmp_path: Path):
+    evs: list[VerifiedIncident] = []
+    for k in range(18):
+        d = (date(2024, 1, 1) + timedelta(days=k * 4)).isoformat()
+        evs.append(
+            VerifiedIncident(
+                incident_id=f"m_{k}",
+                date_start=d,
+                date_end=d,
+                precision_level="exact_locality",
+                admin1="Ménaka",
+                admin2="Ménaka",
+                cercle_id="menaka",
+                lat=15.9,
+                lon=2.4,
+                actor_primary="ISGS / Islamic State Sahel",
+                tactic="raid_assault",
+                fatalities_best=7 if k % 3 == 0 else 2,
+            )
+        )
+        evs.append(
+            VerifiedIncident(
+                incident_id=f"b_{k}",
+                date_start=d,
+                date_end=d,
+                precision_level="cercle_centroid",
+                admin1="Bandiagara",
+                admin2="Bandiagara",
+                cercle_id="bandiagara",
+                lat=14.35,
+                lon=-3.61,
+                actor_primary="JNIM / Katiba Coalition",
+                tactic="ambush",
+                fatalities_best=1,
+            )
+        )
+
+    clusters, members = build_attack_clusters(evs)
+    model_out = run_walk_forward_and_predictions(evs, clusters, members)
+    proofs = list(model_out["proofs"])
+    open_proofs, ex_rec = asyncio.run(
+        run_autonomous_proof_debate(None, evs, clusters, proofs, sweep_id="test_sweep", use_llm=False)
+    )
+    assert len(open_proofs) >= 1
+    assert all(h.origin == "agent_open" and h.family == "H_open" for h in open_proofs)
+    assert len(ex_rec.turns) >= 3
+    assert {t.role_badge for t in ex_rec.turns} == {"Explorer", "Theorist", "Arbiter"}
+
+    proofs.extend(open_proofs)
+    clamped_h = clamp_hypothesis_doc(open_proofs[0])
+    assert clamped_h["origin"] == "agent_open"
+    assert isinstance(clamped_h["kl_bins"], list)
+    clamped_ex = clamp_exchange_doc(ex_rec)
+    assert len(clamped_ex["turns"]) == len(ex_rec.turns)
+
+    meta = ObservatoryMeta(
+        sweep_id="test_sweep",
+        updated_at="2026-11-27T18:30:00Z",
+        total_verified_incidents=len(evs),
+        total_clusters=len(clusters),
+        total_hypotheses=len(proofs),
+        agent_exchanges=[t.model_dump() for t in ex_rec.turns],
+    )
+    exported = export_static_site_bundle(
+        tmp_path,
+        meta=meta,
+        incidents=evs,
+        clusters=clusters,
+        hypotheses=proofs,
+        proofs=model_out["cercle_states"],
+        predictions=model_out["predictions"],
+        exchanges=ex_rec,
+    )
+    ex_file = Path(exported["exchanges"])
+    assert ex_file.is_file()
+    loaded_ex = AgentExchangeRecord.model_validate(json.loads(ex_file.read_text(encoding="utf-8")))
+    assert len(loaded_ex.turns) == len(ex_rec.turns)

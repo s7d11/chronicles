@@ -108,7 +108,7 @@ class HypothesisProof(BaseModel):
     hyp_id: str
     cluster_id: str
     cercle_id: str
-    family: Literal["H_hawkes", "H_dispersion", "H_markov", "H_seasonal", "H_beta"]
+    family: str
     title: str
     symbolic_formula: str
     null_hypothesis: str
@@ -117,13 +117,41 @@ class HypothesisProof(BaseModel):
     test_statistic_name: str
     test_statistic_value: float
     p_value: float
+    q_value: Optional[float] = None
     log_likelihood_ratio: float = 0.0
     verdict: VerdictStatus
     alpha: float = 0.05
     n_observations: int = 0
     derivation_steps: List[str] = Field(default_factory=list)
+    kl_bins: List[Dict[str, Any]] = Field(default_factory=list)
+    origin: Literal["deterministic", "agent_open"] = "deterministic"
+    proposed_by: str = ""
+    challenged_by: str = ""
+    adjudicated_by: str = ""
     analyst_narrative: str = ""
     updated_at: str = ""
+
+
+class AgentExchangeTurn(BaseModel):
+    turn_index: int
+    timestamp: str
+    agent_id: str
+    agent_name: str
+    model_id: str
+    role_badge: Literal["Explorer", "Theorist", "Arbiter"]
+    target_hyp_id: str = ""
+    message: str
+    math_refs: Dict[str, Any] = Field(default_factory=dict)
+    verdict_after: str = ""
+
+
+class AgentExchangeRecord(BaseModel):
+    exchange_id: str
+    sweep_id: str = ""
+    updated_at: str = ""
+    topic: str = ""
+    open_hyp_ids: List[str] = Field(default_factory=list)
+    turns: List[AgentExchangeTurn] = Field(default_factory=list)
 
 
 class CercleMathProofState(BaseModel):
@@ -152,6 +180,14 @@ class CercleMathProofState(BaseModel):
     rainy_season_rate: float = 0.0
     dominant_actor: str = "Unattributed"
     markov_next_tactics: Dict[str, float] = Field(default_factory=dict)
+    kl_actor_nats: float = 0.0
+    kl_actor_q_bh: float = 1.0
+    kl_tactic_nats: float = 0.0
+    kl_tactic_q_bh: float = 1.0
+    te_inflow_bits: float = 0.0
+    te_inflow_q_bh: float = 1.0
+    changepoint_date: str = ""
+    kl_bins: List[Dict[str, Any]] = Field(default_factory=list)
     risk_7d_prob: float = 0.0
     risk_30d_prob: float = 0.0
     expected_30d_count: float = 0.0
@@ -200,4 +236,5 @@ class ObservatoryMeta(BaseModel):
     tactic_counts: Dict[str, int] = Field(default_factory=dict)
     corridor_edges: List[Dict[str, Any]] = Field(default_factory=list)
     active_agents: List[Dict[str, Any]] = Field(default_factory=list)
+    agent_exchanges: List[Dict[str, Any]] = Field(default_factory=list)
     running: bool = False

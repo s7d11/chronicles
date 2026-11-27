@@ -5,10 +5,11 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 from . import VOL2_STATE_REPO
 from .schema import (
+    AgentExchangeRecord,
     AttackCluster,
     CercleMathProofState,
     CerclePrediction,
@@ -38,6 +39,7 @@ def export_static_site_bundle(
     hypotheses: Sequence[HypothesisProof],
     proofs: Sequence[CercleMathProofState],
     predictions: Sequence[CerclePrediction],
+    exchanges: Optional[AgentExchangeRecord] = None,
     max_site_incidents: int = 450,
 ) -> Dict[str, str]:
     """Export all Volume II JSON replay files cleanly into `site/data/`."""
@@ -52,6 +54,7 @@ def export_static_site_bundle(
         "hypotheses": base / "vol2_hypotheses.json",
         "proofs": base / "vol2_proofs.json",
         "predictions": base / "vol2_predictions.json",
+        "exchanges": base / "vol2_exchanges.json",
     }
 
     _write_json(paths["meta"], meta.model_dump())
@@ -60,6 +63,19 @@ def export_static_site_bundle(
     _write_json(paths["hypotheses"], [h.model_dump() for h in hypotheses])
     _write_json(paths["proofs"], [st.model_dump() for st in proofs])
     _write_json(paths["predictions"], [pr.model_dump() for pr in predictions])
+    ex_payload = (
+        exchanges.model_dump()
+        if exchanges is not None
+        else {
+            "exchange_id": f"{meta.sweep_id}_exchange",
+            "sweep_id": meta.sweep_id,
+            "updated_at": meta.updated_at,
+            "topic": "Autonomous Agent Mathematical Proof Exchange",
+            "open_hyp_ids": [],
+            "turns": meta.agent_exchanges,
+        }
+    )
+    _write_json(paths["exchanges"], ex_payload)
     return {k: str(v) for k, v in paths.items()}
 
 
@@ -103,6 +119,7 @@ def push_bundle_to_hf(
     hypotheses: Sequence[HypothesisProof],
     proofs: Sequence[CercleMathProofState],
     predictions: Sequence[CerclePrediction],
+    exchanges: Optional[AgentExchangeRecord] = None,
     staging_dir: str | Path = "/tmp/vol2_hf_staging",
     repo_id: str = VOL2_STATE_REPO,
 ) -> str:
@@ -123,6 +140,7 @@ def push_bundle_to_hf(
         hypotheses=hypotheses,
         proofs=proofs,
         predictions=predictions,
+        exchanges=exchanges,
         max_site_incidents=1500,
     )
     _write_jsonl(stage / "data" / "incidents.jsonl", [i.model_dump() for i in incidents])
@@ -130,6 +148,8 @@ def push_bundle_to_hf(
     _write_jsonl(stage / "data" / "hypotheses.jsonl", [h.model_dump() for h in hypotheses])
     _write_jsonl(stage / "data" / "proofs.jsonl", [p.model_dump() for p in proofs])
     _write_jsonl(stage / "data" / "predictions.jsonl", [p.model_dump() for p in predictions])
+    if exchanges is not None:
+        _write_jsonl(stage / "data" / "exchanges.jsonl", [t.model_dump() for t in exchanges.turns])
     (stage / "README.md").write_text(_build_dataset_card(meta), encoding="utf-8")
 
     api = HfApi(token=token)
@@ -161,14 +181,19 @@ def pull_json_bundle_from_hf(
         "vol2_hypotheses.json",
         "vol2_proofs.json",
         "vol2_predictions.json",
+        "vol2_exchanges.json",
     ):
-        local = hf_hub_download(
-            repo_id=repo_id,
-            repo_type="dataset",
-            filename=f"json/{name}",
-            token=(os.environ.get("HF_KEY") or os.environ.get("HF_TOKEN") or None),
-        )
-        dst = target / name
-        dst.write_text(Path(local).read_text(encoding="utf-8"), encoding="utf-8")
-        written.append(str(dst))
+        try:
+            local = hf_hub_download(
+                repo_id=repo_id,
+                repo_type="dataset",
+                filename=f"json/{name}",
+                token=(os.environ.get("HF_KEY") or os.environ.get("HF_TOKEN") or None),
+            )
+            dst = target / name
+            dst.write_text(Path(local).read_text(encoding="utf-8"), encoding="utf-8")
+            written.append(str(dst))
+        except Exception:
+            if name != "vol2_exchanges.json":
+                raise
     return written

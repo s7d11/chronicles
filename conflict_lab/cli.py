@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import os
 import sys
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import httpx
 
@@ -17,13 +18,13 @@ from . import AGENT_CAST
 from .firestore_sync import Vol2FirestorePublisher
 from .georesolve_dedup import adjudicate_recent_incidents_batched, deduplicate_and_georesolve
 from .hf_sync import export_static_site_bundle, pull_json_bundle_from_hf, push_bundle_to_hf
-from .hypothesis_proofs import synthesize_llm_hypothesis_notes
+from .hypothesis_proofs import run_autonomous_proof_debate, synthesize_llm_hypothesis_notes
 from .pattern_model import (
     build_attack_clusters,
     build_corridor_edges,
     run_walk_forward_and_predictions,
 )
-from .schema import ObservatoryMeta
+from .schema import ObservatoryMeta, VerifiedIncident
 from .sources import gather_all_sources
 
 
@@ -49,6 +50,7 @@ async def run_sweep_pipeline(
     use_llm: bool = True,
     push_hf: bool = False,
     push_firestore: bool = False,
+    from_incidents: Optional[str | Path] = None,
 ) -> Dict[str, Any]:
     load_repo_dotenv()
     now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -60,20 +62,36 @@ async def run_sweep_pipeline(
     ]
 
     async with httpx.AsyncClient(timeout=35.0, follow_redirects=True) as client:
-        print(f"[vol2] Gathering multi-perspective Mali OSINT across 6 live sources (use_llm={use_llm})...", flush=True)
-        gathered = await gather_all_sources(client, max_ucdp_rows=max_ucdp_rows, use_llm=use_llm)
-        records = gathered["records"]
-        source_counts = gathered["source_counts"]
-        print(
-            f"[vol2] Raw records gathered: {len(records)} ({source_counts})",
-            flush=True,
-        )
+        if from_incidents:
+            src_path = Path(from_incidents)
+            raw_list = json.loads(src_path.read_text(encoding="utf-8"))
+            incidents = [VerifiedIncident.model_validate(item) for item in raw_list]
+            existing_meta_path = Path(out_dir) / "vol2_meta.json"
+            prev_meta: Dict[str, Any] = {}
+            if existing_meta_path.is_file():
+                try:
+                    prev_meta = json.loads(existing_meta_path.read_text(encoding="utf-8"))
+                except Exception:
+                    prev_meta = {}
+            records_count = int(prev_meta.get("total_raw_records") or len(incidents))
+            source_counts = dict(prev_meta.get("source_counts") or {"snapshot_replay": len(incidents)})
+            print(f"[vol2] Loaded {len(incidents)} verified incidents from {src_path} (use_llm={use_llm})", flush=True)
+        else:
+            print(f"[vol2] Gathering multi-perspective Mali OSINT across 6 live sources (use_llm={use_llm})...", flush=True)
+            gathered = await gather_all_sources(client, max_ucdp_rows=max_ucdp_rows, use_llm=use_llm)
+            records = gathered["records"]
+            records_count = len(records)
+            source_counts = gathered["source_counts"]
+            print(
+                f"[vol2] Raw records gathered: {records_count} ({source_counts})",
+                flush=True,
+            )
 
-        print("[vol2] Deduplicating (±2d, 15km) & georesolving across 38 Malian cercles...", flush=True)
-        incidents = deduplicate_and_georesolve(records)
-        if use_llm and incidents:
-            print("[vol2] Adjudicating recent events with Gemini 3.1 Flash-Lite + OpenRouter Free...", flush=True)
-            incidents = await adjudicate_recent_incidents_batched(client, incidents, batch_size=20, max_to_audit=40)
+            print("[vol2] Deduplicating (±2d, 15km) & georesolving across 38 Malian cercles...", flush=True)
+            incidents = deduplicate_and_georesolve(records)
+            if use_llm and incidents:
+                print("[vol2] Adjudicating recent events with Gemini 3.1 Flash-Lite + OpenRouter Free...", flush=True)
+                incidents = await adjudicate_recent_incidents_batched(client, incidents, batch_size=20, max_to_audit=40)
 
         print(f"[vol2] Verified incidents: {len(incidents)}. Clustering corridors & proving hypotheses...", flush=True)
         clusters, cluster_members = build_attack_clusters(incidents)
@@ -83,6 +101,16 @@ async def run_sweep_pipeline(
         proofs = model_out["proofs"]
         if use_llm and proofs:
             proofs = await synthesize_llm_hypothesis_notes(client, proofs, max_to_enrich=8, use_llm=True)
+
+        open_proofs, exchange_record = await run_autonomous_proof_debate(
+            client if use_llm else None,
+            incidents,
+            clusters,
+            proofs,
+            sweep_id=sweep_id,
+            use_llm=use_llm,
+        )
+        proofs.extend(open_proofs)
 
         cercle_states = model_out["cercle_states"]
         predictions = model_out["predictions"]
@@ -95,7 +123,7 @@ async def run_sweep_pipeline(
     meta = ObservatoryMeta(
         sweep_id=sweep_id,
         updated_at=now_iso,
-        total_raw_records=len(records),
+        total_raw_records=records_count,
         total_verified_incidents=len(incidents),
         total_clusters=len(clusters),
         total_hypotheses=len(proofs),
@@ -111,6 +139,7 @@ async def run_sweep_pipeline(
         tactic_counts=tactic_counts,
         corridor_edges=corridor_edges,
         active_agents=agent_roster,
+        agent_exchanges=[t.model_dump() for t in exchange_record.turns[:24]],
         running=False,
     )
 
@@ -122,6 +151,7 @@ async def run_sweep_pipeline(
         hypotheses=proofs,
         proofs=cercle_states,
         predictions=predictions,
+        exchanges=exchange_record,
     )
     print(
         f"[vol2] Exported JSON bundle to {out_dir} | clusters={len(clusters)} "
@@ -140,6 +170,7 @@ async def run_sweep_pipeline(
                 hypotheses=proofs,
                 proofs=cercle_states,
                 predictions=predictions,
+                exchanges=exchange_record,
             )
             print(f"[vol2] Synced HF Dataset: {hf_url}", flush=True)
         except Exception as exc:
@@ -156,6 +187,7 @@ async def run_sweep_pipeline(
                 hypotheses=proofs,
                 proofs=cercle_states,
                 predictions=predictions,
+                exchanges=exchange_record,
             )
             print(f"[vol2] Synced Cloud Firestore ({pub.database_id}): {fs_counts}", flush=True)
 
@@ -175,6 +207,7 @@ def main(argv: List[str] | None = None) -> int:
     sw.add_argument("--out-dir", default="site/data")
     sw.add_argument("--max-ucdp-rows", type=int, default=1200)
     sw.add_argument("--no-llm", action="store_true", help="Skip external LLM adjudication/synthesis calls")
+    sw.add_argument("--from-incidents", default=None, help="Recompute proofs & exchanges from existing VerifiedIncident JSON")
     sw.add_argument("--push-hf", action="store_true", help="Upload snapshots to Hugging Face Hub dataset")
     sw.add_argument("--push-firestore", action="store_true", help="Publish live states to Cloud Firestore")
 
@@ -190,6 +223,7 @@ def main(argv: List[str] | None = None) -> int:
                 use_llm=not args.no_llm,
                 push_hf=args.push_hf,
                 push_firestore=args.push_firestore,
+                from_incidents=args.from_incidents,
             )
         )
         return 0

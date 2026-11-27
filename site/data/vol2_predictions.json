@@ -21,7 +21,7 @@
     "walk_forward_auroc": 0.6667,
     "walk_forward_brier": 0.14363,
     "brier_skill_score": 0.0572,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "menaka",
@@ -46,7 +46,7 @@
     "walk_forward_auroc": 0.0,
     "walk_forward_brier": 0.07355,
     "brier_skill_score": -0.2553,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "ansongo",
@@ -71,7 +71,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.02383,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "bandiagara",
@@ -93,7 +93,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.02038,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "niono",
@@ -117,7 +117,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.01654,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "koro",
@@ -140,7 +140,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.01337,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "gao",
@@ -164,7 +164,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.01285,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "douentza",
@@ -189,7 +189,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.01228,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "segou",
@@ -214,7 +214,7 @@
     "walk_forward_auroc": 0.0,
     "walk_forward_brier": 0.05887,
     "brier_skill_score": -0.0047,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "bankass",
@@ -236,7 +236,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.01045,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "kidal",
@@ -260,7 +260,7 @@
     "walk_forward_auroc": 0.0,
     "walk_forward_brier": 0.06268,
     "brier_skill_score": -0.0698,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "djenne",
@@ -282,7 +282,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00931,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "gourma-rharous",
@@ -308,7 +308,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00765,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "nara",
@@ -333,7 +333,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00791,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "tenenkou",
@@ -357,7 +357,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.0069,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "tombouctou",
@@ -382,7 +382,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00576,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "macina",
@@ -404,7 +404,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00513,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "niafunke",
@@ -427,7 +427,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00464,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "bafulabe",
@@ -448,7 +448,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00343,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "goundam",
@@ -472,7 +472,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00342,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "san",
@@ -494,7 +494,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.0032,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "tessalit",
@@ -517,7 +517,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00328,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "bourem",
@@ -541,7 +541,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00255,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "dire",
@@ -562,7 +562,7 @@
     "walk_forward_auroc": 0.0333,
     "walk_forward_brier": 0.05966,
     "brier_skill_score": -0.0182,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "abeibara",
@@ -587,7 +587,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00227,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "nioro",
@@ -609,7 +609,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00211,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "sikasso",
@@ -631,7 +631,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00088,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "kati",
@@ -653,7 +653,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00067,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "koulikoro",
@@ -675,7 +675,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00064,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "banamba",
@@ -698,7 +698,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00048,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "koutiala",
@@ -719,7 +719,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00041,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "dioila",
@@ -740,7 +740,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00035,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "kayes",
@@ -762,7 +762,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00028,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "kita",
@@ -783,7 +783,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00023,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "kolokani",
@@ -804,7 +804,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00019,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "yelimane",
@@ -825,7 +825,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00018,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "bamako",
@@ -846,7 +846,7 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.00011,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   },
   {
     "cercle_id": "bougouni",
@@ -867,6 +867,6 @@
     "walk_forward_auroc": 0.7583,
     "walk_forward_brier": 0.0001,
     "brier_skill_score": 0.0,
-    "updated_at": "2026-11-27T17:02:21Z"
+    "updated_at": "2026-11-27T18:39:39Z"
   }
 ]

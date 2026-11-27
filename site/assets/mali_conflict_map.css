@@ -328,3 +328,125 @@
   margin-right: 4px;
   vertical-align: middle;
 }
+
+.vol2-kl-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vol2-kl-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.vol2-pill-btn {
+  border: 1px solid var(--rule);
+  background: var(--paper-2, #f5f0e6);
+  color: var(--ink);
+  padding: 2px 7px;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.vol2-pill-btn.active,
+.vol2-pill-btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.vol2-kl-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.7rem;
+  margin-bottom: 4px;
+  opacity: 0.85;
+}
+
+.vol2-badge-open {
+  background: #8b1e1e;
+  color: #fff;
+  border-color: #8b1e1e;
+  font-weight: 700;
+}
+
+.vol2-exchange-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vol2-exchange-turn {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--ink);
+  background: var(--paper-2, #f7f3ea);
+  padding: 9px 11px;
+}
+
+.vol2-exchange-turn.vol2-role-explorer {
+  border-left-color: #2b6cb0;
+}
+
+.vol2-exchange-turn.vol2-role-theorist {
+  border-left-color: #b45309;
+}
+
+.vol2-exchange-turn.vol2-role-arbiter {
+  border-left-color: #145a32;
+}
+
+.vol2-exchange-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.78rem;
+  margin-bottom: 5px;
+}
+
+.vol2-role-pill {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  margin-right: 5px;
+  color: #fff;
+  background: #374151;
+}
+
+.vol2-role-pill.explorer {
+  background: #2b6cb0;
+}
+
+.vol2-role-pill.theorist {
+  background: #b45309;
+}
+
+.vol2-role-pill.arbiter {
+  background: #145a32;
+}
+
+.vol2-model-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  opacity: 0.78;
+}
+
+.vol2-exchange-msg {
+  font-size: 0.8rem;
+  line-height: 1.42;
+  margin-bottom: 6px;
+}
+
+.vol2-exchange-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
