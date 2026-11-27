@@ -24,9 +24,22 @@ def _write_json(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
+def _flatten_for_hf_jsonl(row: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize heterogeneous nested dicts/lists so Hugging Face Datasets Viewer infers clean Arrow schemas."""
+    out: Dict[str, Any] = {}
+    for k, v in row.items():
+        if isinstance(v, dict):
+            out[f"{k}_json"] = json.dumps(v, ensure_ascii=False, sort_keys=True)
+        elif isinstance(v, list) and any(isinstance(el, (dict, list)) for el in v):
+            out[f"{k}_json"] = json.dumps(v, ensure_ascii=False)
+        else:
+            out[k] = v
+    return out
+
+
 def _write_jsonl(path: Path, items: Sequence[Dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    lines = [json.dumps(item, ensure_ascii=False) for item in items]
+    lines = [json.dumps(_flatten_for_hf_jsonl(item), ensure_ascii=False) for item in items]
     path.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
 
 
@@ -91,6 +104,20 @@ tags:
   - conflict-forecasting
   - hawkes-process
   - sebeni-chronicle
+configs:
+  - config_name: incidents
+    data_files: "data/incidents.jsonl"
+    default: true
+  - config_name: clusters
+    data_files: "data/clusters.jsonl"
+  - config_name: hypotheses
+    data_files: "data/hypotheses.jsonl"
+  - config_name: proofs
+    data_files: "data/proofs.jsonl"
+  - config_name: predictions
+    data_files: "data/predictions.jsonl"
+  - config_name: exchanges
+    data_files: "data/exchanges.jsonl"
 ---
 
 # The Sebeni Chronicle · Volume II: Mali Conflict OSINT Observatory

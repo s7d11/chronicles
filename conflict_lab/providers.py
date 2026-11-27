@@ -5,14 +5,24 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import re
 import subprocess
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
 
-from bench.metrics import strip_thinking
 from conflict_lab import ALLOWED_OPENROUTER_FREE_MODELS
+
+_THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL | re.IGNORECASE)
+
+
+def strip_thinking(raw_text: str) -> str:
+    txt = _THINK_RE.sub("", raw_text or "")
+    if "<think>" in txt.lower():
+        idx = txt.lower().find("<think>")
+        txt = txt[:idx]
+    return txt.strip()
 
 NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
