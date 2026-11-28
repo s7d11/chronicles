@@ -108,7 +108,7 @@ def deploy_vol2_job(
                 "--source",
                 str(stage),
                 "--cpu",
-                "0.5",
+                "1",
                 "--memory",
                 "512Mi",
                 "--tasks",
