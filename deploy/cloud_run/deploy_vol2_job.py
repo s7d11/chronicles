@@ -69,6 +69,11 @@ def deploy_vol2_job(
         # Strict isolation: NEVER include ADOPTION_KEY or Edition 4 models
         env_vars = {
             "JOB_MODE": "vol2",
+            "VOL2_CONTINUOUS": "1",
+            "VOL2_MAX_HOURS": "23.2",
+            "VOL2_CYCLE_SLEEP_SEC": "45",
+            "VOL2_OSINT_EVERY": "6",
+            "VOL2_CHECKPOINT_EVERY": "6",
             "HF_KEY": hf_tok,
             "NVIDIA_KEY": nvidia_key,
             "GCP_VERTEX_PROJECT": project,
@@ -109,9 +114,9 @@ def deploy_vol2_job(
                 "--tasks",
                 "1",
                 "--task-timeout",
-                "30m",
+                "24h",
                 "--max-retries",
-                "1",
+                "0",
                 "--env-vars-file",
                 str(env_yaml),
                 "--quiet",

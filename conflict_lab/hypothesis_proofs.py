@@ -2015,10 +2015,28 @@ async def run_autonomous_proof_debate(
     cutoff_date: Optional[str] = None,
     use_llm: bool = True,
     on_turn: Optional[Any] = None,
+    focus_cercle: Optional[str] = None,
+    cycle_num: int = 1,
+    prior_turns_history: Optional[Sequence[AgentExchangeTurn]] = None,
+    max_history_turns: int = 20,
 ) -> Tuple[List[HypothesisProof], AgentExchangeRecord]:
-    """Run an autonomous 3-stage inter-agent proof debate and return validated open hypotheses + exchange transcript."""
+    """Run an autonomous multi-turn inter-agent proof debate, rotating across Mali cercles in ongoing loops."""
     now_iso = _utc_now_iso()
     open_proofs = _compute_open_hypotheses_from_data(incidents, proofs, cutoff_date=cutoff_date)
+
+    # Focused cercle metrics when rotating continuously across cercles
+    focus_proofs = [h for h in proofs if focus_cercle and h.cercle_id == focus_cercle]
+    focus_stats = [
+        {
+            "hyp_id": h.hyp_id,
+            "family": h.family,
+            "stat": h.test_statistic_value,
+            "p": h.p_value,
+            "q": h.q_value,
+            "verdict": h.verdict,
+        }
+        for h in focus_proofs
+    ]
 
     # Build grounded statistical dossier for agent prompts and deterministic fallback
     actor_kls = sorted(
@@ -2046,6 +2064,9 @@ async def run_autonomous_proof_debate(
     unlocated_cnt = sum(1 for i in incidents if not is_located_incident(i))
 
     dossier = {
+        "cycle_num": cycle_num,
+        "focus_cercle": focus_cercle or "national",
+        "focus_cercle_proofs": focus_stats[:8],
         "n_total": len(incidents),
         "n_region_centroid_filtered": unlocated_cnt,
         "top_actor_kl": [
@@ -2164,23 +2185,34 @@ async def run_autonomous_proof_debate(
         },
     ]
 
+    base_history = list(prior_turns_history or [])
+    start_idx = (base_history[-1].turn_index + 1) if base_history else 1
+    prior_notes: List[str] = [f"[{t.role_badge}] {t.message[:180]}" for t in base_history[-4:]]
     turns: List[AgentExchangeTurn] = []
-    prior_notes: List[str] = []
-    topic_str = "Autonomous Open Hypothesis Debate: Empirical-Bayes KL, Year-Stratified TE & Changepoints"
+    focus_label = BY_CERCLE_ID[focus_cercle].name if (focus_cercle and focus_cercle in BY_CERCLE_ID) else (focus_cercle or "All-Mali")
+    topic_str = (
+        f"Ongoing Proof Cycle #{cycle_num} ({focus_label}): Empirical-Bayes KL, Transfer Entropy & Changepoints"
+    )
     open_ids = [h.hyp_id for h in open_proofs]
 
-    for idx, tspec in enumerate(turns_spec, start=1):
+    for offset, tspec in enumerate(turns_spec):
+        idx = start_idx + offset
         role = tspec["role_badge"]
         sp = tspec["spec"]
         msg_text = tspec["default_msg"]
+        if focus_cercle and offset == 0 and focus_stats:
+            fp_summary = ", ".join(f"{x['family']}={x['stat']}(q={x['q']})" for x in focus_stats[:4])
+            msg_text = f"[Cycle #{cycle_num} Focus: {focus_label}] {fp_summary}. {msg_text}"
         if use_llm and client is not None:
             prompt_payload = {
+                "cycle_num": cycle_num,
+                "focus_cercle": focus_label,
                 "role": role,
                 "dossier": dossier,
-                "prior_turns": prior_notes,
+                "prior_turns": prior_notes[-4:],
                 "instruction": (
-                    f"You are {sp.name} ({role}) debating Mali conflict mathematical proofs. "
-                    "Respond to prior_turns (if any) and write ONE concise technical turn (<=60 words) citing ONLY exact numbers from dossier. "
+                    f"You are {sp.name} ({role}) in ongoing cycle #{cycle_num} focused on {focus_label} (Mali). "
+                    "Advance the debate beyond prior_turns (inspect focus_cercle_proofs or open_candidates) and write ONE concise technical turn (<=60 words) citing ONLY exact dossier numbers. "
                     'Return strictly JSON: {"message": "..."}'
                 ),
             }
@@ -2191,7 +2223,7 @@ async def run_autonomous_proof_debate(
                         sp,
                         [{"role": "user", "content": json.dumps(prompt_payload)}],
                         max_tokens=900,
-                        temperature=0.18,
+                        temperature=0.2,
                     ),
                     timeout=25.0,
                 )
@@ -2210,12 +2242,13 @@ async def run_autonomous_proof_debate(
                 agent_name=sp.name,
                 model_id=sp.model_id,
                 role_badge=role,
-                target_hyp_id=tspec["target_hyp_id"],
+                target_hyp_id=(focus_proofs[0].hyp_id if (focus_proofs and offset == 0) else tspec["target_hyp_id"]),
                 message=msg_text,
-                math_refs=tspec["math_refs"],
+                math_refs={**tspec["math_refs"], "cycle": cycle_num, "focus": focus_cercle or "all"},
                 verdict_after=tspec["verdict_after"],
             )
         )
+        rolling = (base_history + turns)[-max_history_turns:]
         if on_turn is not None:
             try:
                 partial = AgentExchangeRecord(
@@ -2224,7 +2257,7 @@ async def run_autonomous_proof_debate(
                     updated_at=turn_now,
                     topic=topic_str,
                     open_hyp_ids=open_ids,
-                    turns=list(turns),
+                    turns=rolling,
                 )
                 maybe_coro = on_turn(partial)
                 if asyncio.iscoroutine(maybe_coro):
@@ -2232,12 +2265,13 @@ async def run_autonomous_proof_debate(
             except Exception:
                 pass
 
+    final_turns = (base_history + turns)[-max_history_turns:]
     exchange_record = AgentExchangeRecord(
         exchange_id=f"{sweep_id or 'vol2'}_exchange",
         sweep_id=sweep_id or "vol2_sweep",
         updated_at=_utc_now_iso(),
         topic=topic_str,
         open_hyp_ids=open_ids,
-        turns=turns,
+        turns=final_turns,
     )
     return open_proofs, exchange_record

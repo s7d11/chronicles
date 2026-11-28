@@ -414,3 +414,57 @@ def test_autonomous_proof_debate_and_bundle_export(tmp_path: Path):
     assert ex_file.is_file()
     loaded_ex = AgentExchangeRecord.model_validate(json.loads(ex_file.read_text(encoding="utf-8")))
     assert len(loaded_ex.turns) == len(ex_rec.turns)
+
+
+def test_continuous_rolling_exchange_turns():
+    evs: list[VerifiedIncident] = []
+    for k in range(16):
+        d = (date(2024, 1, 1) + timedelta(days=k * 4)).isoformat()
+        evs.append(
+            VerifiedIncident(
+                incident_id=f"c1_{k}",
+                date_start=d,
+                date_end=d,
+                precision_level="exact_locality",
+                admin1="Ménaka",
+                admin2="Ménaka",
+                cercle_id="menaka",
+                lat=15.9,
+                lon=2.4,
+                actor_primary="ISGS / Islamic State Sahel",
+                tactic="raid_assault",
+                fatalities_best=4,
+            )
+        )
+    clusters, members = build_attack_clusters(evs)
+    model_out = run_walk_forward_and_predictions(evs, clusters, members)
+    proofs = list(model_out["proofs"])
+
+    _, ex1 = asyncio.run(
+        run_autonomous_proof_debate(
+            None,
+            evs,
+            clusters,
+            proofs,
+            sweep_id="cont_c1",
+            use_llm=False,
+            focus_cercle="menaka",
+            cycle_num=1,
+        )
+    )
+    assert [t.turn_index for t in ex1.turns] == [1, 2, 3, 4]
+    _, ex2 = asyncio.run(
+        run_autonomous_proof_debate(
+            None,
+            evs,
+            clusters,
+            proofs,
+            sweep_id="cont_c2",
+            use_llm=False,
+            focus_cercle="menaka",
+            cycle_num=2,
+            prior_turns_history=ex1.turns,
+        )
+    )
+    assert [t.turn_index for t in ex2.turns] == [1, 2, 3, 4, 5, 6, 7, 8]
+    assert "Cycle #2" in ex2.topic

@@ -13,7 +13,19 @@ ED3_STATE_REPO="${ED3_STATE_REPO:-s7d11/chronicles-edition3-state}"
 ED4_STATE_REPO="${ED4_STATE_REPO:-s7d11/chronicles-edition4-state}"
 
 if [[ "${JOB_MODE:-}" == "vol2" ]]; then
-  echo "[entrypoint] Launching Volume II Mali OSINT Sweep & Mathematical Proof Job..."
+  if [[ "${VOL2_CONTINUOUS:-1}" == "1" ]]; then
+    echo "[entrypoint] Launching Volume II Continuous Ongoing Proof Observatory (max_hours=${VOL2_MAX_HOURS:-23.2}, sleep=${VOL2_CYCLE_SLEEP_SEC:-45}s)..."
+    exec python3 -m conflict_lab.cli run-continuous \
+      --out-dir "${SITE_DATA_DIR}" \
+      --max-ucdp-rows "${VOL2_MAX_UCDP_ROWS:-1200}" \
+      --max-hours "${VOL2_MAX_HOURS:-23.2}" \
+      --cycle-sleep "${VOL2_CYCLE_SLEEP_SEC:-45}" \
+      --osint-every "${VOL2_OSINT_EVERY:-6}" \
+      --checkpoint-every "${VOL2_CHECKPOINT_EVERY:-6}" \
+      --push-hf \
+      --push-firestore
+  fi
+  echo "[entrypoint] Launching Volume II Single OSINT Sweep & Mathematical Proof Job..."
   exec python3 -m conflict_lab.cli sweep \
     --out-dir "${SITE_DATA_DIR}" \
     --max-ucdp-rows "${VOL2_MAX_UCDP_ROWS:-1200}" \

@@ -246,6 +246,207 @@ async def run_sweep_pipeline(
     }
 
 
+async def run_continuous_loop(
+    *,
+    out_dir: str | Path = "site/data",
+    max_ucdp_rows: int = 1200,
+    use_llm: bool = True,
+    push_hf: bool = False,
+    push_firestore: bool = False,
+    max_cycles: int = 0,
+    max_hours: float = 23.2,
+    cycle_sleep: float = 45.0,
+    osint_every: int = 6,
+    checkpoint_every: int = 6,
+) -> Dict[str, Any]:
+    """Ongoing continuous proof discovery & multi-agent exchange stream until max_cycles or max_hours."""
+    import time as _time
+
+    load_repo_dotenv()
+    t_start = _time.monotonic()
+    max_secs = max(60.0, float(max_hours) * 3600.0)
+    fs_pub = Vol2FirestorePublisher.from_env() if push_firestore else None
+
+    agent_roster: List[Dict[str, Any]] = [
+        {"agent_id": s.agent_id, "name": s.name, "provider": s.provider, "model": s.model_id, "role": s.role}
+        for s in AGENT_CAST
+    ]
+
+    async with httpx.AsyncClient(timeout=35.0, follow_redirects=True) as client:
+        cycle = 0
+        incidents: List[VerifiedIncident] = []
+        raw_count = 0
+        source_counts: Dict[str, int] = {}
+        clusters: List[Any] = []
+        cluster_members: Dict[str, Any] = {}
+        corridor_edges: List[Dict[str, Any]] = []
+        model_out: Dict[str, Any] = {}
+        base_proofs: List[Any] = []
+        history_turns: List[Any] = []
+        focus_order: List[str] = []
+        last_meta: Optional[ObservatoryMeta] = None
+        last_proofs: List[Any] = []
+        last_exchange = None
+
+        while True:
+            cycle += 1
+            if max_cycles > 0 and cycle > max_cycles:
+                break
+            if (_time.monotonic() - t_start) >= max_secs and cycle > 1:
+                break
+
+            now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            sweep_id = f"vol2_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%SZ')}_c{cycle}"
+            print(f"[vol2-ongoing] === Cycle #{cycle} ({sweep_id}) ===", flush=True)
+
+            if cycle == 1 or (osint_every > 0 and (cycle - 1) % osint_every == 0):
+                gathered = await gather_all_sources(client, max_ucdp_rows=max_ucdp_rows, use_llm=use_llm)
+                records = gathered["records"]
+                raw_count = len(records)
+                source_counts = gathered["source_counts"]
+                incidents = deduplicate_and_georesolve(records)
+                if use_llm and incidents:
+                    incidents = await adjudicate_recent_incidents_batched(client, incidents, batch_size=20, max_to_audit=40)
+                clusters, cluster_members = build_attack_clusters(incidents)
+                corridor_edges = build_corridor_edges(incidents)
+                model_out = run_walk_forward_and_predictions(incidents, clusters, cluster_members)
+                base_proofs = list(model_out["proofs"])
+                if use_llm and base_proofs:
+                    base_proofs = await synthesize_llm_hypothesis_notes(client, base_proofs, max_to_enrich=8, use_llm=True)
+                # Build focus rotation from high-divergence / high-count active cercles
+                focus_order = [
+                    p.cercle_id for p in sorted(model_out["cercle_states"], key=lambda x: (x.kl_actor_nats + x.kl_tactic_nats, x.event_count), reverse=True)
+                    if p.event_count >= 5
+                ] or [c.dominant_cercle_id for c in clusters]
+
+            focus_c = focus_order[(cycle - 1) % len(focus_order)] if focus_order else None
+
+            def _stream_turn(partial_ex: Any) -> None:
+                if fs_pub is not None:
+                    from .firestore_sync import clamp_exchange_doc
+
+                    ex_doc = clamp_exchange_doc(partial_ex)
+                    fs_pub.patch_doc("vol2_exchanges/latest", ex_doc)
+                    fs_pub.patch_doc(
+                        "vol2_meta/overview",
+                        {
+                            "sweep_id": sweep_id,
+                            "updated_at": partial_ex.updated_at,
+                            "running": True,
+                            "agent_exchanges": list(ex_doc.get("turns") or [])[:24],
+                        },
+                    )
+
+            open_proofs, exchange_record = await run_autonomous_proof_debate(
+                client if use_llm else None,
+                incidents,
+                clusters,
+                base_proofs,
+                sweep_id=sweep_id,
+                use_llm=use_llm,
+                on_turn=_stream_turn if fs_pub is not None else None,
+                focus_cercle=focus_c,
+                cycle_num=cycle,
+                prior_turns_history=history_turns,
+            )
+            history_turns = list(exchange_record.turns)
+            all_proofs = list(base_proofs) + list(open_proofs)
+            last_proofs = all_proofs
+            last_exchange = exchange_record
+
+            perspective_counts = dict(Counter(p for inc in incidents for p in inc.perspectives))
+            actor_counts = dict(Counter(inc.actor_primary for inc in incidents).most_common(12))
+            tactic_counts = dict(Counter(inc.tactic for inc in incidents).most_common(10))
+            proven_cnt = sum(1 for h in all_proofs if h.verdict in ("PROVEN", "SUPPORTED"))
+            still_running = not (max_cycles > 0 and cycle >= max_cycles) and ((_time.monotonic() - t_start + cycle_sleep) < max_secs)
+
+            meta = ObservatoryMeta(
+                sweep_id=sweep_id,
+                updated_at=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                total_raw_records=raw_count,
+                total_verified_incidents=len(incidents),
+                total_clusters=len(clusters),
+                total_hypotheses=len(all_proofs),
+                proven_or_supported_count=proven_cnt,
+                walk_forward_folds=model_out["walk_forward_folds"],
+                global_auroc=model_out["global_auroc"],
+                global_pr_auc=model_out["global_pr_auc"],
+                global_brier=model_out["global_brier"],
+                global_bss=model_out["global_bss"],
+                source_counts=source_counts,
+                perspective_counts=perspective_counts,
+                actor_counts=actor_counts,
+                tactic_counts=tactic_counts,
+                corridor_edges=corridor_edges,
+                active_agents=agent_roster,
+                agent_exchanges=[t.model_dump() for t in history_turns[-24:]],
+                running=still_running,
+            )
+            last_meta = meta
+
+            export_static_site_bundle(
+                out_dir,
+                meta=meta,
+                incidents=incidents,
+                clusters=clusters,
+                hypotheses=all_proofs,
+                proofs=model_out["cercle_states"],
+                predictions=model_out["predictions"],
+                exchanges=exchange_record,
+            )
+
+            if fs_pub is not None:
+                if cycle == 1 or (osint_every > 0 and (cycle - 1) % osint_every == 0):
+                    fs_pub.publish_bundle(
+                        meta=meta,
+                        incidents=incidents,
+                        clusters=clusters,
+                        hypotheses=all_proofs,
+                        proofs=model_out["cercle_states"],
+                        predictions=model_out["predictions"],
+                        exchanges=exchange_record,
+                    )
+                else:
+                    from .firestore_sync import clamp_exchange_doc, clamp_hypothesis_doc
+
+                    fs_pub.patch_doc("vol2_meta/overview", meta.model_dump())
+                    fs_pub.patch_doc("vol2_exchanges/latest", clamp_exchange_doc(exchange_record))
+                    for oh in open_proofs:
+                        hd = clamp_hypothesis_doc(oh)
+                        fs_pub.patch_doc(f"vol2_hypotheses/{hd['hyp_id']}", hd)
+
+            if push_hf and (cycle == 1 or (checkpoint_every > 0 and cycle % checkpoint_every == 0)):
+                try:
+                    hf_url = push_bundle_to_hf(
+                        meta=meta,
+                        incidents=incidents,
+                        clusters=clusters,
+                        hypotheses=all_proofs,
+                        proofs=model_out["cercle_states"],
+                        predictions=model_out["predictions"],
+                        exchanges=exchange_record,
+                    )
+                    print(f"[vol2-ongoing] Cycle #{cycle} HF checkpoint: {hf_url}", flush=True)
+                except Exception as exc:
+                    print(f"[vol2-ongoing] WARN Cycle #{cycle} HF checkpoint failed: {exc}", file=sys.stderr, flush=True)
+
+            if not still_running:
+                break
+            await asyncio.sleep(max(5.0, float(cycle_sleep)))
+
+        # Finalize running=False if loop ends cleanly
+        if fs_pub is not None and last_meta is not None:
+            last_meta.running = False
+            fs_pub.patch_doc("vol2_meta/overview", last_meta.model_dump())
+
+    return {
+        "cycles_completed": cycle - 1 if (max_cycles > 0 and cycle > max_cycles) else cycle,
+        "meta": last_meta.model_dump() if last_meta else {},
+        "total_proofs": len(last_proofs),
+        "turns_tail": len(last_exchange.turns) if last_exchange else 0,
+    }
+
+
 def main(argv: List[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Sebeni Chronicle Vol II Mali OSINT & Math Proofs CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -257,6 +458,18 @@ def main(argv: List[str] | None = None) -> int:
     sw.add_argument("--from-incidents", default=None, help="Recompute proofs & exchanges from existing VerifiedIncident JSON")
     sw.add_argument("--push-hf", action="store_true", help="Upload snapshots to Hugging Face Hub dataset")
     sw.add_argument("--push-firestore", action="store_true", help="Publish live states to Cloud Firestore")
+
+    cont = sub.add_parser("run-continuous", help="Run ongoing continuous proof exploration & debate loop")
+    cont.add_argument("--out-dir", default="site/data")
+    cont.add_argument("--max-ucdp-rows", type=int, default=1200)
+    cont.add_argument("--no-llm", action="store_true")
+    cont.add_argument("--max-cycles", type=int, default=0, help="0 = run up to max-hours continuously")
+    cont.add_argument("--max-hours", type=float, default=23.2)
+    cont.add_argument("--cycle-sleep", type=float, default=45.0)
+    cont.add_argument("--osint-every", type=int, default=6)
+    cont.add_argument("--checkpoint-every", type=int, default=6)
+    cont.add_argument("--push-hf", action="store_true")
+    cont.add_argument("--push-firestore", action="store_true")
 
     sync_cmd = sub.add_parser("sync-from-hf", help="Pull Vol II JSON files from Hugging Face Hub")
     sync_cmd.add_argument("--out-dir", default="site/data")
@@ -271,6 +484,23 @@ def main(argv: List[str] | None = None) -> int:
                 push_hf=args.push_hf,
                 push_firestore=args.push_firestore,
                 from_incidents=args.from_incidents,
+            )
+        )
+        return 0
+
+    if args.command == "run-continuous":
+        asyncio.run(
+            run_continuous_loop(
+                out_dir=args.out_dir,
+                max_ucdp_rows=args.max_ucdp_rows,
+                use_llm=not args.no_llm,
+                push_hf=args.push_hf,
+                push_firestore=args.push_firestore,
+                max_cycles=args.max_cycles,
+                max_hours=args.max_hours,
+                cycle_sleep=args.cycle_sleep,
+                osint_every=args.osint_every,
+                checkpoint_every=args.checkpoint_every,
             )
         )
         return 0
