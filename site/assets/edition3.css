@@ -5,23 +5,24 @@
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
-  padding: 8px 10px;
-  margin-bottom: 10px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
   background: var(--paper-card);
   border: 1px solid var(--rule-heavy);
   font-family: var(--sans);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
 }
 
 .ed3-lang-pill {
   border: 1px solid var(--rule-hair);
   background: var(--paper);
   color: var(--ink);
-  padding: 2px 7px;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 700;
+  padding: 3px 8px;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 180ms var(--ease-editorial), color 180ms var(--ease-editorial), border-color 180ms var(--ease-editorial);
 }
 .ed3-lang-pill.done { border-color: var(--forest); color: var(--forest); }
 .ed3-lang-pill.live { border-color: var(--crimson); color: var(--crimson); background: var(--paper-alt); }
@@ -34,17 +35,17 @@
   gap: 8px;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: 8px 12px;
   margin-bottom: 12px;
   background: var(--paper-card);
   border: 1px solid var(--rule-hair);
   font-family: var(--sans);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
 }
 .ed3-toolbar select, .ed3-toolbar input[type="text"], .ed3-toolbar input[type="password"] {
   font-family: var(--mono);
-  font-size: 0.74rem;
-  padding: 4px 7px;
+  font-size: 0.8125rem;
+  padding: 5px 8px;
   border: 1px solid var(--rule-heavy);
   background: var(--paper);
   color: var(--ink);
@@ -55,18 +56,18 @@
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-  padding: 8px 10px;
+  padding: 8px 12px;
   margin-bottom: 12px;
   background: var(--paper-alt);
   border: 1px solid var(--crimson);
   font-family: var(--sans);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
 }
 .ed3-admin-drawer.open { display: flex; }
 
 .ed3-kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 8px;
   margin-bottom: 14px;
 }
@@ -74,28 +75,27 @@
   background: var(--paper-card);
   border: 1px solid var(--rule-hair);
   border-top: 3px solid var(--rule-heavy);
-  padding: 8px 10px;
+  padding: 10px 12px;
 }
 .ed3-kpi.good { border-top-color: var(--forest); }
 .ed3-kpi.warn { border-top-color: var(--ochre); }
 .ed3-kpi.bad { border-top-color: var(--crimson); }
 .ed3-kpi .k {
   font-family: var(--sans);
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
+  font-weight: 600;
   color: var(--ink-soft);
 }
 .ed3-kpi .v {
-  font-family: var(--mono);
-  font-size: 1.08rem;
+  font-family: var(--sans);
+  font-size: 1.15rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   margin-top: 2px;
 }
 .ed3-kpi .s {
   font-family: var(--sans);
-  font-size: 0.71rem;
+  font-size: 0.8125rem;
   color: var(--ink-muted);
   margin-top: 2px;
 }
@@ -119,12 +119,10 @@
 .ed3-panel h4 {
   margin: 0 0 8px;
   font-family: var(--sans);
-  font-size: 0.76rem;
-  font-weight: 800;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
+  font-size: 0.875rem;
+  font-weight: 700;
   border-bottom: 1px solid var(--rule-hair);
-  padding-bottom: 5px;
+  padding-bottom: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -140,9 +138,9 @@
 .ed3-ev {
   background: var(--paper);
   border: 1px solid var(--rule-hair);
-  border-left: 4px solid var(--slate);
-  padding: 8px 10px;
-  font-size: 0.8rem;
+  border-left: 3px solid var(--slate);
+  padding: 9px 11px;
+  font-size: 0.875rem;
 }
 .ed3-ev.kind-corpus_stress_complete { border-left-color: var(--forest); }
 .ed3-ev.kind-model_stress_test { border-left-color: var(--ochre); }
@@ -153,8 +151,9 @@
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 6px;
-  font-family: var(--mono);
-  font-size: 0.71rem;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
   color: var(--ink-muted);
   margin-bottom: 4px;
 }
@@ -162,15 +161,13 @@ details.ed3-trace {
   margin-top: 6px;
   background: var(--paper-alt);
   border: 1px solid var(--rule-hair);
-  padding: 5px 8px;
+  padding: 6px 9px;
 }
 details.ed3-trace summary {
   cursor: pointer;
   font-family: var(--sans);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
+  font-weight: 600;
   color: var(--slate);
 }
 details.ed3-trace pre {
@@ -178,24 +175,24 @@ details.ed3-trace pre {
   white-space: pre-wrap;
   word-break: break-word;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   max-height: 240px;
   overflow-y: auto;
   background: var(--paper);
-  padding: 6px;
+  padding: 8px;
 }
 
-.ed3-dp-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.72rem; }
+.ed3-dp-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
 .ed3-dp-table th, .ed3-dp-table td {
   border: 1px solid var(--rule-hair);
-  padding: 4px 6px;
+  padding: 5px 7px;
   text-align: center;
 }
-.ed3-dp-table th { background: var(--paper-alt); font-size: 0.68rem; }
+.ed3-dp-table th { background: var(--paper-alt); font-size: 0.8125rem; }
 .ed3-dp-table td.dp-path {
   background: var(--paper-alt);
   border: 1.5px solid var(--crimson);
-  font-weight: 800;
+  font-weight: 700;
   color: var(--crimson);
 }
 
@@ -211,8 +208,8 @@ details.ed3-trace pre {
 }
 .ed3-fsa-node {
   font-family: var(--mono);
-  font-size: 0.72rem;
-  padding: 3px 7px;
+  font-size: 0.8125rem;
+  padding: 3px 8px;
   border: 1px solid var(--rule-hair);
   background: var(--paper-card);
 }
@@ -228,9 +225,9 @@ details.ed3-trace pre {
 .ed3-model-card {
   background: var(--paper-card);
   border: 1px solid var(--rule-heavy);
-  border-top: 4px solid var(--slate);
+  border-top: 3px solid var(--slate);
   padding: 12px 14px;
-  font-size: 0.82rem;
+  font-size: 0.875rem;
 }
 .ed3-model-card.verdict-PROVEN_EFFECTIVE { border-top-color: var(--forest); }
 .ed3-model-card.verdict-EFFECTIVE_WITH_HARDENING { border-top-color: var(--ochre); }

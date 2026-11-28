@@ -86,7 +86,7 @@
           </div>
           <div class="spec-item">
             <div class="lbl">Strict Walk-Forward Score</div>
-            <div class="val">AUROC ${v2.global_auroc ?? "—"} (Brier ${v2.global_brier ?? "—"})</div>
+            <div class="val">AUROC ${v2.global_auroc ?? "-"} (Brier ${v2.global_brier ?? "-"})</div>
             <div class="sub">${v2.walk_forward_folds || 0} causal folds &bull; NVIDIA + OpenRouter Free + Gemini 3.1 Flash-Lite</div>
           </div>
         `;
@@ -327,8 +327,8 @@
         archiveBody.innerHTML = editions.map((ed) => `
           <tr>
             <td><code>${esc(ed.vol_issue)}</code></td>
-            <td>${esc(ed.date)}</td>
-            <td><strong><a href="${esc(ed.url)}">${esc(ed.title)}</a></strong><br/><small style="color:var(--ink-muted)">${esc(ed.summary)}</small></td>
+            <td class="num">${esc(ed.date)}</td>
+            <td><strong><a href="${esc(ed.url)}">${esc(ed.title)}</a></strong><div style="font-size:0.8125rem;color:var(--ink-muted);margin-top:2px">${esc(ed.summary)}</div></td>
             <td><span class="tag ${esc(ed.tagCls || "sebeni")}">${esc(ed.kind)}</span></td>
           </tr>
         `).join("");
@@ -379,11 +379,14 @@
 
     if (navEl) {
       const preserved = [...navEl.querySelectorAll('a[data-keep-nav="1"]')].map((a) => a.outerHTML);
+      const navEditions = editions.filter(
+        (ed) => ed.is_edition || ed.id === "mali13-leaderboard" || ed.id === pageId
+      );
       const navLinks = [
         `<a href="${esc(resolveSiteUrl("index.html"))}"${pageId === "front" ? ' class="active"' : ""}>Front Page</a>`,
-        ...editions.map((ed) => {
+        ...navEditions.map((ed) => {
           const isLatest = latestEdition && ed.id === latestEdition.id;
-          const badge = isLatest ? `<span class="nav-badge">Latest</span>` : "";
+          const badge = isLatest ? `<span class="nav-badge">New</span>` : "";
           const label = esc(ed.short_title || ed.title);
           return `<a href="${esc(resolveSiteUrl(ed.url))}"${ed.id === pageId ? ' class="active"' : ""}>${label}${badge}</a>`;
         }),
@@ -524,7 +527,7 @@
                 .map((b) => {
                   const target = byId[b.id];
                   if (!target) return "";
-                  return `<li><a href="${esc(resolveSiteUrl(target.url))}"><strong>${esc(target.short_title || target.title)}</strong></a> <code>${esc(target.vol_issue)}</code>${b.note ? ` &mdash; ${esc(b.note)}` : ""}</li>`;
+                  return `<li><a href="${esc(resolveSiteUrl(target.url))}"><strong>${esc(target.short_title || target.title)}</strong></a> <code>${esc(target.vol_issue)}</code>${b.note ? ` : ${esc(b.note)}` : ""}</li>`;
                 })
                 .join("")}
             </ul>
@@ -539,7 +542,7 @@
               ${forwardList
                 .map(
                   ({ item, note }) =>
-                    `<li><a href="${esc(resolveSiteUrl(item.url))}"><strong>${esc(item.short_title || item.title)}</strong></a> <code>${esc(item.vol_issue)}</code>${note ? ` &mdash; ${esc(note)}` : ""}</li>`
+                    `<li><a href="${esc(resolveSiteUrl(item.url))}"><strong>${esc(item.short_title || item.title)}</strong></a> <code>${esc(item.vol_issue)}</code>${note ? ` : ${esc(note)}` : ""}</li>`
                 )
                 .join("")}
             </ul>
@@ -553,13 +556,13 @@
       sec.setAttribute("aria-label", "Chronicle Edition Continuity");
       sec.innerHTML = `
         <div class="cont-head">
-          <h3>Chronicle Continuity &amp; Cross-Edition Dispatch Map</h3>
+          <h3>Chronicle Continuity &amp; Cross-Edition Index</h3>
           <span class="tag ${esc(current.tagCls || "sebeni")}">${esc(current.vol_issue)}</span>
         </div>
         <div class="continuity-pager">${leftSlot}${centerSlot}${rightSlot}</div>
         ${colsHtml.length ? `<div class="continuity-grid${colsHtml.length === 1 ? " single" : ""}">${colsHtml.join("")}</div>` : ""}
         <div class="continuity-pills">
-          <span style="font-weight:800;text-transform:uppercase;color:var(--ink-soft);margin-right:4px">All Dispatches:</span>
+          <span style="font-weight:700;color:var(--ink-soft);margin-right:4px">All Dispatches:</span>
           <a href="${esc(resolveSiteUrl("index.html"))}">Front Page</a>
           ${editions
             .map(

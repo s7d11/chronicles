@@ -2,9 +2,9 @@
 
 .vw-telemetry-bar {
   display: grid;
-  grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(110px, 0.7fr));
+  grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(120px, 0.7fr));
   gap: 10px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border: 1px solid var(--rule-heavy);
   background: var(--paper-card);
   margin-bottom: 10px;
@@ -27,8 +27,9 @@
 .vw-progress-head {
   display: flex;
   justify-content: space-between;
-  font-size: 0.76rem;
+  font-size: 0.8125rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .vw-progress-track {
@@ -40,15 +41,15 @@
 }
 
 .vw-progress-base {
-  background: #8a6c46;
+  background: var(--ochre);
   height: 100%;
-  transition: width 0.35s ease;
+  transition: width 350ms var(--ease-editorial);
 }
 
 .vw-progress-added {
-  background: var(--emerald, #1e5c3a);
+  background: var(--forest);
   height: 100%;
-  transition: width 0.35s ease;
+  transition: width 350ms var(--ease-editorial);
 }
 
 .vw-stat-card {
@@ -60,16 +61,16 @@
 }
 
 .vw-stat-lbl {
-  font-size: 0.66rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.8125rem;
+  font-weight: 600;
   color: var(--ink-muted);
 }
 
 .vw-stat-val {
-  font-family: var(--serif);
-  font-size: 1.05rem;
+  font-family: var(--sans);
+  font-size: 1.08rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   color: var(--ink);
 }
 
@@ -78,22 +79,23 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border: 1px solid var(--rule-hair);
   background: var(--paper);
   margin-bottom: 10px;
   font-family: var(--sans);
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
 }
 
 .vw-lang-pill {
   border: 1px solid var(--rule-heavy);
   background: var(--paper-card);
   color: var(--ink);
-  padding: 3px 8px;
-  font-size: 0.72rem;
-  font-weight: 700;
+  padding: 4px 9px;
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 180ms var(--ease-editorial), color 180ms var(--ease-editorial);
 }
 
 .vw-lang-pill.active {
@@ -102,7 +104,7 @@
 }
 
 .vw-lang-pill.has-epochs {
-  border-color: #1e5c3a;
+  border-color: var(--forest);
 }
 
 .vw-main-grid {
@@ -126,46 +128,42 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 7px 9px;
+  padding: 8px 10px;
   border: 1px solid var(--rule-hair);
   background: var(--paper);
   margin-bottom: 8px;
   font-family: var(--sans);
-  font-size: 0.74rem;
+  font-size: 0.8125rem;
 }
 
 .vw-toolbar button,
 .vw-toolbar select {
   font-family: var(--sans);
-  font-size: 0.73rem;
+  font-size: 0.8125rem;
   background: var(--paper-card);
   color: var(--ink);
   border: 1px solid var(--rule-heavy);
-  padding: 3px 8px;
+  padding: 4px 9px;
   cursor: pointer;
 }
 
 .vw-toolbar button.active-btn {
-  background: #1e5c3a;
-  color: #fbf8f0;
-  border-color: #1e5c3a;
+  background: var(--forest);
+  color: var(--paper);
+  border-color: var(--forest);
 }
 
 .vw-stage-box {
   position: relative;
   border: 1px solid var(--rule-heavy);
-  background: #efe5cf;
+  background: var(--paper-alt);
   height: 580px;
   min-height: 520px;
   overflow: hidden;
 }
 
-[data-theme="evening"] .vw-stage-box {
-  background: #1c1714;
-}
-
 .vw-main-grid.fullscreen .vw-stage-box {
-  height: calc(100vh - 285px);
+  height: calc(100vh - 255px);
   min-height: 540px;
 }
 
@@ -185,12 +183,12 @@
 .vw-agent-tag {
   position: absolute;
   transform: translate(-50%, -125%);
-  padding: 2px 6px;
+  padding: 2px 7px;
   border: 1px solid var(--rule-heavy);
-  background: rgba(251, 248, 240, 0.92);
+  background: rgba(251, 248, 240, 0.94);
   color: #181613;
   font-family: var(--sans);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
   white-space: nowrap;
   pointer-events: auto;
@@ -199,51 +197,50 @@
 }
 
 [data-theme="evening"] .vw-agent-tag {
-  background: rgba(28, 24, 20, 0.92);
+  background: rgba(28, 24, 20, 0.94);
   color: #ede6d8;
 }
 
 .vw-agent-tag.role-orchestrator {
-  border-color: #1b4d6e;
+  border-color: var(--slate);
   border-left-width: 4px;
 }
 
 .vw-agent-tag.role-critic {
-  border-color: #8c1d24;
+  border-color: var(--crimson);
   border-left-width: 4px;
 }
 
 .vw-agent-tag.role-council {
-  border-color: #9a6314;
+  border-color: var(--ochre);
 }
 
 .vw-agent-tag.role-specialist {
   border-style: dashed;
-  border-color: #1e5c3a;
+  border-color: var(--forest);
 }
 
 .vw-agent-tag.selected {
-  background: #181613;
-  color: #fbf8f0;
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .vw-zone-badge {
   position: absolute;
   transform: translate(-50%, -50%);
-  padding: 1px 5px;
-  background: rgba(245, 241, 230, 0.72);
-  border: 1px solid rgba(110, 92, 65, 0.45);
-  color: #5b482e;
+  padding: 2px 6px;
+  background: rgba(245, 241, 230, 0.85);
+  border: 1px solid var(--rule-hair);
+  color: var(--ink-muted);
   font-family: var(--sans);
-  font-size: 0.61rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 
 [data-theme="evening"] .vw-zone-badge {
-  background: rgba(24, 21, 18, 0.78);
-  color: #d3c2a4;
+  background: rgba(24, 21, 18, 0.88);
+  color: var(--ink-muted);
 }
 
 .vw-speech-bubble {
@@ -253,16 +250,16 @@
   max-width: min(520px, calc(100% - 24px));
   background: rgba(251, 248, 240, 0.95);
   border: 1px solid var(--rule-heavy);
-  border-left: 4px solid #8c1d24;
-  padding: 8px 10px;
+  border-left: 4px solid var(--crimson);
+  padding: 9px 12px;
   font-family: var(--sans);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
 }
 
 [data-theme="evening"] .vw-speech-bubble {
   background: rgba(26, 23, 20, 0.95);
-  color: #ede6d8;
+  color: var(--ink);
 }
 
 .vw-side-panel {
@@ -276,7 +273,7 @@
 }
 
 .vw-main-grid.fullscreen .vw-side-panel {
-  max-height: calc(100vh - 235px);
+  max-height: calc(100vh - 215px);
 }
 
 .vw-tabs {
@@ -287,15 +284,20 @@
 
 .vw-tab-btn {
   flex: 1;
-  padding: 7px 6px;
+  padding: 8px 8px;
   border: none;
   border-right: 1px solid var(--rule-hair);
   background: transparent;
   color: var(--ink-muted);
   font-family: var(--sans);
-  font-size: 0.73rem;
-  font-weight: 700;
+  font-size: 0.8125rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background-color 180ms var(--ease-editorial), color 180ms var(--ease-editorial);
+}
+
+.vw-tab-btn:last-child {
+  border-right: none;
 }
 
 .vw-tab-btn.active {
@@ -308,63 +310,62 @@
   overflow-y: auto;
   flex: 1;
   font-family: var(--sans);
-  font-size: 0.76rem;
+  font-size: 0.875rem;
 }
 
 .vw-log-card {
   border: 1px solid var(--rule-hair);
   background: var(--paper-card);
-  padding: 8px 9px;
+  padding: 9px 11px;
   margin-bottom: 8px;
 }
 
 .vw-log-card.kind-lexicon_commit,
 .vw-log-card.kind-gram_commit {
-  border-left: 4px solid #1e5c3a;
+  border-left: 3px solid var(--forest);
 }
 
 .vw-log-card.kind-council_reject {
-  border-left: 4px solid #8c1d24;
+  border-left: 3px solid var(--crimson);
 }
 
 .vw-log-card.kind-agent_spawn,
 .vw-log-card.kind-orchestrator_directive {
-  border-left: 4px solid #1b4d6e;
+  border-left: 3px solid var(--slate);
 }
 
 .vw-log-card.kind-critic_review {
-  border-left: 4px solid #9a6314;
+  border-left: 3px solid var(--ochre);
 }
 
 .vw-tag-pill {
   display: inline-block;
-  padding: 1px 6px;
+  padding: 1px 7px;
   border: 1px solid var(--rule-hair);
-  font-size: 0.66rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
+  font-weight: 600;
   margin-right: 4px;
 }
 
 .vw-tag-ok {
-  background: #e2f2e8;
-  color: #15492c;
-  border-color: #1e5c3a;
+  background: var(--paper);
+  color: var(--forest);
+  border-color: var(--forest);
 }
 
 .vw-tag-reject {
-  background: #fae4e6;
-  color: #7d151c;
-  border-color: #8c1d24;
+  background: var(--paper);
+  color: var(--crimson);
+  border-color: var(--crimson);
 }
 
 .vw-mdf-pre {
   margin: 6px 0 0;
-  padding: 6px 8px;
+  padding: 7px 9px;
   background: var(--paper);
   border: 1px solid var(--rule-hair);
   font-family: var(--mono);
-  font-size: 0.71rem;
+  font-size: 0.8125rem;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -372,7 +373,7 @@
 .vw-gate-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 5px;
   margin: 5px 0;
 }
 
@@ -382,7 +383,7 @@
   gap: 8px;
   margin-top: 6px;
   font-family: var(--sans);
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
 }
 
 .vw-scrub-row input[type="range"] {

@@ -253,9 +253,11 @@
       <div class="vol2-mount">
         <div class="vol2-toolbar">
           <div class="vol2-toolbar-group">
-            <button class="vol2-btn active" data-layer="clusters">Hotspots &amp; Corridors</button>
-            <button class="vol2-btn" data-layer="risk">7d / 30d Predictive Hazard</button>
-            <button class="vol2-btn" data-layer="incidents">Raw OSINT Incidents</button>
+            <div class="vol2-segmented" role="group" aria-label="Map layer mode">
+              <button class="vol2-btn active" data-layer="clusters">Hotspots &amp; Corridors</button>
+              <button class="vol2-btn" data-layer="risk">7d / 30d Predictive Hazard</button>
+              <button class="vol2-btn" data-layer="incidents">Raw OSINT Incidents</button>
+            </div>
           </div>
           <div class="vol2-toolbar-group">
             <select class="vol2-select" id="vol2PerspFilter" title="Filter source perspective">
@@ -271,11 +273,11 @@
         </div>
 
         <div class="vol2-kpi-strip" id="vol2KpiStrip">
-          <div class="vol2-kpi"><div class="k-lbl">Verified Incidents</div><div class="k-val">—</div><div class="k-sub">Loading dataset…</div></div>
-          <div class="vol2-kpi"><div class="k-lbl">Clusters &amp; Hypotheses</div><div class="k-val">—</div><div class="k-sub">9 proof families + Open</div></div>
-          <div class="vol2-kpi"><div class="k-lbl">Walk-Forward AUROC</div><div class="k-val">—</div><div class="k-sub">Strict t &le; T_cut</div></div>
-          <div class="vol2-kpi"><div class="k-lbl">Brier / Skill (BSS)</div><div class="k-val">—</div><div class="k-sub">Calibration</div></div>
-          <div class="vol2-kpi"><div class="k-lbl">Data Mode</div><div class="k-val" id="vol2ModeLbl">Static Replay</div><div class="k-sub" id="vol2UpdatedLbl">—</div></div>
+          <div class="vol2-kpi"><div class="k-lbl">Verified Incidents</div><div class="k-val">-</div><div class="k-sub">Loading dataset...</div></div>
+          <div class="vol2-kpi"><div class="k-lbl">Clusters &amp; Hypotheses</div><div class="k-val">-</div><div class="k-sub">9 proof families + Open</div></div>
+          <div class="vol2-kpi"><div class="k-lbl">Walk-Forward AUROC</div><div class="k-val">-</div><div class="k-sub">Strict t &le; T_cut</div></div>
+          <div class="vol2-kpi"><div class="k-lbl">Brier / Skill (BSS)</div><div class="k-val">-</div><div class="k-sub">Calibration</div></div>
+          <div class="vol2-kpi"><div class="k-lbl">Data Mode</div><div class="k-val" id="vol2ModeLbl">Static Replay</div><div class="k-sub" id="vol2UpdatedLbl">-</div></div>
         </div>
 
         <div class="vol2-stage">
@@ -284,22 +286,22 @@
             <div class="vol2-scrubber">
               <label for="vol2TimeSlider">
                 <span>Temporal Causal Cutoff (T<sub>cutoff</sub>)</span>
-                <span id="vol2CutoffDisplay">—</span>
+                <span id="vol2CutoffDisplay">-</span>
               </label>
               <input id="vol2TimeSlider" type="range" min="10" max="100" value="100" />
             </div>
             <div class="vol2-legend">
-              <span><span class="vol2-swatch" style="background:#8b1e1e"></span>p<sub>7d</sub> &ge; 55% (Severe Surge)</span>
-              <span><span class="vol2-swatch" style="background:#b45309"></span>35–54% (Elevated)</span>
-              <span><span class="vol2-swatch" style="background:#ca8a04"></span>18–34% (Watch)</span>
+              <span><span class="vol2-swatch" style="background:#8b1e1e"></span>p<sub>7d</sub> &ge; 55% (Severe)</span>
+              <span><span class="vol2-swatch" style="background:#b45309"></span>35-54% (Elevated)</span>
+              <span><span class="vol2-swatch" style="background:#ca8a04"></span>18-34% (Watch)</span>
               <span><span class="vol2-swatch" style="background:#2b6cb0"></span>&lt; 18% (Baseline)</span>
-              <span>— Dashed lines: Actor diffusion corridors</span>
+              <span>Dashed: Actor diffusion corridors</span>
             </div>
           </div>
 
           <div class="vol2-workbench-col" id="vol2Workbench"></div>
+          <section class="vol2-exchange-dock" id="vol2ExchangeDock"></section>
         </div>
-        <section class="vol2-exchange-dock" id="vol2ExchangeDock"></section>
       </div>
     `;
 
@@ -677,11 +679,11 @@
     }
 
     function renderProofCard(h) {
-      const qTxt = h.q_value != null ? ` &bull; <strong>q<sub>BH</sub> =</strong> ${h.q_value}` : "";
-      const openBadge = h.origin === "agent_open" ? `<span class="vol2-badge vol2-badge-open">AGENT OPEN</span>` : "";
+      const qTxt = h.q_value != null ? ` &middot; <strong>q<sub>BH</sub> =</strong> ${h.q_value}` : "";
+      const openBadge = h.origin === "agent_open" ? `<span class="vol2-badge vol2-badge-open">Agent Open</span>` : "";
       const provLine =
         h.proposed_by || h.challenged_by || h.adjudicated_by
-          ? `<div style="font-size:0.71rem;opacity:0.78;margin-top:4px">Provenance: ${esc(h.proposed_by || "Explorer")} &rarr; ${esc(h.challenged_by || "Theorist")} &rarr; ${esc(h.adjudicated_by || "Arbiter")}</div>`
+          ? `<div class="vol2-inline-meta">Provenance: ${esc(h.proposed_by || "Explorer")} &rarr; ${esc(h.challenged_by || "Theorist")} &rarr; ${esc(h.adjudicated_by || "Arbiter")}</div>`
           : "";
       return `
         <div class="vol2-proof-card">
@@ -690,14 +692,14 @@
             <span class="vol2-verdict ${esc(h.verdict)}">${esc(h.verdict)}</span>
           </div>
           <div class="vol2-formula">${esc(h.symbolic_formula)}</div>
-          <div style="font-size:0.76rem;margin-bottom:5px">
-            <strong>${esc(h.test_statistic_name)}:</strong> ${h.test_statistic_value} &bull;
-            <strong>p =</strong> ${h.p_value}${qTxt} &bull; <strong>n =</strong> ${h.n_observations}
+          <div class="vol2-inline-meta">
+            <strong>${esc(h.test_statistic_name)}:</strong> ${h.test_statistic_value} &middot;
+            <strong>p =</strong> ${h.p_value}${qTxt} &middot; <strong>n =</strong> ${h.n_observations}
           </div>
-          <ul style="margin:4px 0 6px 16px;padding:0;font-size:0.76rem">
+          <ul style="margin:4px 0 6px 16px;padding:0;font-size:0.875rem">
             ${(h.derivation_steps || []).map((s) => `<li>${esc(s)}</li>`).join("")}
           </ul>
-          <div style="font-size:0.77rem;font-style:italic">${esc(h.analyst_narrative)}</div>
+          <div style="font-size:0.875rem;font-style:italic">${esc(h.analyst_narrative)}</div>
           ${provLine}
         </div>`;
     }
@@ -764,7 +766,7 @@
 
         tabBody = `
           <div class="vol2-kl-controls">
-            <div class="vol2-toolbar-group">
+            <div class="vol2-segmented" role="group" aria-label="KL dimension">
               <button class="vol2-btn ${state.klDim === "actor" ? "active" : ""}" data-kl-dim="actor">Actor Profile (K=5)</button>
               <button class="vol2-btn ${state.klDim === "tactic" ? "active" : ""}" data-kl-dim="tactic">Tactic Profile (K&le;8)</button>
             </div>
@@ -773,10 +775,10 @@
           ${renderKlDistributionSvg(bins, state.klDim === "actor" ? "Actor" : "Tactic", pred ? pred.cercle_name : cercleId, klVal, klQ)}
           <div class="vol2-proof-card" style="margin-top:10px">
             <strong>Cercle Information-Theoretic Telemetry (${esc(pred ? pred.cercle_name : cercleId)}):</strong><br/>
-            <span style="font-size:0.78rem">
-              Actor D<sub>KL</sub><sup>EB</sup>: <strong>${proofState ? proofState.kl_actor_nats.toFixed(4) : "0.0000"}</strong> nats (q<sub>BH</sub>=${proofState ? proofState.kl_actor_q_bh.toFixed(4) : "1.0000"}) &bull;
+            <span class="vol2-inline-meta">
+              Actor D<sub>KL</sub><sup>EB</sup>: <strong>${proofState ? proofState.kl_actor_nats.toFixed(4) : "0.0000"}</strong> nats (q<sub>BH</sub>=${proofState ? proofState.kl_actor_q_bh.toFixed(4) : "1.0000"}) &middot;
               Tactic D<sub>KL</sub><sup>EB</sup>: <strong>${proofState ? proofState.kl_tactic_nats.toFixed(4) : "0.0000"}</strong> nats (q<sub>BH</sub>=${proofState ? proofState.kl_tactic_q_bh.toFixed(4) : "1.0000"})<br/>
-              Neighborhood-Inflow TE<sub>MM</sub>: <strong>${proofState ? proofState.te_inflow_bits.toFixed(4) : "0.0000"}</strong> bits (q<sub>BH</sub>=${proofState ? proofState.te_inflow_q_bh.toFixed(4) : "1.0000"}) &bull;
+              Neighborhood-Inflow TE<sub>MM</sub>: <strong>${proofState ? proofState.te_inflow_bits.toFixed(4) : "0.0000"}</strong> bits (q<sub>BH</sub>=${proofState ? proofState.te_inflow_q_bh.toFixed(4) : "1.0000"}) &middot;
               Changepoint: <strong>${esc(cpDate)}</strong>
             </span>
           </div>
@@ -825,15 +827,13 @@
         const rows = cercleEvents.slice(0, 60).map((e) => `
           <div class="vol2-event-row">
             <div>
-              <strong>${esc(e.date_start)}</strong> &bull; ${esc(e.locality || e.admin2)} &bull;
+              <strong>${esc(e.date_start)}</strong> &middot; ${esc(e.locality || e.admin2)} &middot;
               <em>${esc(e.actor_primary)}</em>
             </div>
-            <div style="margin:2px 0">
-              <span class="vol2-badge">${esc(e.tactic)}</span>
-              <span class="vol2-badge">${esc(e.corroboration_tier)} (${e.source_count} src)</span>
-              ${e.fatalities_best ? `<span class="vol2-badge">${e.fatalities_best} fat.</span>` : ""}
+            <div class="vol2-inline-meta">
+              ${esc(e.tactic)} &middot; ${esc(e.corroboration_tier)} (${e.source_count} src)${e.fatalities_best ? ` &middot; ${e.fatalities_best} fat.` : ""}
             </div>
-            <div style="opacity:.86">${esc(e.headline || e.summary)}</div>
+            <div style="opacity:.88">${esc(e.headline || e.summary)}</div>
           </div>
         `).join("");
         tabBody = `<div class="vol2-events-list">${rows || '<div class="vol2-event-row">No matching events in filter.</div>'}</div>`;
@@ -948,8 +948,8 @@
         .map((t) => {
           const origIdx = shownTurns.indexOf(t);
           const refs = Object.entries(t.math_refs || {})
-            .map(([k, v]) => `<span class="vol2-badge">${esc(k)}=${esc(v)}</span>`)
-            .join("");
+            .map(([k, v]) => `${esc(k)}=${v === null || v === undefined ? "n/a" : esc(v)}`)
+            .join(" &middot; ");
           const roleCls = String(t.role_badge || "Explorer").toLowerCase();
           const prevTurn = origIdx > 0 ? shownTurns[origIdx - 1] : null;
           const prevV = prevTurn && prevTurn.verdict_after ? `${prevTurn.verdict_after} \u2192 ` : "";
@@ -971,7 +971,7 @@
               </div>
               <div class="vol2-exchange-msg">${esc(t.message)}</div>
               <div class="vol2-exchange-foot">
-                <div>${refs}</div>
+                <div class="vol2-inline-meta">${refs}</div>
                 ${t.verdict_after ? `<span class="vol2-verdict ${esc(t.verdict_after)}">${esc(prevV + t.verdict_after)}</span>` : ""}
               </div>
             </div>`;
@@ -983,25 +983,24 @@
       dock.innerHTML = `
         <div class="vol2-dock-head">
           <div>
-            <strong>Always-Visible Agent Proof Exchange &amp; Live Verdict Log (Newest First &bull; ${shownTurns.length} recent turns)</strong>
-            <div style="font-size:0.76rem;opacity:0.84;margin-top:2px">
-              ${esc((state.exchangeRecord && state.exchangeRecord.topic) || "Multi-agent deduction, estimator bias challenge & BH-FDR adjudication.")}
-              &bull; Sweep: <code>${esc((state.exchangeRecord && state.exchangeRecord.sweep_id) || (state.meta && state.meta.sweep_id) || "snapshot")}</code>
-              &bull; Updated: <strong>${esc(updIso || "—")}</strong> (<span id="vol2AgoClock">${esc(formatAgo(updIso))}</span>)
+            <strong>Agent Proof Exchange &amp; Live Verdict Log</strong>
+            <div class="vol2-inline-meta">
+              Newest first &middot; ${shownTurns.length} recent turns &middot;
+              Updated: <strong>${esc(updIso || "n/a")}</strong> (<span id="vol2AgoClock">${esc(formatAgo(updIso))}</span>)
             </div>
           </div>
           <div class="vol2-toolbar-group">
             ${statusPill}
-            <label style="font-size:0.72rem;display:flex;align-items:center;gap:4px;cursor:pointer">
-              <input type="checkbox" id="vol2FollowFocusChk" ${state.followLiveCercle ? "checked" : ""} /> Auto-Focus Active Cercle
+            <label style="font-size:0.8125rem;display:flex;align-items:center;gap:4px;cursor:pointer">
+              <input type="checkbox" id="vol2FollowFocusChk" ${state.followLiveCercle ? "checked" : ""} /> Auto-focus cercle
             </label>
-            ${!state.liveConnected ? `<button class="vol2-btn vol2-btn-live" id="vol2ExLiveBtn">Connect Firestore Live Stream</button>` : `<button class="vol2-btn" id="vol2ExRefreshBtn">Pull Latest Turns Now</button>`}
-            <button class="vol2-btn" id="vol2ExReplayBtn">${state.replayTimer ? "Pause Animated Replay" : "Animate Step-by-Step Replay"}</button>
+            ${!state.liveConnected ? `<button class="vol2-btn vol2-btn-live" id="vol2ExLiveBtn">Connect Firestore Live</button>` : `<button class="vol2-btn" id="vol2ExRefreshBtn">Pull Latest Turns</button>`}
+            <button class="vol2-btn" id="vol2ExReplayBtn">${state.replayTimer ? "Pause Replay" : "Animate Replay"}</button>
           </div>
         </div>
         ${activeBanner}
-        <div class="vol2-exchange-feed">${turnsHtml || `<div class="vol2-proof-card">${isSweepRunning ? "Cloud Run sweep active — waiting for Turn 1 (Explorer) to stream via Firestore..." : "No agent exchange turns recorded yet."}</div>`}</div>
-        ${openCards ? `<h4 style="margin:14px 0 4px;font-size:0.84rem;text-transform:uppercase;letter-spacing:0.04em">Deduced Open Hypotheses Resolved by Exchange (${openHyps.length})</h4><div class="vol2-open-grid">${openCards}</div>` : ""}
+        <div class="vol2-exchange-feed">${turnsHtml || `<div class="vol2-proof-card">${isSweepRunning ? "Cloud Run sweep active: waiting for Turn 1 (Explorer) to stream via Firestore..." : "No agent exchange turns recorded yet."}</div>`}</div>
+        ${openCards ? `<h4 style="margin:14px 0 6px;font-size:0.875rem;font-weight:700">Deduced Open Hypotheses (${openHyps.length})</h4><div class="vol2-open-grid">${openCards}</div>` : ""}
       `;
 
       const chk = dock.querySelector("#vol2FollowFocusChk");
