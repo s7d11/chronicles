@@ -1201,9 +1201,9 @@
           () => {}
         );
         state.unsubs.push(unsubMeta, unsubEx);
-        // Periodic REST sync every 4s + 1s live age ticker so stream always visibly breathes
+        // Visibility-aware 12s REST backup sync alongside sub-second onSnapshot push
         state.livePollingTimer = setInterval(async () => {
-          if (!state.liveConnected) return;
+          if (!state.liveConnected || document.visibilityState === "hidden") return;
           const prevExUpd = state.exchangeRecord && state.exchangeRecord.updated_at;
           await Promise.all([fetchMetaRest(), fetchLiveExchangeRest()]);
           renderKpis();
@@ -1212,8 +1212,9 @@
           } else {
             renderExchangeDock();
           }
-        }, 4000);
+        }, 12000);
         state.liveAgeTimer = setInterval(() => {
+          if (document.visibilityState === "hidden") return;
           const updIso = (state.exchangeRecord && state.exchangeRecord.updated_at) || (state.meta && state.meta.updated_at) || "";
           const el1 = rootEl.querySelector("#vol2AgoClock");
           const el2 = rootEl.querySelector("#vol2LiveAgoTicker");
@@ -1233,11 +1234,11 @@
           btn.classList.add("connected");
           btn.textContent = "Live Polling (REST)";
           state.livePollingTimer = setInterval(async () => {
-            if (!state.liveConnected) return;
+            if (!state.liveConnected || document.visibilityState === "hidden") return;
             await Promise.all([fetchMetaRest(), fetchLiveExchangeRest()]);
             renderKpis();
             renderExchangeDock();
-          }, 6000);
+          }, 12000);
           renderKpis();
           renderWorkbench();
           renderExchangeDock();
