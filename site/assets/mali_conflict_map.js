@@ -239,6 +239,9 @@
       simBeta0: 12.0,
       liveConnected: false,
       livePollingTimer: null,
+      liveAgeTimer: null,
+      lastRenderedTurnMax: 0,
+      followLiveCercle: true,
       replayLimit: null,
       replayTimer: null,
       unsubs: [],
@@ -899,6 +902,16 @@
       }
     }
 
+    function formatAgo(isoStr) {
+      if (!isoStr) return "—";
+      const ms = Date.parse(isoStr);
+      if (!Number.isFinite(ms)) return isoStr;
+      const diff = Math.max(0, Math.round((Date.now() - ms) / 1000));
+      if (diff < 60) return `${diff}s ago`;
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ${diff % 60}s ago`;
+      return `${Math.floor(diff / 3600)}h ago`;
+    }
+
     function renderExchangeDock() {
       const dock = rootEl.querySelector("#vol2ExchangeDock");
       if (!dock) return;
@@ -907,28 +920,51 @@
         (state.meta && Array.isArray(state.meta.agent_exchanges) && state.meta.agent_exchanges) ||
         [];
       const shownTurns = state.replayLimit != null ? turnsAll.slice(0, state.replayLimit) : turnsAll;
+      const maxTurnSeen = shownTurns.reduce((mx, t) => Math.max(mx, Number(t.turn_index || 0)), 0);
+      const prevMaxSeen = state.lastRenderedTurnMax || 0;
+      const newestFirst = [...shownTurns].reverse();
+
       const openHyps = state.hypotheses.filter((h) => h.origin === "agent_open");
       const isSweepRunning = Boolean(state.meta && state.meta.running);
       const statusPill = state.liveConnected
-        ? `<span class="vol2-verdict ${isSweepRunning ? "FALSIFIED" : "PROVEN"}">${isSweepRunning ? "STREAMING LIVE TURN-BY-TURN" : "FIRESTORE LIVE SYNCED"}</span>`
+        ? `<span class="vol2-verdict ${isSweepRunning ? "FALSIFIED" : "PROVEN"}">${isSweepRunning ? "ONGOING LIVE STREAM" : "FIRESTORE LIVE SYNCED"}</span>`
         : `<span class="vol2-verdict INCONCLUSIVE">STATIC SNAPSHOT</span>`;
 
-      const turnsHtml = shownTurns
-        .map((t, idx) => {
+      const lastTurn = shownTurns.length ? shownTurns[shownTurns.length - 1] : null;
+      const roleOrder = ["Explorer", "Theorist", "Explorer", "Arbiter"];
+      const nextStepPos = lastTurn ? (Number(lastTurn.turn_index || 0) % 4) : 0;
+      const nextRole = roleOrder[nextStepPos];
+      const updIso = (state.exchangeRecord && state.exchangeRecord.updated_at) || (state.meta && state.meta.updated_at) || "";
+
+      const activeBanner =
+        state.liveConnected && isSweepRunning
+          ? `<div class="vol2-live-thinking">
+              <div><span class="vol2-pulse-dot"></span><strong>Live Reasoning Active:</strong> awaiting next <code>${esc(nextRole)}</code> turn (#${maxTurnSeen + 1}) &bull; <em>${esc((state.exchangeRecord && state.exchangeRecord.topic) || "Mali ongoing cycle")}</em></div>
+              <span id="vol2LiveAgoTicker">Last turn: ${esc(formatAgo(updIso))}</span>
+            </div>`
+          : "";
+
+      const turnsHtml = newestFirst
+        .map((t) => {
+          const origIdx = shownTurns.indexOf(t);
           const refs = Object.entries(t.math_refs || {})
             .map(([k, v]) => `<span class="vol2-badge">${esc(k)}=${esc(v)}</span>`)
             .join("");
           const roleCls = String(t.role_badge || "Explorer").toLowerCase();
-          const prevTurn = idx > 0 ? shownTurns[idx - 1] : null;
+          const prevTurn = origIdx > 0 ? shownTurns[origIdx - 1] : null;
           const prevV = prevTurn && prevTurn.verdict_after ? `${prevTurn.verdict_after} \u2192 ` : "";
           const targetTxt = t.target_hyp_id ? `Target: <code>${esc(t.target_hyp_id)}</code> &bull; ` : "";
           const timeTxt = t.timestamp ? String(t.timestamp).replace("T", " ").slice(0, 19) + "Z" : "";
+          const isFresh = prevMaxSeen > 0 && Number(t.turn_index || 0) > prevMaxSeen;
+          const focusCid = (t.math_refs && t.math_refs.focus && t.math_refs.focus !== "all") ? String(t.math_refs.focus) : "";
+          const jumpBtn = focusCid ? `<button class="vol2-cercle-jump" data-jump-cercle="${esc(focusCid)}">Focus Map: ${esc(focusCid)}</button>` : "";
           return `
-            <div class="vol2-exchange-turn vol2-role-${esc(roleCls)}">
+            <div class="vol2-exchange-turn vol2-role-${esc(roleCls)} ${isFresh ? "vol2-turn-fresh" : ""}">
               <div class="vol2-exchange-head">
                 <div>
                   <span class="vol2-role-pill ${esc(roleCls)}">${esc(t.role_badge || "Agent")}</span>
-                  <strong>Turn #${t.turn_index || idx + 1} &bull; ${esc(t.agent_name || t.agent_id)}</strong>
+                  <strong>Turn #${t.turn_index || origIdx + 1} &bull; ${esc(t.agent_name || t.agent_id)}</strong>
+                  ${jumpBtn}
                   <span class="vol2-turn-verdict-arrow">${targetTxt}${esc(timeTxt)}</span>
                 </div>
                 <span class="vol2-model-tag">${esc(t.model_id || "")}</span>
@@ -941,27 +977,50 @@
             </div>`;
         })
         .join("");
+      state.lastRenderedTurnMax = Math.max(prevMaxSeen, maxTurnSeen);
 
       const openCards = openHyps.map(renderProofCard).join("");
       dock.innerHTML = `
         <div class="vol2-dock-head">
           <div>
-            <strong>Always-Visible Agent Proof Exchange &amp; Live Verdict Log (${shownTurns.length}/${turnsAll.length} turns)</strong>
+            <strong>Always-Visible Agent Proof Exchange &amp; Live Verdict Log (Newest First &bull; ${shownTurns.length} recent turns)</strong>
             <div style="font-size:0.76rem;opacity:0.84;margin-top:2px">
               ${esc((state.exchangeRecord && state.exchangeRecord.topic) || "Multi-agent deduction, estimator bias challenge & BH-FDR adjudication.")}
               &bull; Sweep: <code>${esc((state.exchangeRecord && state.exchangeRecord.sweep_id) || (state.meta && state.meta.sweep_id) || "snapshot")}</code>
-              &bull; Updated: <strong>${esc((state.exchangeRecord && state.exchangeRecord.updated_at) || (state.meta && state.meta.updated_at) || "—")}</strong>
+              &bull; Updated: <strong>${esc(updIso || "—")}</strong> (<span id="vol2AgoClock">${esc(formatAgo(updIso))}</span>)
             </div>
           </div>
           <div class="vol2-toolbar-group">
             ${statusPill}
+            <label style="font-size:0.72rem;display:flex;align-items:center;gap:4px;cursor:pointer">
+              <input type="checkbox" id="vol2FollowFocusChk" ${state.followLiveCercle ? "checked" : ""} /> Auto-Focus Active Cercle
+            </label>
             ${!state.liveConnected ? `<button class="vol2-btn vol2-btn-live" id="vol2ExLiveBtn">Connect Firestore Live Stream</button>` : `<button class="vol2-btn" id="vol2ExRefreshBtn">Pull Latest Turns Now</button>`}
             <button class="vol2-btn" id="vol2ExReplayBtn">${state.replayTimer ? "Pause Animated Replay" : "Animate Step-by-Step Replay"}</button>
           </div>
         </div>
+        ${activeBanner}
         <div class="vol2-exchange-feed">${turnsHtml || `<div class="vol2-proof-card">${isSweepRunning ? "Cloud Run sweep active — waiting for Turn 1 (Explorer) to stream via Firestore..." : "No agent exchange turns recorded yet."}</div>`}</div>
         ${openCards ? `<h4 style="margin:14px 0 4px;font-size:0.84rem;text-transform:uppercase;letter-spacing:0.04em">Deduced Open Hypotheses Resolved by Exchange (${openHyps.length})</h4><div class="vol2-open-grid">${openCards}</div>` : ""}
       `;
+
+      const chk = dock.querySelector("#vol2FollowFocusChk");
+      if (chk) {
+        chk.addEventListener("change", (ev) => {
+          state.followLiveCercle = Boolean(ev.target.checked);
+        });
+      }
+      dock.querySelectorAll("[data-jump-cercle]").forEach((b) => {
+        b.addEventListener("click", () => {
+          const cid = b.dataset.jumpCercle;
+          const matchingCl = state.clusters.find((c) => c.dominant_cercle_id === cid);
+          selectTarget(matchingCl ? matchingCl.cluster_id : state.selectedClusterId, cid);
+          if (map) {
+            const p = state.predictions.find((x) => x.cercle_id === cid);
+            if (p) map.setView([p.lat, p.lon], 7, { animate: true });
+          }
+        });
+      });
 
       const exLiveBtn = dock.querySelector("#vol2ExLiveBtn");
       if (exLiveBtn) {
@@ -1016,6 +1075,10 @@
         if (state.livePollingTimer) {
           clearInterval(state.livePollingTimer);
           state.livePollingTimer = null;
+        }
+        if (state.liveAgeTimer) {
+          clearInterval(state.liveAgeTimer);
+          state.liveAgeTimer = null;
         }
         state.liveConnected = false;
         btn.classList.remove("connected");
@@ -1091,6 +1154,21 @@
         state.liveRefreshFn = refreshAllRestFallback;
 
         let lastSweepId = "";
+        const handleTurnUpdate = (exData) => {
+          state.exchangeRecord = exData;
+          const tList = (exData && Array.isArray(exData.turns) && exData.turns) || [];
+          const newest = tList.length ? tList[tList.length - 1] : null;
+          const focusCid = newest && newest.math_refs && newest.math_refs.focus && newest.math_refs.focus !== "all" ? String(newest.math_refs.focus) : "";
+          if (state.followLiveCercle && focusCid && focusCid !== state.selectedCercleId) {
+            const matchingCl = state.clusters.find((c) => c.dominant_cercle_id === focusCid);
+            state.selectedCercleId = focusCid;
+            if (matchingCl) state.selectedClusterId = matchingCl.cluster_id;
+            renderMap();
+            renderWorkbench();
+          }
+          renderExchangeDock();
+        };
+
         const unsubMeta = fsMod.onSnapshot(
           fsMod.doc(db, "vol2_meta", "overview"),
           (snap) => {
@@ -1098,11 +1176,15 @@
               const d = snap.data();
               state.meta = d;
               renderKpis();
-              if (d && d.sweep_id && d.sweep_id !== lastSweepId && !d.running) {
+              if (d && d.sweep_id && d.sweep_id !== lastSweepId) {
                 lastSweepId = d.sweep_id;
-                refreshAllRestFallback().catch(() => {});
+                queryFsCollection("vol2_hypotheses", 250).then((hy) => {
+                  if (hy.length) {
+                    state.hypotheses = hy;
+                    renderWorkbench();
+                  }
+                }).catch(() => {});
               } else {
-                renderWorkbench();
                 renderExchangeDock();
               }
             }
@@ -1113,20 +1195,32 @@
           fsMod.doc(db, "vol2_exchanges", "latest"),
           (snap) => {
             if (snap.exists()) {
-              state.exchangeRecord = snap.data();
-              renderExchangeDock();
+              handleTurnUpdate(snap.data());
             }
           },
           () => {}
         );
         state.unsubs.push(unsubMeta, unsubEx);
-        // Periodic REST sync every 6s while connected guarantees real-time updates even if Enterprise WebChannel throttles
+        // Periodic REST sync every 4s + 1s live age ticker so stream always visibly breathes
         state.livePollingTimer = setInterval(async () => {
           if (!state.liveConnected) return;
+          const prevExUpd = state.exchangeRecord && state.exchangeRecord.updated_at;
           await Promise.all([fetchMetaRest(), fetchLiveExchangeRest()]);
           renderKpis();
-          renderExchangeDock();
-        }, 6000);
+          if ((state.exchangeRecord && state.exchangeRecord.updated_at) !== prevExUpd) {
+            handleTurnUpdate(state.exchangeRecord);
+          } else {
+            renderExchangeDock();
+          }
+        }, 4000);
+        state.liveAgeTimer = setInterval(() => {
+          const updIso = (state.exchangeRecord && state.exchangeRecord.updated_at) || (state.meta && state.meta.updated_at) || "";
+          const el1 = rootEl.querySelector("#vol2AgoClock");
+          const el2 = rootEl.querySelector("#vol2LiveAgoTicker");
+          const txt = formatAgo(updIso);
+          if (el1) el1.textContent = txt;
+          if (el2) el2.textContent = `Last turn: ${txt}`;
+        }, 1000);
 
         state.liveConnected = true;
         btn.classList.add("connected");
@@ -1186,7 +1280,9 @@
     renderWorkbench();
     renderExchangeDock();
 
-    if (new URLSearchParams(window.location.search).get("live") === "1") {
+    const params = new URLSearchParams(window.location.search);
+    const isHttp = window.location.protocol === "http:" || window.location.protocol === "https:";
+    if (params.get("static") !== "1" && (params.get("live") === "1" || isHttp)) {
       connectFirestoreLive();
     }
   }

@@ -2200,9 +2200,14 @@ async def run_autonomous_proof_debate(
         role = tspec["role_badge"]
         sp = tspec["spec"]
         msg_text = tspec["default_msg"]
-        if focus_cercle and offset == 0 and focus_stats:
-            fp_summary = ", ".join(f"{x['family']}={x['stat']}(q={x['q']})" for x in focus_stats[:4])
-            msg_text = f"[Cycle #{cycle_num} Focus: {focus_label}] {fp_summary}. {msg_text}"
+        if focus_cercle and focus_stats:
+            fp_summary = ", ".join(f"{x['family']}={x['stat']}(q={x['q']}, {x['verdict']})" for x in focus_stats[:4])
+            if offset == 0:
+                msg_text = f"[Cycle #{cycle_num} Focus: {focus_label}] {fp_summary}. {msg_text}"
+            elif offset == 1:
+                msg_text = f"[Cycle #{cycle_num} Theorist Audit on {focus_label}] Scrutinizing permutation nulls & BH-FDR: {fp_summary}. {msg_text}"
+            elif offset == 2:
+                msg_text = f"[Cycle #{cycle_num} Explorer Reply on {focus_label}] Re-anchored causal T<=T_cut bounds & >45d gap check for {focus_label}: {fp_summary}."
         if use_llm and client is not None:
             prompt_payload = {
                 "cycle_num": cycle_num,
@@ -2216,22 +2221,25 @@ async def run_autonomous_proof_debate(
                     'Return strictly JSON: {"message": "..."}'
                 ),
             }
-            try:
-                raw, _, err = await asyncio.wait_for(
-                    invoke_vol2_agent(
-                        client,
-                        sp,
-                        [{"role": "user", "content": json.dumps(prompt_payload)}],
-                        max_tokens=900,
-                        temperature=0.2,
-                    ),
-                    timeout=25.0,
-                )
-                parsed = extract_json_object(raw) if (not err and raw) else None
-                if parsed and isinstance(parsed.get("message"), str) and len(parsed["message"].strip()) >= 16:
-                    msg_text = parsed["message"].strip()[:520]
-            except Exception:
-                pass
+            parsed = None
+            for cand_spec, t_sec in ((sp, 14.0), (CRITIC_SPEC, 12.0)):
+                try:
+                    raw, _, err = await asyncio.wait_for(
+                        invoke_vol2_agent(
+                            client,
+                            cand_spec,
+                            [{"role": "user", "content": json.dumps(prompt_payload)}],
+                            max_tokens=800,
+                            temperature=0.22,
+                        ),
+                        timeout=t_sec,
+                    )
+                    parsed = extract_json_object(raw) if (not err and raw) else None
+                    if parsed and isinstance(parsed.get("message"), str) and len(parsed["message"].strip()) >= 16:
+                        msg_text = parsed["message"].strip()[:520]
+                        break
+                except Exception:
+                    continue
         prior_notes.append(f"[{role}] {msg_text}")
         turn_now = _utc_now_iso()
         turns.append(

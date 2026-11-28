@@ -71,7 +71,7 @@ def deploy_vol2_job(
             "JOB_MODE": "vol2",
             "VOL2_CONTINUOUS": "1",
             "VOL2_MAX_HOURS": "23.2",
-            "VOL2_CYCLE_SLEEP_SEC": "45",
+            "VOL2_CYCLE_SLEEP_SEC": "15",
             "VOL2_OSINT_EVERY": "6",
             "VOL2_CHECKPOINT_EVERY": "6",
             "HF_KEY": hf_tok,
